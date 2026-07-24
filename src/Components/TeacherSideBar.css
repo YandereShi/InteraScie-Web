@@ -1,0 +1,36 @@
+.teachersidebar{
+    width: 250px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #00BF63;
+}
+
+#interascielogo{
+    width: 90%;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+#teacherpfp{
+    width: 50%;
+    margin-bottom: 20px;
+}
+
+ul{
+    margin-top: 20px;
+}
+
+.sidebarlist {
+  width: 100%;
+  padding: 0;
+  list-style: none;
+}
+
+.sidebarlist button {
+  width: 100%;
+  padding: 12px;
+  cursor: pointer;
+  font-size: 2rem;
+}
