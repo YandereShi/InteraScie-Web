@@ -1,10 +1,11 @@
 .teachersidebar{
     width: 250px;
     min-height: 100vh;
+    flex-shrink: 0;
     display: flex;
     flex-direction: column;
     align-items: center;
-    background-color: #00BF63;
+    background-color: #00bf63;
 }
 
 #interascielogo{
@@ -18,19 +19,44 @@
     margin-bottom: 20px;
 }
 
-ul{
-    margin-top: 20px;
-}
-
 .sidebarlist {
-  width: 100%;
-  padding: 0;
-  list-style: none;
+    width: 100%;
+    margin-top: 20px;
+    padding-left: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    list-style: none;
 }
 
-.sidebarlist button {
-  width: 100%;
-  padding: 12px;
-  cursor: pointer;
-  font-size: 2rem;
+.navlink {
+    width: 100%;
+    min-height: 45px;
+    padding: 10px 22px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 14px;
+    background-color: #00bf63;
+    color: white;
+    border-radius: 30px 0 0 30px;
+    font-size: 1.25rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    text-decoration: none;
+    transition: background-color 0.2s;
+}
+
+.navlink:hover {
+    background-color: #006b3c;
+}
+
+.navlink.active {
+    background-color: #005f36;
+}
+
+.sidebaricon {
+  flex-shrink: 0;
+  font-size: 1.4rem;
+  color: white;
 }

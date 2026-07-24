@@ -39,7 +39,7 @@ function Login() {
       return;
     }
 
-    navigate("/teacher-dashboard", { replace: true });
+    navigate("/teacher", { replace: true });
   }
 
   const [loginType, setLoginType] = useState("teacher");
