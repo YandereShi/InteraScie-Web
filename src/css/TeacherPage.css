@@ -25,6 +25,8 @@
   display: flex;
   flex-direction: column;
   background-color: #fb8686;
+  width: 100%;
+  min-width: 0;
 }
 
 .tools{
@@ -45,11 +47,12 @@ button{
   cursor: pointer;
 }
 
-.studentcontainer{
-  background-color: #a7fb86;
-  margin: 10px;
-  width: 100vw;
-  height: 70vh;
+.studentcontainer {
+  width: calc(100% - 40px);
+  min-width: 0;
+  margin: 10px 0 0;
+  background-color: #86f934;
+  margin: 0px 20px;
 }
 
 .add button{

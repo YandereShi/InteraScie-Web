@@ -41,6 +41,17 @@ function TeacherPage({ title, children }) {
           <div className="studentcontainer">
             <p>Student Name</p>
           </div>
+
+          <div className="check">
+            <input
+              type="checkbox"
+              id="select-all"
+            />
+
+            <label htmlFor="select-all">
+              Select All
+            </label>
+          </div>
         </div>
 
         <div className="add">
