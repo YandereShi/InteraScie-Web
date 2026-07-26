@@ -1,4 +1,4 @@
-import "./TeacherDashboard.css";
+import "../css/TeacherDashboard.css";
 import TeacherPage from "./TeacherPage";
 
 function TeacherDashboard() {

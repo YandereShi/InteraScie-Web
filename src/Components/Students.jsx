@@ -1,4 +1,4 @@
-import "./Students.css";
+import "../css/Students.css";
 import TeacherPage from "./TeacherPage";
 
 function Students() {

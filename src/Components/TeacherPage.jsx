@@ -1,4 +1,4 @@
-import "./TeacherPage.css";
+import "../css/TeacherPage.css";
 import { useNavigate } from "react-router";
 import { supabase } from "../lib/supabase";
 
@@ -27,7 +27,25 @@ function TeacherPage({ title, children }) {
       </header>
 
       <main className="mainpanel">
-        {children}
+        <div className="studentbox">
+          <div className="tools">
+            <div className="searchbar">
+              <input type="text" placeholder="Search students..." />
+            </div>
+            <div className="buttons">
+              <button type="button">Batch Upload</button>
+              <button type="button">Delete Selected</button>
+            </div>
+          </div>
+
+          <div className="studentcontainer">
+            <p>Student Name</p>
+          </div>
+        </div>
+
+        <div className="add">
+          <button type="button">+</button>
+        </div>
       </main>
     </div>
   );

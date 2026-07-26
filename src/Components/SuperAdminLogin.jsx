@@ -1,4 +1,4 @@
-import "./Login.css";
+import "../css/Login.css";
 import superadminImage from "../assets/SuperAdmin.png";
 
 function SuperAdminLogin({ showTeacher }) {

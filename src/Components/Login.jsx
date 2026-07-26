@@ -1,4 +1,4 @@
-import "./Login.css";
+import "../css/Login.css";
 import teacherImage from "../assets/teacher.png";
 import { useState } from "react";
 import SuperAdminLogin from "./SuperAdminLogin";

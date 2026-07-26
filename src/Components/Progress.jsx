@@ -1,4 +1,4 @@
-import "./Progress.css";
+import "../css/Progress.css";
 import TeacherPage from "./TeacherPage";
 
 function Progress() {

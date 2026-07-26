@@ -1,4 +1,4 @@
-import "./Assessments.css";
+import "../css/Assessments.css";
 import TeacherPage from "./TeacherPage";
 
 function Assessments() {

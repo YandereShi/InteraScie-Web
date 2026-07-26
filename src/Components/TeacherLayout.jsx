@@ -1,4 +1,4 @@
-import "./TeacherLayout.css";
+import "../css/TeacherLayout.css";
 import { useEffect, useState } from "react";
 import { Outlet, useNavigate } from "react-router";
 import { supabase } from "../lib/supabase";

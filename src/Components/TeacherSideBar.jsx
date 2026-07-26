@@ -1,4 +1,4 @@
-import "./TeacherSideBar.css";
+import "../css/TeacherSideBar.css";
 import InteraScie from "../assets/InteraScie.png";
 import teacherPfp from "../assets/pfp.png";
 import { NavLink } from "react-router";
