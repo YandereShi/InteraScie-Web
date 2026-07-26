@@ -1,0 +1,111 @@
+.studentpopupoverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background-color: rgba(0, 0, 0, 0.45);
+}
+
+.studentpopup {
+  width: 520px;
+  padding: 20px;
+
+  background-color: white;
+  border-radius: 5px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.35);
+}
+
+.studentpopupheader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding-bottom: 12px;
+  border-bottom: 1px solid black;
+}
+
+.studentpopupheader h2 {
+  font-size: 2rem;
+}
+
+.closestudentpopup {
+  padding: 0;
+  background: none;
+  border: none;
+
+  font-size: 2.5rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.studentpopupcontent {
+  margin-top: 20px;
+
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  gap: 20px;
+}
+
+.studentpopupimage {
+  width: 115px;
+  height: 115px;
+  object-fit: cover;
+}
+
+.studentpopupform {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.studentpopupform label {
+  font-weight: bold;
+}
+
+.studentpopupform input,
+.studentpopupform select {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 8px;
+
+  border: 1px solid #555555;
+  font-size: 1rem;
+}
+
+.studentpopuperror {
+  grid-column: 1 / -1;
+  color: #d00000;
+}
+
+.studentpopupactions {
+  grid-column: 1 / -1;
+
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.studentpopupactions button {
+  padding: 10px 20px;
+  border: none;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.cancelstudent {
+  background-color: #dddddd;
+}
+
+.savestudent {
+  background-color: #00bf63;
+  color: white;
+}
+
+.savestudent:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

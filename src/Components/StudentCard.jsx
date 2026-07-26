@@ -1,9 +1,14 @@
 import "../css/StudentCard.css";
 import studentImage from "../assets/pfp.png";
 
-function StudentCard({ student }) {
+function StudentCard({
+  student,
+  onEdit,
+  isSelected,
+  onSelect,
+}) {
   return (
-    <article className="studentcard">
+    <article className="studentcard" onClick={() => onEdit(student)}>
       <img
         className="studentcardimage"
         src={studentImage}
@@ -12,7 +17,7 @@ function StudentCard({ student }) {
 
       <div className="studentinformation">
         <h3>
-          {student.firstName} {student.lastName}
+          {student.lastName}, {student.firstName} 
         </h3>
         <p>Username: {student.username}</p>
         <p>Section: {student.section}</p>
@@ -21,7 +26,15 @@ function StudentCard({ student }) {
       <input
         className="studentcheckbox"
         type="checkbox"
+        checked={isSelected}
         aria-label={`Select ${student.firstName} ${student.lastName}`}
+        onChange={(event) =>
+          onSelect(
+            student.studentID,
+            event.target.checked
+          )
+        }
+        onClick={(event) => event.stopPropagation()}
       />
     </article>
   );

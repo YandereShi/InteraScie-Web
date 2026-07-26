@@ -118,3 +118,8 @@
   padding: 5px 10px;
   cursor: pointer;
 }
+
+#remove:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
