@@ -50,9 +50,10 @@ button{
 .studentcontainer {
   width: calc(100% - 40px);
   min-width: 0;
-  margin: 10px 0 0;
+  height: 100%;
   background-color: #86f934;
   margin: 0px 20px;
+  margin-bottom: 10px;
 }
 
 .add button{
@@ -91,5 +92,25 @@ button{
   border-radius: 50%;
   font-size: 2.5rem;
   font-weight: bold;
+  cursor: pointer;
+}
+
+.check {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 10px 20px;
+  background-color: #a186fb;
+}
+
+.check input[type="checkbox"] {
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
+  accent-color: #00bf63;
+}
+
+.check label {
+  font-size: 1.2rem;
   cursor: pointer;
 }
