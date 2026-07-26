@@ -1,58 +1,51 @@
 import "../css/Students.css";
 import StudentCard from "./StudentCard";
 import TeacherPage from "./TeacherPage";
+import { useEffect, useState } from "react";
+import { supabase } from "../lib/supabase";
 
 function Students() {
-  const students = [
-    {
-      studentID: 1,
-      firstName: "Juan",
-      lastName: "Dela Cruz",
-      section: "Section A",
-    },
-    {
-      studentID: 2,
-      firstName: "Maria",
-      lastName: "Santos",
-      section: "Section A",
-    },
-    {
-      studentID: 3,
-      firstName: "Alex",
-      lastName: "Reyes",
-      section: "Section B",
-    },
-    {
-      studentID: 4,
-      firstName: "Angela",
-      lastName: "Garcia",
-      section: "Section B",
-    },
-    {
-      studentID: 5,
-      firstName: "John",
-      lastName: "Mendoza",
-      section: "Section C",
-    },
-    {
-      studentID: 6,
-      firstName: "Sofia",
-      lastName: "Flores",
-      section: "Section C",
-    },
-    {
-      studentID: 7,
-      firstName: "Daniel",
-      lastName: "Castro",
-      section: "Section D",
-    },
-    {
-      studentID: 8,
-      firstName: "Nicole",
-      lastName: "Ramos",
-      section: "Section D",
-    },
-  ];
+const [students, setStudents] = useState([]);
+const [loadingStudents, setLoadingStudents] = useState(true);
+const [studentError, setStudentError] = useState("");
+
+useEffect(() => {
+  async function loadStudents() {
+    const { data, error } = await supabase
+      .from("Student")
+      .select(`
+        studentID,
+        firstName,
+        lastName,
+        username,
+        sectionID,
+        Section (
+          sectionName
+        )
+      `)
+      .order("lastName", { ascending: true });
+
+    if (error) {
+      console.error(error.message);
+      setStudentError("Unable to load students.");
+      setLoadingStudents(false);
+      return;
+    }
+
+    const formattedStudents = data.map((student) => ({
+      studentID: student.studentID,
+      firstName: student.firstName,
+      lastName: student.lastName,
+      username: student.username,
+      section: student.Section?.sectionName ?? "No section",
+    }));
+
+    setStudents(formattedStudents);
+    setLoadingStudents(false);
+  }
+
+  loadStudents();
+}, []);
 
   return (
     <TeacherPage title="Students">
@@ -63,18 +56,24 @@ function Students() {
               <input type="text" placeholder="Search students..." />
             </div>
             <div className="buttons">
-              <button type="button">Batch Upload</button>
-              <button type="button">Delete Selected</button>
+              <button type="button" id="batch">Batch Upload</button>
+              <button type="button" id="remove">Remove Selected</button>
             </div>
           </div>
 
           <div className="studentcontainer">
-            {students.map((student) => (
-              <StudentCard
-                key={student.studentID}
-                student={student}
-              />
-            ))}
+            {loadingStudents && <p>Loading students...</p>}
+
+            {studentError && <p>{studentError}</p>}
+
+            {!loadingStudents &&
+              !studentError &&
+              students.map((student) => (
+                <StudentCard
+                  key={student.studentID}
+                  student={student}
+                />
+              ))}
           </div>
 
           <div className="check">

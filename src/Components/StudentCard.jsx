@@ -14,7 +14,7 @@ function StudentCard({ student }) {
         <h3>
           {student.firstName} {student.lastName}
         </h3>
-
+        <p>Username: {student.username}</p>
         <p>Section: {student.section}</p>
       </div>
 

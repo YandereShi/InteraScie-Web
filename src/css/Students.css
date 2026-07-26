@@ -8,21 +8,26 @@
 .studentbox{
   display: flex;
   flex-direction: column;
-  background-color: #fb8686;
   width: 100%;
   min-width: 0;
+  border:black 1px solid;
+  border-radius: 5px;
+  box-shadow: 0 1px 5px #000000;
 }
 
 .tools{
   display: flex;
   justify-content: space-between;
-  padding: 10px 20px;
+  padding: 15px 40px;
+}
+
+.searchbar input {
+  padding: 5px 10px;
 }
 
 .buttons{
   display: flex;
   gap: 10px;
-  background-color: #f3fb86;
 }
 
 .studentspanel button{
@@ -35,7 +40,6 @@
   width: calc(100% - 40px);
   min-width: 0;
   height: 100%;
-  background-color: #86f934;
   margin: 0px 20px;
   margin-bottom: 10px;
   display: grid;
@@ -43,6 +47,7 @@
   align-content: start;
   gap: 20px;
   overflow-y: auto;
+  padding: 20px;
 }
 
 .add button{
@@ -80,17 +85,36 @@
   align-items: center;
   gap: 10px;
   margin: 10px 20px;
-  background-color: #a186fb;
 }
 
 .check input[type="checkbox"] {
   width: 24px;
   height: 24px;
   cursor: pointer;
-  accent-color: #00bf63;
+  accent-color: #0040ff;
 }
 
 .check label {
   font-size: 1.2rem;
+  cursor: pointer;
+}
+
+#batch {
+  background-color: #00bf63;
+  color: white;
+  border: none;
+  font-weight: bold;
+  border-radius: 5px;
+  padding: 5px 10px;
+  cursor: pointer;
+}
+
+#remove {
+  background-color: #ff0000;
+  color: white;
+  border: none;
+  font-weight: bold;
+  border-radius: 5px;
+  padding: 5px 10px;
   cursor: pointer;
 }
