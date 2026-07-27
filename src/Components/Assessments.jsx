@@ -1,6 +1,7 @@
 import "../css/Assessments.css";
 import { useCallback, useEffect, useState } from "react";
 import { supabase } from "../lib/supabase";
+import Questions from "./Questions";
 import TeacherPage from "./TeacherPage";
 
 const maxRows = 10;
@@ -8,6 +9,7 @@ const maxLessons = 3;
 const maxScore = 15;
 
 function Assessments() {
+  const [view, setView] = useState("scores");
   const [sections, setSections] = useState([]);
   const [section, setSection] = useState("");
   const [levels, setLevels] = useState([]);
@@ -288,9 +290,13 @@ function Assessments() {
 
   return (
     <TeacherPage title="Assessments">
+      {view === "scores" ? (
       <section className="assessmentspanel">
         <div className="assessmentmanage">
-          <button type="button">
+          <button
+            type="button"
+            onClick={() => setView("questions")}
+          >
             Manage Questions &rarr;
           </button>
         </div>
@@ -480,6 +486,9 @@ function Assessments() {
           </button>
         </div>
       </section>
+      ) : (
+        <Questions onBack={() => setView("scores")} />
+      )}
     </TeacherPage>
   );
 }
