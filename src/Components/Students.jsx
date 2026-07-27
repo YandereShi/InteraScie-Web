@@ -202,10 +202,10 @@ function Students() {
     alert(`${deletedStudents.length} student(s) deleted.`);
   }
 
-  const normalizedSearch = search.trim().toLowerCase();
+  const Sinearch = search.trim().toLowerCase();
 
   const filteredStudents = students.filter((student) => {
-    const searchableValues = [
+    const searchable = [
       student.firstName,
       student.lastName,
       `${student.firstName} ${student.lastName}`,
@@ -214,10 +214,10 @@ function Students() {
       student.section,
     ];
 
-    return searchableValues.some((value) =>
+    return searchable.some((value) =>
       String(value ?? "")
         .toLowerCase()
-        .includes(normalizedSearch)
+        .includes(Sinearch)
     );
   });
 

@@ -1,3 +1,154 @@
 .sectionspanel {
+  width: calc(100% - 30px);
+  min-width: 0;
+  min-height: 100%;
+  padding: 0 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.sectionbox {
   width: 100%;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  background-color: #ffffff;
+  border: 1px solid #454545;
+}
+
+.sectiontools {
+  min-height: 68px;
+  display: grid;
+  grid-template-columns: minmax(190px, 28%) minmax(220px, 1fr) auto;
+  align-items: center;
+  border-bottom: 1px solid #454545;
+}
+
+.sectionpick {
+  width: 100%;
+  height: 100%;
+  padding: 0 20px;
+  background-color: #ffffff;
+  border: none;
+  border-right: 1px solid #454545;
+  font-size: 1.8rem;
+  cursor: pointer;
+}
+
+.sectionsearch {
+  padding: 0 20px;
+}
+
+.sectionsearch input {
+  width: min(100%, 320px);
+  padding: 8px 12px;
+  border: 1px solid #454545;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
+.sectionremove {
+  margin-right: 10px;
+  padding: 8px 12px;
+  background-color: #ff6b6b;
+  border: none;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.sectionlist {
+  min-height: 440px;
+  display: flex;
+  flex-direction: column;
+}
+
+.sectionrow {
+  min-height: 44px;
+  padding: 0 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #777777;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.sectionrow input,
+.sectioncheck input {
+  width: 25px;
+  height: 25px;
+  cursor: pointer;
+  accent-color: #0040ff;
+}
+
+.sectionnote {
+  margin: auto;
+  color: #555555;
+  font-size: 1.05rem;
+}
+
+.sectionfoot {
+  min-height: 52px;
+  padding: 0 12px;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+}
+
+.sectioncheck {
+  grid-column: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sectioncheck label {
+  font-size: 1.1rem;
+  cursor: pointer;
+}
+
+.sectionpager {
+  grid-column: 2;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sectionpager button {
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  background-color: transparent;
+  border: none;
+  font-size: 1.4rem;
+  cursor: pointer;
+}
+
+.sectionpager button:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.sectionpager span {
+  min-width: 46px;
+  text-align: center;
+  font-weight: bold;
+}
+
+.sectionactions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 30px;
+  padding-top: 8px;
+}
+
+.sectionactions button {
+  min-width: 180px;
+  padding: 9px 18px;
+  background-color: #55bd68;
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  font-size: 1.05rem;
+  cursor: pointer;
 }
