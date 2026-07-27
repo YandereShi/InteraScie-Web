@@ -1,5 +1,7 @@
 import "../css/Sections.css";
 import TeacherPage from "./TeacherPage";
+import AddPopup from "./AddPopup";
+import SectionPopup from "./SectionPopup";
 import {useCallback,useEffect,useState,} from "react";
 import { supabase } from "../lib/supabase";
 
@@ -14,13 +16,18 @@ function Sections() {
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [addOpen, setAddOpen] = useState(false);
+  const [addList, setAddList] = useState([]);
+  const [addLoad, setAddLoad] = useState(false);
+  const [addError, setAddError] = useState("");
+  const [createOpen, setCreateOpen] = useState(false);
 
   const loadSections = useCallback(async () => {
     setError("");
 
     const { data, error: loadError } = await supabase
       .from("Section")
-      .select("sectionID, sectionName")
+      .select("sectionID, sectionName, isShared")
       .order("sectionName", { ascending: true });
 
     if (loadError) {
@@ -31,10 +38,11 @@ function Sections() {
     }
 
     const list = data ?? [];
+    const choices = list.filter((item) => !item.isShared);
     setSections(list);
 
     setSection((active) => {
-      const exists = list.some(
+      const exists = choices.some(
         (item) => String(item.sectionID) === active
       );
 
@@ -42,10 +50,10 @@ function Sections() {
         return active;
       }
 
-      return String(list[0]?.sectionID ?? "");
+      return String(choices[0]?.sectionID ?? "");
     });
 
-    if (list.length === 0) {
+    if (choices.length === 0) {
       setLoading(false);
     }
   }, []);
@@ -173,6 +181,175 @@ function Sections() {
     setSelected([]);
   }
 
+  async function removeStudents() {
+    if (selected.length === 0) {
+      alert("Please select at least one student.");
+      return;
+    }
+
+    const shared = sections.find((item) => item.isShared);
+
+    if (!shared) {
+      alert("The shared No Section row was not found.");
+      return;
+    }
+
+    const confirmed = window.confirm(
+      "Move the selected students to No Section?"
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
+    const { data: moved, error: moveError } =
+      await supabase
+        .from("Student")
+        .update({ sectionID: shared.sectionID })
+        .in("studentID", selected)
+        .select("studentID");
+
+    if (moveError) {
+      console.error(moveError.message);
+      alert("Unable to move the selected students.");
+      return;
+    }
+
+    setSelected([]);
+    await loadStudents();
+    alert(`${moved.length} student(s) moved to No Section.`);
+  }
+
+  async function loadShared() {
+    const shared = sections.find((item) => item.isShared);
+
+    if (!shared) {
+      setAddError("The shared No Section row was not found.");
+      setAddLoad(false);
+      return;
+    }
+
+    setAddLoad(true);
+    setAddError("");
+
+    const { data, error: loadError } = await supabase
+      .from("Student")
+      .select(`
+        studentID,
+        firstName,
+        lastName,
+        username,
+        sectionID
+      `)
+      .eq("sectionID", shared.sectionID)
+      .order("lastName", { ascending: true })
+      .order("firstName", { ascending: true });
+
+    if (loadError) {
+      console.error(loadError.message);
+      setAddError("Unable to load shared students.");
+      setAddLoad(false);
+      return;
+    }
+
+    setAddList(data ?? []);
+    setAddLoad(false);
+  }
+
+  async function openAdd() {
+    setAddList([]);
+    setAddError("");
+    setAddOpen(true);
+    await loadShared();
+  }
+
+  function closeAdd() {
+    setAddOpen(false);
+    setAddList([]);
+    setAddError("");
+  }
+
+  async function addStudents(ids) {
+    if (!section) {
+      throw new Error("No active section was selected.");
+    }
+
+    const { error: moveError } = await supabase
+      .from("Student")
+      .update({ sectionID: Number(section) })
+      .in("studentID", ids);
+
+    if (moveError) {
+      console.error(moveError.message);
+      throw new Error("Unable to add the selected students.");
+    }
+
+    await loadStudents();
+    closeAdd();
+  }
+
+  function openCreate() {
+    setCreateOpen(true);
+  }
+
+  function closeCreate() {
+    setCreateOpen(false);
+  }
+
+  async function createSection(name) {
+    const {
+      data: { user },
+      error: userError,
+    } = await supabase.auth.getUser();
+
+    if (userError || !user) {
+      throw new Error("Your login session was not found.");
+    }
+
+    const { data: staff, error: staffError } =
+      await supabase
+        .from("SchoolStaff")
+        .select("staffID")
+        .eq("authUserID", user.id)
+        .eq("role", "teacher")
+        .single();
+
+    if (staffError || !staff) {
+      console.error(staffError?.message);
+      throw new Error("Your teacher account was not found.");
+    }
+
+    const { data: created, error: createError } =
+      await supabase
+        .from("Section")
+        .insert({
+          sectionName: name,
+          staffID: staff.staffID,
+          isShared: false,
+        })
+        .select("sectionID")
+        .single();
+
+    if (createError) {
+      console.error(createError.message);
+
+      if (createError.code === "23505") {
+        throw new Error("That section name already exists.");
+      }
+
+      throw new Error("Unable to create the section.");
+    }
+
+    await loadSections();
+    setSection(String(created.sectionID));
+    setSearch("");
+    setSelected([]);
+    setPage(1);
+    closeCreate();
+  }
+
+  const choices = sections.filter((item) => !item.isShared);
+
   return (
     <TeacherPage title="Sections">
       <section className="sectionspanel">
@@ -183,13 +360,13 @@ function Sections() {
               value={section}
               onChange={pickSection}
               aria-label="Active section"
-              disabled={sections.length === 0}
+              disabled={choices.length === 0}
             >
-              {sections.length === 0 && (
+              {choices.length === 0 && (
                 <option value="">No sections</option>
               )}
 
-              {sections.map((item) => (
+              {choices.map((item) => (
                 <option
                   key={item.sectionID}
                   value={item.sectionID}
@@ -211,6 +388,8 @@ function Sections() {
             <button
               type="button"
               className="sectionremove"
+              disabled={selected.length === 0}
+              onClick={removeStudents}
             >
               Remove Selected
             </button>
@@ -307,10 +486,38 @@ function Sections() {
         </div>
 
         <div className="sectionactions">
-          <button type="button">Create Section</button>
-          <button type="button">Add Student</button>
+          <button
+            type="button"
+            onClick={openCreate}
+          >
+            Create Section
+          </button>
+          <button
+            type="button"
+            disabled={!section}
+            onClick={openAdd}
+          >
+            Add Student
+          </button>
         </div>
       </section>
+
+      {addOpen && (
+        <AddPopup
+          students={addList}
+          loading={addLoad}
+          error={addError}
+          onClose={closeAdd}
+          onAdd={addStudents}
+        />
+      )}
+
+      {createOpen && (
+        <SectionPopup
+          onClose={closeCreate}
+          onCreate={createSection}
+        />
+      )}
     </TeacherPage>
   );
 }

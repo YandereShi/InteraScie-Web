@@ -56,6 +56,11 @@
   cursor: pointer;
 }
 
+.sectionremove:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 .sectionlist {
   min-height: 440px;
   display: flex;
@@ -151,4 +156,9 @@
   border-radius: 6px;
   font-size: 1.05rem;
   cursor: pointer;
+}
+
+.sectionactions button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }

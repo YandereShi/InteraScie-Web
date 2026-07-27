@@ -1,0 +1,122 @@
+.addoverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.45);
+}
+
+.addpopup {
+  width: min(540px, calc(100vw - 40px));
+  max-height: calc(100vh - 40px);
+  padding: 20px 24px;
+  overflow: hidden;
+  background-color: #ffffff;
+  border-radius: 5px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.35);
+}
+
+.addhead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.addhead h2 {
+  font-size: 2rem;
+}
+
+.addclose {
+  padding: 0;
+  background-color: transparent;
+  border: none;
+  font-size: 2rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.addsearch {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #454545;
+  border-radius: 3px;
+  font-size: 1rem;
+}
+
+.addselect,
+.addrow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.addselect {
+  min-height: 52px;
+  border-bottom: 1px solid #777777;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.addselect input,
+.addrow input {
+  width: 25px;
+  height: 25px;
+  flex: 0 0 auto;
+  cursor: pointer;
+  accent-color: #0040ff;
+}
+
+.addselect label,
+.addrow {
+  cursor: pointer;
+}
+
+.addlist {
+  min-height: 210px;
+  max-height: 300px;
+  overflow-y: auto;
+  border-bottom: 1px solid #777777;
+}
+
+.addrow {
+  min-height: 43px;
+  padding: 4px 0;
+  font-size: 1.08rem;
+  font-weight: 600;
+}
+
+.addnote {
+  margin: 25px 0;
+  text-align: center;
+  color: #555555;
+}
+
+.adderror {
+  margin-top: 8px;
+  color: #d00000;
+}
+
+.addactions {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 10px;
+}
+
+.addbutton {
+  min-width: 125px;
+  padding: 8px 24px;
+  background-color: #00bf63;
+  color: #ffffff;
+  border: none;
+  border-radius: 22px;
+  font-size: 1.25rem;
+  cursor: pointer;
+}
+
+.addbutton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
