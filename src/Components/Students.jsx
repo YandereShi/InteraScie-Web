@@ -2,12 +2,10 @@ import "../css/Students.css";
 import StudentCard from "./StudentCard";
 import StudentPopup from "./StudentPopup";
 import TeacherPage from "./TeacherPage";
-import {
-  useCallback,
-  useEffect,
-  useState,
-} from "react";
+import {useCallback,useEffect,useState,} from "react";
 import { supabase } from "../lib/supabase";
+
+const maxCards = 12;
 
 function Students() {
   const [students, setStudents] = useState([]);
@@ -22,6 +20,10 @@ function Students() {
   const [isPopupOpen, setIsPopupOpen] =useState(false);
 
   const [selectedStudentIDs, setSelectedStudentIDs,] = useState([]);
+
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const [search, setSearch] = useState("");
 
   const loadStudents = useCallback(async () => {
     setLoadingStudents(true);
@@ -200,6 +202,39 @@ function Students() {
     alert(`${deletedStudents.length} student(s) deleted.`);
   }
 
+  const normalizedSearch = search.trim().toLowerCase();
+
+  const filteredStudents = students.filter((student) => {
+    const searchableValues = [
+      student.firstName,
+      student.lastName,
+      `${student.firstName} ${student.lastName}`,
+      `${student.lastName} ${student.firstName}`,
+      student.username,
+      student.section,
+    ];
+
+    return searchableValues.some((value) =>
+      String(value ?? "")
+        .toLowerCase()
+        .includes(normalizedSearch)
+    );
+  });
+
+  const totalPages = Math.max(
+    1,
+    Math.ceil(filteredStudents.length / maxCards)
+  );
+
+  const firstStudentIndex = (currentPage - 1) * maxCards;
+
+  const lastStudentIndex = firstStudentIndex + maxCards;
+
+  const currentStudents = filteredStudents.slice(
+    firstStudentIndex,
+    lastStudentIndex
+  );
+
   return (
     <TeacherPage title="Students">
       <section className="studentspanel">
@@ -209,6 +244,11 @@ function Students() {
               <input
                 type="text"
                 placeholder="Search students..."
+                value={search}
+                onChange={(event) => {
+                  setSearch(event.target.value);
+                  setCurrentPage(1);
+                }}
               />
             </div>
 
@@ -239,7 +279,13 @@ function Students() {
 
             {!loadingStudents &&
               !studentError &&
-              students.map((student) => (
+              currentStudents.length === 0 && (
+                <p>No students found.</p>
+              )}
+
+            {!loadingStudents &&
+              !studentError &&
+              currentStudents.map((student) => (
                 <StudentCard
                   key={student.studentID}
                   student={student}
@@ -251,21 +297,51 @@ function Students() {
                 />
               ))}
           </div>
+          
+          <div className="studentcontrols">
+            <div className="check">
+              <input
+                type="checkbox"
+                id="select-all"
+                checked={
+                  students.length > 0 &&
+                  selectedStudentIDs.length === students.length
+                }
+                onChange={handleSelectAll}
+              />
 
-          <div className="check">
-            <input
-              type="checkbox"
-              id="select-all"
-              checked={
-                students.length > 0 &&
-                selectedStudentIDs.length === students.length
-              }
-              onChange={handleSelectAll}
-            />
+              <label htmlFor="select-all">
+                Select All
+              </label>
+            </div>
 
-            <label htmlFor="select-all">
-              Select All
-            </label>
+            <div className="pagination">
+              <button
+                type="button"
+                aria-label="Previous page"
+                onClick={() =>
+                  setCurrentPage((page) => page - 1)
+                }
+                disabled={currentPage === 1}
+              >
+                &lt;
+              </button>
+
+              <span>
+                {currentPage} of {totalPages}
+              </span>
+
+              <button
+                type="button"
+                aria-label="Next page"
+                onClick={() =>
+                  setCurrentPage((page) => page + 1)
+                }
+                disabled={currentPage === totalPages}
+              >
+                &gt;
+              </button>
+            </div>
           </div>
         </div>
 

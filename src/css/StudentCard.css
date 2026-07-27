@@ -13,8 +13,8 @@
 }
 
 .studentcardimage {
-  width: 90px;
-  height: 90px;
+  width: 80px;
+  height: 80px;
   object-fit: cover;
 }
 
@@ -30,6 +30,6 @@
 .studentcheckbox {
   width: 24px;
   height: 24px;
-  accent-color: #00bf63;
+  accent-color: #0040ff;
   cursor: pointer;
 }
