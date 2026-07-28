@@ -1,5 +1,7 @@
 import "../css/Progress.css";
 import { useCallback, useEffect, useState } from "react";
+import { FaCheck } from "react-icons/fa";
+import { TbProgress } from "react-icons/tb";
 import { supabase } from "../lib/supabase";
 import TeacherPage from "./TeacherPage";
 
@@ -13,6 +15,7 @@ function Progress() {
   const [levels, setLevels] = useState([]);
   const [branch, setBranch] = useState("");
   const [students, setStudents] = useState([]);
+  const [records, setRecords] = useState([]);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
   const [ready, setReady] = useState(false);
@@ -105,6 +108,7 @@ function Progress() {
 
     if (!section) {
       setStudents([]);
+      setRecords([]);
       setLoading(false);
       return;
     }
@@ -126,10 +130,42 @@ function Progress() {
       return;
     }
 
-    setStudents(data ?? []);
+    const studentList = data ?? [];
+    const lessonList = levels
+      .filter((item) => item.branchName === branch)
+      .slice(0, maxLessons);
+    let progressList = [];
+
+    if (studentList.length > 0 && lessonList.length > 0) {
+      const studentIds = studentList.map(
+        (student) => student.studentID
+      );
+      const lessonIds = lessonList.map(
+        (lesson) => lesson.levelID
+      );
+
+      const { data: progressData, error: progressError } =
+        await supabase
+          .from("Progress")
+          .select("studentID, levelID, savepoint, status")
+          .in("studentID", studentIds)
+          .in("levelID", lessonIds);
+
+      if (progressError) {
+        console.error(progressError.message);
+        setError("Unable to load student progress.");
+        setLoading(false);
+        return;
+      }
+
+      progressList = progressData ?? [];
+    }
+
+    setStudents(studentList);
+    setRecords(progressList);
     setPage(1);
     setLoading(false);
-  }, [ready, section]);
+  }, [branch, levels, ready, section]);
 
   useEffect(() => {
     const timer = window.setTimeout(() => {
@@ -164,6 +200,50 @@ function Progress() {
         .filter(Boolean)
     ),
   ];
+
+  const lessons = levels
+    .filter((item) => item.branchName === branch)
+    .slice(0, maxLessons);
+
+  function getIcon(studentID, levelID, taskIndex) {
+    const record = records.find(
+      (item) =>
+        item.studentID === studentID &&
+        item.levelID === levelID
+    );
+
+    if (!record) {
+      return null;
+    }
+
+    const savepoint = Number(record.savepoint);
+    const finished =
+      String(record.status ?? "")
+        .trim()
+        .toLowerCase() === "finished";
+
+    if (finished || taskIndex < savepoint - 1) {
+      return (
+        <FaCheck
+          className="progressicon progressdone"
+          aria-label="Completed"
+          title="Completed"
+        />
+      );
+    }
+
+    if (taskIndex === savepoint - 1) {
+      return (
+        <TbProgress
+          className="progressicon progressactive"
+          aria-label="Current progress"
+          title="Current progress"
+        />
+      );
+    }
+
+    return null;
+  }
 
   const pages = Math.max(
     1,
@@ -280,7 +360,7 @@ function Progress() {
               {loading && (
                 <tr>
                   <td colSpan="10" className="progressnote">
-                    Loading students...
+                    Loading progress...
                   </td>
                 </tr>
               )}
@@ -310,8 +390,26 @@ function Progress() {
                     </td>
 
                     {Array.from(
-                      { length: maxLessons * maxTasks },
-                      (_, index) => <td key={index}></td>
+                      { length: maxLessons },
+                      (_, lessonIndex) => {
+                        const lesson = lessons[lessonIndex];
+
+                        return Array.from(
+                          { length: maxTasks },
+                          (_, taskIndex) => (
+                            <td
+                              key={`${lessonIndex}-${taskIndex}`}
+                            >
+                              {lesson &&
+                                getIcon(
+                                  student.studentID,
+                                  lesson.levelID,
+                                  taskIndex
+                                )}
+                            </td>
+                          )
+                        );
+                      }
                     )}
                   </tr>
                 ))}

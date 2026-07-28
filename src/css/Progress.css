@@ -111,6 +111,26 @@
   font-weight: 600;
 }
 
+.progressicon {
+  vertical-align: middle;
+  font-size: 1.25rem;
+}
+
+.progressdone {
+  color: #161616;
+}
+
+.progressactive {
+  color: #a5a5a5;
+  animation: progressspin 1s linear infinite;
+}
+
+@keyframes progressspin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 .progressempty td {
   height: 43px;
 }
