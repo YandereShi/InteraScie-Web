@@ -1,3 +1,152 @@
 .progresspanel {
+  width: calc(100% - 30px);
+  min-width: 0;
+  min-height: 100%;
+  padding: 18px 20px 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.progresssubject {
+  min-height: 62px;
+  display: flex;
+  align-items: flex-start;
+}
+
+.progresssubject select {
+  min-width: 205px;
+  padding: 8px 12px;
+  background-color: #ffffff;
+  border: 1px solid #454545;
+  border-radius: 4px;
+  font-size: 1.1rem;
+  cursor: pointer;
+}
+
+.progressbox {
   width: 100%;
+  min-width: 0;
+  overflow-x: auto;
+  border: 1px solid #454545;
+}
+
+.progresstable {
+  width: 100%;
+  min-width: 900px;
+  table-layout: fixed;
+  border-collapse: collapse;
+  background-color: #ffffff;
+}
+
+.progresstable col {
+  width: 8.22%;
+}
+
+.progresstable .progressname {
+  width: 25%;
+}
+
+.progresstable th,
+.progresstable td {
+  height: 43px;
+  padding: 4px 5px;
+  border-right: 1px solid #555555;
+  border-bottom: 1px solid #555555;
+  text-align: center;
+}
+
+.progresstable th:last-child,
+.progresstable td:last-child {
+  border-right: none;
+}
+
+.progresstop th {
+  height: 70px;
+  padding: 0;
+  border-right-width: 3px;
+  font-size: 1.35rem;
+}
+
+.progresstop th:last-child {
+  border-right: none;
+}
+
+.progresstop select {
+  width: 100%;
+  height: 100%;
+  padding: 0 16px;
+  background-color: #ffffff;
+  border: none;
+  font-size: 1.55rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.progresstasks th {
+  height: 45px;
+  font-size: 1.05rem;
+}
+
+.progresstasks p {
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+.progresstasks th:first-child,
+.progresstable tbody td:first-child {
+  border-right-width: 3px;
+}
+
+.progresstasks th:nth-child(4),
+.progresstasks th:nth-child(7),
+.progresstable tbody td:nth-child(4),
+.progresstable tbody td:nth-child(7) {
+  border-right-width: 3px;
+}
+
+.progresstable tbody td:first-child {
+  padding-left: 8px;
+  text-align: left;
+  font-size: 1.02rem;
+  font-weight: 600;
+}
+
+.progressempty td {
+  height: 43px;
+}
+
+.progresstable .progressnote {
+  height: 86px;
+  text-align: center;
+  color: #555555;
+  font-weight: normal;
+}
+
+.progresspager {
+  min-height: 55px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+
+.progresspager button {
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  background-color: transparent;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+.progresspager button:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.progresspager span {
+  min-width: 24px;
+  text-align: center;
+  font-size: 1.2rem;
 }
