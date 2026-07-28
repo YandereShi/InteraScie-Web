@@ -22,6 +22,7 @@ function Assessments() {
   const [loading, setLoading] = useState(true);
   const [ready, setReady] = useState(false);
   const [error, setError] = useState("");
+  const [sort, setSort] = useState({key: null, order: "asc",});
 
   const loadPage = useCallback(async () => {
     setLoading(true);
@@ -280,12 +281,99 @@ function Assessments() {
     return `${total}/${maxScore * maxLessons}`;
   }
 
+  function getValue(student, key) {
+    if (key === "name") {
+      return `${student.lastName}, ${student.firstName}`
+        .toLowerCase();
+    }
+
+    const values = lessons.map((lesson) => {
+      const test = tests.find(
+        (item) => item.levelID === lesson.levelID
+      );
+
+      return test
+        ? getScore(student.studentID, test.assessmentID)
+        : null;
+    });
+
+    if (key === "total") {
+      if (
+        values.length < maxLessons ||
+        values.some((value) => value === null)
+      ) {
+        return null;
+      }
+
+      return values.reduce(
+        (sum, value) => sum + value,
+        0
+      );
+    }
+
+    return values[key] ?? null;
+  }
+
+  function changeSort(key) {
+    setSort((current) => ({
+      key,
+      order:
+        current.key === key &&
+        current.order === "asc"
+          ? "desc"
+          : "asc",
+    }));
+
+    setPage(1);
+  }
+
+  function getArrow(key) {
+    if (sort.key !== key) {
+      return "";
+    }
+
+    return sort.order === "asc" ? "↑" : "↓";
+  }
+
+  const sorted = sort.key === null
+    ? students
+    : [...students].sort((firstStudent, secondStudent) => {
+        const firstValue = getValue(
+          firstStudent,
+          sort.key
+        );
+        const secondValue = getValue(
+          secondStudent,
+          sort.key
+        );
+
+        if (firstValue === null && secondValue === null) {
+          return 0;
+        }
+
+        if (firstValue === null) {
+          return 1;
+        }
+
+        if (secondValue === null) {
+          return -1;
+        }
+
+        const result =
+          typeof firstValue === "string"
+            ? firstValue.localeCompare(secondValue)
+            : firstValue - secondValue;
+
+        return sort.order === "asc"
+          ? result
+          : -result;
+      });
   const pages = Math.max(
     1,
-    Math.ceil(students.length / maxRows)
+    Math.ceil(sorted.length / maxRows)
   );
   const first = (page - 1) * maxRows;
-  const shown = students.slice(first, first + maxRows);
+  const shown = sorted.slice(first, first + maxRows);
   const empty = Math.max(0, maxRows - shown.length);
 
   return (
@@ -369,11 +457,43 @@ function Assessments() {
               </tr>
 
               <tr>
-                <th>Student Name</th>
-                <th>Score</th>
-                <th>Score</th>
-                <th>Score</th>
-                <th>Total Score</th>
+                <th>
+                  <button
+                    type="button"
+                    className="assessmentsort"
+                    onClick={() => changeSort("name")}
+                  >
+                    Student Name
+                    <span>{getArrow("name")}</span>
+                  </button>
+                </th>
+
+                {Array.from(
+                  { length: maxLessons },
+                  (_, index) => (
+                    <th key={index}>
+                      <button
+                        type="button"
+                        className="assessmentsort"
+                        onClick={() => changeSort(index)}
+                      >
+                        Score
+                        <span>{getArrow(index)}</span>
+                      </button>
+                    </th>
+                  )
+                )}
+
+                <th>
+                  <button
+                    type="button"
+                    className="assessmentsort"
+                    onClick={() => changeSort("total")}
+                  >
+                    Total Score
+                    <span>{getArrow("total")}</span>
+                  </button>
+                </th>
               </tr>
             </thead>
 
