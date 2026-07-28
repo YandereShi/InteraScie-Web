@@ -69,9 +69,24 @@ function Questions({ onBack }) {
     }
 
     const levelList = data ?? [];
-    const firstBranch = levelList.find(
-      (item) => item.branchName
-    )?.branchName;
+    const branchList = [
+      ...new Set(
+        levelList
+          .map((item) => item.branchName)
+          .filter(Boolean)
+      ),
+    ].sort((first, second) => {
+      if (first === "Chemistry") {
+        return -1;
+      }
+
+      if (second === "Chemistry") {
+        return 1;
+      }
+
+      return first.localeCompare(second);
+    });
+    const firstBranch = branchList[0];
     const firstLesson = levelList.find(
       (item) => item.branchName === firstBranch
     );
@@ -178,7 +193,17 @@ function Questions({ onBack }) {
         .map((item) => item.branchName)
         .filter(Boolean)
     ),
-  ];
+  ].sort((first, second) => {
+    if (first === "Chemistry") {
+      return -1;
+    }
+
+    if (second === "Chemistry") {
+      return 1;
+    }
+
+    return first.localeCompare(second);
+  });
 
   const lessons = levels.filter(
     (item) => item.branchName === branch

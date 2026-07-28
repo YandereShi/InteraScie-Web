@@ -7,13 +7,15 @@ import { FaPeopleGroup } from "react-icons/fa6";
 import { IoPerson } from "react-icons/io5";
 import { TbProgressCheck } from "react-icons/tb";
 
-function TeacherSidebar() {
+function TeacherSidebar({ teacher }) {
     return (
         <aside className="teachersidebar">
             <img src={InteraScie} alt="InteraScie Logo" id="interascielogo" />
             <img src={teacherPfp} alt="Teacher Icon" id="teacherpfp" />
-            <h2>Firstname, Lastname</h2>
-            <h4>Teacher</h4>
+            <h2>
+                {teacher.firstName} {teacher.lastName}
+            </h2>
+            <h4>{teacher.role}</h4>
 
         <ul className="sidebarlist">
             <li>

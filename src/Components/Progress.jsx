@@ -88,7 +88,17 @@ function Progress() {
           .map((item) => item.branchName)
           .filter(Boolean)
       ),
-    ];
+    ].sort((first, second) => {
+      if (first === "Chemistry") {
+        return -1;
+      }
+
+      if (second === "Chemistry") {
+        return 1;
+      }
+
+      return first.localeCompare(second);
+    });
 
     setSections(sectionList);
     setLevels(levelList);
@@ -199,7 +209,17 @@ function Progress() {
         .map((item) => item.branchName)
         .filter(Boolean)
     ),
-  ];
+  ].sort((first, second) => {
+    if (first === "Chemistry") {
+      return -1;
+    }
+
+    if (second === "Chemistry") {
+      return 1;
+    }
+
+    return first.localeCompare(second);
+  });
 
   const lessons = levels
     .filter((item) => item.branchName === branch)

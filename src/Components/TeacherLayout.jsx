@@ -7,6 +7,7 @@ import TeacherSidebar from "./TeacherSidebar";
 function TeacherLayout() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
+  const [teacher, setTeacher] = useState(null);
 
   useEffect(() => {
     async function checkTeacher() {
@@ -21,7 +22,7 @@ function TeacherLayout() {
 
       const { data: staff, error } = await supabase
         .from("SchoolStaff")
-        .select("role")
+        .select("firstName, lastName, role")
         .eq("authUserID", user.id)
         .single();
 
@@ -31,6 +32,7 @@ function TeacherLayout() {
         return;
       }
 
+      setTeacher(staff);
       setLoading(false);
     }
 
@@ -43,7 +45,7 @@ function TeacherLayout() {
 
   return (
     <div className="teacherlayout">
-      <TeacherSidebar />
+      <TeacherSidebar teacher={teacher} />
       <Outlet />
     </div>
   );
