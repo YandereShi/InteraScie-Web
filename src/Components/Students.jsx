@@ -110,32 +110,45 @@ function Students() {
     const payload = {
       firstName: studentData.firstName.trim(),
       lastName: studentData.lastName.trim(),
-      username: studentData.username.trim(),
+      username: studentData.username
+        .trim()
+        .toLowerCase(),
       sectionID: studentData.sectionID,
     };
 
     let saveResult;
 
     if (selectedStudent) {
-      saveResult = await supabase
-        .from("Student")
-        .update(payload)
-        .eq(
-          "studentID",
-          selectedStudent.studentID
-        )
-        .select("studentID")
-        .single();
+      saveResult = await supabase.functions.invoke(
+        "update-student",
+        {
+          body: {
+            ...payload,
+            studentID: selectedStudent.studentID,
+          },
+        }
+      );
     } else {
-      saveResult = await supabase
-        .from("Student")
-        .insert(payload)
-        .select("studentID")
-        .single();
+      saveResult = await supabase.functions.invoke(
+        "create-student",
+        {
+          body: payload,
+        }
+      );
     }
 
     if (saveResult.error) {
-      throw saveResult.error;
+      let message = saveResult.error.message;
+
+      try {
+        const body =
+          await saveResult.error.context?.json();
+
+        message = body?.error ?? message;
+      } catch {
+      }
+
+      throw new Error(message);
     }
 
     await loadStudents();
@@ -184,22 +197,50 @@ function Students() {
       return;
     }
 
-    const { data: deletedStudents, error } =
-      await supabase
-        .from("Student")
-        .delete()
-        .in("studentID", selectedStudentIDs)
-        .select("studentID");
+    const { data, error } =
+      await supabase.functions.invoke(
+        "delete-student",
+        {
+          body: {
+            studentIDs: selectedStudentIDs,
+          },
+        }
+      );
 
     if (error) {
-      console.error(error.message);
-      alert("Unable to delete the selected students.");
+      let message = error.message;
+
+      try {
+        const body =
+          await error.context?.json();
+
+        message = body?.error ?? message;
+      } catch {
+        
+      }
+
+      console.error(message);
+      alert(message);
       return;
     }
 
     setSelectedStudentIDs([]);
     await loadStudents();
-    alert(`${deletedStudents.length} student(s) deleted.`);
+
+    const deleted =
+      data?.deleted?.length ?? 0;
+
+    const failed =
+      data?.failed?.length ?? 0;
+
+    if (failed > 0) {
+      alert(
+        `${deleted} student record(s) were deleted, but ${failed} Auth account(s) could not be removed.`
+      );
+      return;
+    }
+
+    alert(`${deleted} student(s) deleted.`);
   }
 
   const Sinearch = search.trim().toLowerCase();
