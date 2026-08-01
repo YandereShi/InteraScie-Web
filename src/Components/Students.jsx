@@ -120,9 +120,10 @@ function Students() {
 
     if (selectedStudent) {
       saveResult = await supabase.functions.invoke(
-        "update-student",
+        "student-api",
         {
           body: {
+            action: "update",
             ...payload,
             studentID: selectedStudent.studentID,
           },
@@ -130,9 +131,12 @@ function Students() {
       );
     } else {
       saveResult = await supabase.functions.invoke(
-        "create-student",
+        "student-api",
         {
-          body: payload,
+          body: {
+            action: "create",
+            ...payload,
+          },
         }
       );
     }
@@ -146,6 +150,7 @@ function Students() {
 
         message = body?.error ?? message;
       } catch {
+        // Keep the original error message.
       }
 
       throw new Error(message);
@@ -153,6 +158,52 @@ function Students() {
 
     await loadStudents();
     closePopup();
+  }
+
+  async function resetPassword(student) {
+    const confirmed = window.confirm(
+      `Reset ${student.firstName} ${student.lastName}'s password?`
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
+    const { error } = await supabase.functions.invoke(
+      "student-api",
+      {
+        body: {
+          action: "reset",
+          studentID: student.studentID,
+        },
+      }
+    );
+
+    if (error) {
+      let message = error.message;
+
+      try {
+        const body = await error.context?.json();
+        message = body?.error ?? message;
+      } catch {
+        // Keep the original error message.
+      }
+
+      throw new Error(message);
+    }
+
+    const password = [
+      student.firstName,
+      student.lastName,
+    ]
+      .map((name) => name.trim())
+      .join("_")
+      .toLowerCase()
+      .replace(/\s+/g, "_");
+
+    alert(
+      `Password reset successfully.\nTemporary password: ${password}`
+    );
   }
 
   function handleStudentSelection(studentID, isChecked) {
@@ -199,9 +250,10 @@ function Students() {
 
     const { data, error } =
       await supabase.functions.invoke(
-        "delete-student",
+        "student-api",
         {
           body: {
+            action: "delete",
             studentIDs: selectedStudentIDs,
           },
         }
@@ -216,7 +268,7 @@ function Students() {
 
         message = body?.error ?? message;
       } catch {
-        
+        // Keep the original error message.
       }
 
       console.error(message);
@@ -402,6 +454,7 @@ function Students() {
           sections={sections}
           onClose={closePopup}
           onSave={handleSaveStudent}
+          onReset={resetPassword}
         />
       )}
     </TeacherPage>

@@ -100,12 +100,17 @@
   background-color: #dddddd;
 }
 
+.resetstudent {
+  margin-right: auto;
+  background-color: #dddddd;
+}
+
 .savestudent {
   background-color: #00bf63;
   color: white;
 }
 
-.savestudent:disabled {
+.studentpopupactions button:disabled {
   opacity: 0.6;
   cursor: not-allowed;
 }

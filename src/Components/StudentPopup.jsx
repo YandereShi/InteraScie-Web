@@ -7,6 +7,7 @@ function StudentPopup({
   sections,
   onClose,
   onSave,
+  onReset,
 }) {
   const isEditing = Boolean(student);
 
@@ -30,6 +31,21 @@ function StudentPopup({
 
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState("");
+  const [resetting, setResetting] = useState(false);
+
+  async function resetPassword() {
+    setResetting(true);
+    setSaveError("");
+
+    try {
+      await onReset(student);
+    } catch (error) {
+      console.error(error.message);
+      setSaveError(error.message);
+    } finally {
+      setResetting(false);
+    }
+  }
 
   async function handleSubmit(event) {
     event.preventDefault();
@@ -163,10 +179,24 @@ function StudentPopup({
           )}
 
           <div className="studentpopupactions">
+            {isEditing && (
+              <button
+                type="button"
+                className="resetstudent"
+                onClick={resetPassword}
+                disabled={saving || resetting}
+              >
+                {resetting
+                  ? "Resetting..."
+                  : "Reset Password"}
+              </button>
+            )}
+
             <button
               type="button"
               className="cancelstudent"
               onClick={onClose}
+              disabled={saving || resetting}
             >
               Cancel
             </button>
@@ -174,7 +204,7 @@ function StudentPopup({
             <button
               type="submit"
               className="savestudent"
-              disabled={saving}
+              disabled={saving || resetting}
             >
               {saving ? "Saving..." : "Save"}
             </button>
