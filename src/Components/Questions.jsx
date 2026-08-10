@@ -165,9 +165,17 @@ function Questions({ onBack }) {
       return;
     }
 
-    setQuestions(data ?? []);
+    const loadedQuestions = data ?? [];
+    const loadedPages = Math.max(
+      1,
+      Math.ceil(loadedQuestions.length / maxCards)
+    );
+
+    setQuestions(loadedQuestions);
     setSelected([]);
-    setPage(1);
+    setPage((currentPage) =>
+      Math.min(currentPage, loadedPages)
+    );
     setLoading(false);
   }, [lesson, ready, staff]);
 
