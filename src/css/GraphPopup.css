@@ -1,0 +1,74 @@
+.graphoverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  padding: 40px;
+  box-sizing: border-box;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background-color: rgba(0, 0, 0, 0.55);
+}
+
+.graphpopup {
+  width: min(1000px, 100%);
+  max-height: 100%;
+  padding: 25px;
+  overflow-y: auto;
+  box-sizing: border-box;
+
+  background-color: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+}
+
+.graphhead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #555555;
+}
+
+.graphhead h2 {
+  margin: 0;
+  color: #00bf6f;
+  font-size: 2rem;
+}
+
+.graphclose {
+  padding: 0;
+  color: #111111;
+  background: none;
+  border: 0;
+  font-size: 2.5rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.graphfilter {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 20px 0;
+  font-size: 1.15rem;
+  font-weight: bold;
+}
+
+.graphfilter select {
+  min-width: 220px;
+  padding: 9px 12px;
+  font-size: 1rem;
+  border: 1px solid #555555;
+  border-radius: 6px;
+  background-color: #ffffff;
+  cursor: pointer;
+}
+
+.graphpopup .scoregraph {
+  border: 0;
+  border-radius: 0;
+}

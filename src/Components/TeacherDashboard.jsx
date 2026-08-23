@@ -5,6 +5,7 @@ import {PiStudentFill} from "react-icons/pi";
 import {TbUsersGroup} from "react-icons/tb";
 import {supabase} from "../lib/supabase";
 import ScoreGraph from "./ScoreGraph";
+import GraphPopup from "./GraphPopup";
 
 function makeData(scores) {
   const data = Array.from({length: 15}, (_, index) => ({
@@ -29,17 +30,33 @@ function TeacherDashboard() {
   const [sectionTotal, setSectionTotal] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [branch, setBranch] = useState("Chemistry");
   const [charts, setCharts] = useState(() => [
     makeData([]),
     makeData([]),
     makeData([]),
   ]);
+  const [sections, setSections] = useState([]);
+  const [students, setStudents] = useState([]);
+  const [levels, setLevels] = useState([]);
+  const [tests, setTests] = useState([]);
+  const [scores, setScores] = useState([]);
+  const [active, setActive] = useState(null);
+  const [section, setSection] = useState("all");
 
   useEffect(() => {
     const timer = window.setTimeout(() => {
       async function loadTotals() {
         setLoading(true);
         setError("");
+        setCharts([makeData([]), makeData([]), makeData([])]);
+        setSections([]);
+        setStudents([]);
+        setLevels([]);
+        setTests([]);
+        setScores([]);
+        setActive(null);
+        setSection("all");
 
         const {
           data: {user},
@@ -65,9 +82,9 @@ function TeacherDashboard() {
           return;
         }
 
-        const {data: sections, error: sectionError} = await supabase
+        const {data: sectionData, error: sectionError} = await supabase
           .from("Section")
-          .select("sectionID")
+          .select("sectionID, sectionName")
           .eq("staffID", staff.staffID)
           .eq("isShared", false);
 
@@ -77,9 +94,10 @@ function TeacherDashboard() {
           return;
         }
 
-        const sectionList = sections ?? [];
+        const sectionList = sectionData ?? [];
         const sectionIDs = sectionList.map((section) => section.sectionID);
 
+        setSections(sectionList);
         setSectionTotal(sectionList.length);
 
       if (sectionIDs.length === 0){
@@ -88,9 +106,9 @@ function TeacherDashboard() {
         return;
       }
 
-      const {data: students, error: studentError} = await supabase
+      const {data: studentData, error: studentError} = await supabase
         .from("Student")
-        .select("studentID")
+        .select("studentID, sectionID")
         .in("sectionID", sectionIDs);
 
       if (studentError) {
@@ -99,32 +117,33 @@ function TeacherDashboard() {
         return;
       }
 
-      const studentList = students ?? [];
+      const studentList = studentData ?? [];
 
+      setStudents(studentList);
       setStudentTotal(studentList.length);
-      const {data: levels, error: levelError} = await supabase
+      const {data: levelData, error: levelError} = await supabase
         .from("Level")
         .select("levelID, levelName")
-        .eq("branchName", "Chemistry")
-        .in("levelName", ["ChemLab1", "ChemLab2", "ChemLab3"])
-        .order("levelID", {ascending: true});
+        .eq("branchName", branch)
+        .order("levelID", {ascending: true})
+        .limit(3);
 
       if (levelError) {
-        setError("Failed to fetch Chemistry lessons");
+        setError(`Failed to fetch ${branch} lessons`);
         setLoading(false);
         return;
       }
 
-const levelList = levels ?? [];
+const levelList = levelData ?? [];
 const levelIDs = levelList.map((level) => level.levelID);
 
 if (levelIDs.length === 0) {
-  setError("No Chemistry lessons found");
+  setError(`No ${branch} lessons found`);
   setLoading(false);
   return;
 }
 
-const {data: tests, error: testError} = await supabase
+const {data: testData, error: testError} = await supabase
   .from("Assessment")
   .select("assessmentID, levelID")
   .eq("staffID", staff.staffID)
@@ -137,14 +156,14 @@ if (testError) {
   return;
 }
 
-const testList = tests ?? [];
+const testList = testData ?? [];
 const studentIDs = studentList.map((student) => student.studentID);
 const testIDs = testList.map((test) => test.assessmentID);
 
 let scoreList = [];
 
 if (studentIDs.length > 0 && testIDs.length > 0) {
-  const {data: scores, error: scoreError} = await supabase
+  const {data: scoreData, error: scoreError} = await supabase
     .from("StudentAssessment")
     .select("studentID, assessmentID, score, totalQuestions")
     .in("studentID", studentIDs)
@@ -156,8 +175,12 @@ if (studentIDs.length > 0 && testIDs.length > 0) {
     return;
   }
 
-  scoreList = scores ?? [];
+  scoreList = scoreData ?? [];
 }
+
+setLevels(levelList);
+setTests(testList);
+setScores(scoreList);
 
 const chartList = levelList.map((level) => {
   const test = testList.find(
@@ -189,7 +212,48 @@ setCharts([
   }, 0);
 
   return () => window.clearTimeout(timer);
-  }, []);
+  }, [branch]);
+
+  function getData(index) {
+    const level = levels[index];
+
+    if (!level) {
+      return makeData([]);
+    }
+
+    const test = tests.find((item) => item.levelID === level.levelID);
+
+    if (!test) {
+      return makeData([]);
+    }
+
+    let scoreList = scores.filter(
+      (item) =>
+        item.assessmentID === test.assessmentID &&
+        Number(item.totalQuestions) === 15
+    );
+
+    if (section !== "all") {
+      const studentIDs = students
+        .filter((item) => String(item.sectionID) === section)
+        .map((item) => item.studentID);
+
+      scoreList = scoreList.filter((item) =>
+        studentIDs.includes(item.studentID)
+      );
+    }
+
+    return makeData(scoreList);
+  }
+
+  function openGraph(index) {
+    setSection("all");
+    setActive(index);
+  }
+
+  function closeGraph() {
+    setActive(null);
+  }
 
   return (
     <TeacherPage title="Teacher Dashboard">
@@ -221,14 +285,49 @@ setCharts([
         {error && (<p className="dashboardmessage">{error}</p>)}
 
         <div className="performance">
-          <h2>Performance Overview</h2>
+          <div className="performancehead">
+            <h2>Performance Overview</h2>
+
+            <select
+              value={branch}
+              onChange={(event) => setBranch(event.target.value)}
+              aria-label="Select graph branch"
+              disabled={loading}
+            >
+              <option value="Chemistry">Chemistry</option>
+              <option value="Biology">Biology</option>
+            </select>
+          </div>
 
           <div className="charts">
-            <ScoreGraph title="Lesson1" data={charts[0]} />
-            <ScoreGraph title="Lesson2" data={charts[1]} />
-            <ScoreGraph title="Lesson3" data={charts[2]} />
+            <ScoreGraph
+              title="Lesson1"
+              data={charts[0]}
+              onOpen={() => openGraph(0)}
+            />
+            <ScoreGraph
+              title="Lesson2"
+              data={charts[1]}
+              onOpen={() => openGraph(1)}
+            />
+            <ScoreGraph
+              title="Lesson3"
+              data={charts[2]}
+              onOpen={() => openGraph(2)}
+            />
           </div>
         </div>
+
+        {active !== null && (
+          <GraphPopup
+            title={`${branch} - Lesson ${active + 1}`}
+            data={getData(active)}
+            sections={sections}
+            section={section}
+            onPick={setSection}
+            onClose={closeGraph}
+          />
+        )}
       </section>
     </TeacherPage>
   );
