@@ -25,3 +25,36 @@
   flex: 1;
   padding: 30px 0px 30px 30px;
 }
+
+/* Tablet */
+@media (max-width: 1100px) {
+  .teacherheader {
+    padding: 0 16px;
+  }
+
+  .mainpanel {
+    padding: 20px 0 20px 20px;
+  }
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .teacherheader {
+    min-height: 64px;
+    padding: 0 14px;
+    gap: 10px;
+  }
+
+  .teacherheader h1 {
+    font-size: clamp(1.4rem, 6vw, 2rem);
+  }
+
+  .teacherheader button {
+    flex-shrink: 0;
+    padding: 8px 12px;
+  }
+
+  .mainpanel {
+    padding: 16px;
+  }
+}

@@ -67,3 +67,37 @@
   background-color: #000000;
   border-color: #000000;
 }
+
+@media (max-width: 768px) {
+  .questioncard {
+    padding: 9px 10px;
+  }
+
+  .questioncardhead h3 {
+    font-size: 0.95rem;
+  }
+
+  .questioncardhead input {
+    width: 20px;
+    height: 20px;
+  }
+
+  .questiontext {
+    margin: 7px 0 10px;
+    font-size: 0.9rem;
+  }
+
+  .questionchoices {
+    gap: 7px 10px;
+  }
+
+  .questionchoice {
+    gap: 6px;
+    font-size: 0.82rem;
+  }
+
+  .questionchoice > span:first-child {
+    width: 16px;
+    height: 16px;
+  }
+}

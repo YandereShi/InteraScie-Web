@@ -120,3 +120,67 @@
   opacity: 0.5;
   cursor: not-allowed;
 }
+
+@media (max-width: 768px) {
+  .addoverlay {
+    padding: 8px;
+  }
+
+  .addpopup {
+    width: min(100%, 420px);
+    max-height: calc(100dvh - 16px);
+    padding: 14px;
+  }
+
+  .addhead {
+    margin-bottom: 8px;
+  }
+
+  .addhead h2 {
+    font-size: 1.4rem;
+  }
+
+  .addclose {
+    font-size: 1.7rem;
+  }
+
+  .addsearch {
+    padding: 7px 10px;
+    font-size: 0.95rem;
+  }
+
+  .addselect {
+    min-height: 42px;
+    font-size: 1rem;
+  }
+
+  .addselect input,
+  .addrow input {
+    width: 21px;
+    height: 21px;
+  }
+
+  .addlist {
+    height: clamp(120px, 30dvh, 240px);
+    min-height: 0;
+    max-height: none;
+  }
+
+  .addrow {
+    min-height: 38px;
+    font-size: 0.9rem;
+  }
+
+  .addrow span {
+    min-width: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .addbutton {
+    min-width: 100px;
+    padding: 7px 18px;
+    font-size: 1rem;
+  }
+}

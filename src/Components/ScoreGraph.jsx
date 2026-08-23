@@ -1,7 +1,13 @@
 import {BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer} from 'recharts';
 import "../css/ScoreGraph.css";
 
-function ScoreGraph({title, data, height = 250, onOpen}) {
+function ScoreGraph({
+    title,
+    data,
+    height = 250,
+    onOpen,
+    showTip = false,
+}) {
     return (
         <div
             className={`scoregraph${onOpen ? " scoregraphclick" : ""}`}
@@ -21,7 +27,7 @@ function ScoreGraph({title, data, height = 250, onOpen}) {
                 <BarChart data={data}>
                     <XAxis dataKey="score" />
                     <YAxis domain={[0, 100]}  allowDecimals={false} />
-                    <Tooltip />
+                    {showTip && <Tooltip />}
                     <Bar dataKey="students" fill="#aaa6ff" />
                 </BarChart>
             </ResponsiveContainer>

@@ -73,3 +73,42 @@
   opacity: 0.5;
   cursor: not-allowed;
 }
+
+@media (max-width: 768px) {
+  .createoverlay {
+    padding: 8px;
+  }
+
+  .createpopup {
+    width: min(100%, 420px);
+    padding: 14px;
+  }
+
+  .createhead {
+    padding-bottom: 8px;
+  }
+
+  .createhead h2 {
+    font-size: 1.4rem;
+  }
+
+  .createclose {
+    font-size: 1.7rem;
+  }
+
+  .createinput {
+    margin-top: 16px;
+    padding: 8px 10px;
+    font-size: 1.1rem;
+  }
+
+  .createactions {
+    padding-top: 14px;
+  }
+
+  .createbutton {
+    min-width: 110px;
+    padding: 7px 18px;
+    font-size: 1rem;
+  }
+}

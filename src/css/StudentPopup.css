@@ -114,3 +114,85 @@
   opacity: 0.6;
   cursor: not-allowed;
 }
+
+@media (max-width: 768px) {
+  .studentpopupoverlay {
+    padding: 10px;
+  }
+
+  .studentpopup {
+    width: min(100%, 420px);
+    max-height: calc(100dvh - 20px);
+    padding: 16px;
+    overflow-y: auto;
+  }
+
+  .studentpopupheader h2 {
+    font-size: 1.6rem;
+  }
+
+  .closestudentpopup {
+    font-size: 2rem;
+  }
+
+  .studentpopupcontent {
+    margin-top: 15px;
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .studentpopupimage {
+    width: 90px;
+    height: 90px;
+    justify-self: center;
+  }
+
+  .studentpopupform {
+    width: 100%;
+  }
+
+  .studentpopupactions {
+    width: 100%;
+    gap: 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .studentpopup {
+    padding: 12px;
+  }
+
+  .studentpopupheader {
+    padding-bottom: 8px;
+  }
+
+  .studentpopupheader h2 {
+    font-size: 1.4rem;
+  }
+
+  .studentpopupimage {
+    width: 80px;
+    height: 80px;
+  }
+
+  .studentpopupform input,
+  .studentpopupform select {
+    padding: 7px;
+    margin-bottom: 6px;
+  }
+
+  .studentpopupactions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .studentpopupactions button {
+    width: 100%;
+    padding: 9px;
+  }
+
+  .resetstudent {
+    grid-column: 1 / -1;
+    margin-right: 0;
+  }
+}

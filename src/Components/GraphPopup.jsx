@@ -1,4 +1,5 @@
 import "../css/GraphPopup.css";
+import {useEffect} from "react";
 import ScoreGraph from "./ScoreGraph";
 
 function GraphPopup({
@@ -9,6 +10,15 @@ function GraphPopup({
   onPick,
   onClose,
 }) {
+  useEffect(() => {
+    const old = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      document.body.style.overflow = old;
+    };
+  }, []);
+
   return (
     <div className="graphoverlay" onClick={onClose}>
       <div
@@ -48,7 +58,12 @@ function GraphPopup({
           </select>
         </label>
 
-        <ScoreGraph title={title} data={data} height={500} />
+        <ScoreGraph
+          title={title}
+          data={data}
+          height={200}
+          showTip
+        />
       </div>
     </div>
   );

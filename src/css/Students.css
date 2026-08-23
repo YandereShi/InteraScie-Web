@@ -141,6 +141,14 @@
   cursor: pointer;
 }
 
+#addmobile {
+  display: none;
+  background-color: #006b3c;
+  color: white;
+  border: none;
+  font-weight: bold;
+}
+
 #batch {
   background-color: #00bf63;
   color: white;
@@ -164,4 +172,88 @@
 #remove:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+@media (max-width: 1100px) {
+  .studentspanel {
+    grid-template-columns: minmax(0, 1fr) 70px;
+  }
+
+  .tools {
+    padding: 15px 20px;
+  }
+
+  .studentcontainer {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    padding: 15px;
+    gap: 15px;
+  }
+
+  .add button {
+    width: 60px;
+    height: 60px;
+    font-size: 2rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .studentspanel {
+    display: block;
+    position: relative;
+    height: calc(100dvh - 168px);
+    min-height: 0;
+  }
+
+  .studentbox {
+    height: 100%;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .tools {
+    flex-direction: column;
+    gap: 10px;
+    padding: 12px;
+  }
+
+  .searchbar,
+  .searchbar input {
+    width: 100%;
+  }
+
+  .buttons {
+    width: 100%;
+  }
+
+  .buttons button {
+    flex: 1;
+  }
+
+  .studentcontainer {
+    flex: 1;
+    width: 100%;
+    height: auto;
+    min-height: 0;
+    margin: 0;
+    padding: 12px;
+
+    grid-template-columns: 1fr;
+    gap: 12px;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+
+  .studentcontrols {
+    grid-template-columns: 1fr auto;
+    gap: 10px;
+    padding: 0 12px 12px;
+  }
+
+  .add {
+    display: none;
+  }
+
+  #addmobile {
+    display: block;
+  }
 }

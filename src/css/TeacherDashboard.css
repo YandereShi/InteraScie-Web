@@ -119,3 +119,138 @@
   gap: 30px;
   width: 100%;
 }
+
+/* Smaller desktop and tablet */
+@media (max-width: 1100px) {
+  .dashboardpanel {
+    padding-right: 20px;
+  }
+
+  .dashboardtotals {
+    padding: 20px;
+    gap: 20px;
+  }
+
+  .totalcard {
+    width: 300px;
+    min-height: 125px;
+    gap: 20px;
+  }
+
+  .totalicon {
+    width: 70px;
+    height: 70px;
+  }
+
+  .totaldetails h2 {
+    font-size: 1.4rem;
+  }
+}
+
+/* Small tablet */
+@media (max-width: 900px) {
+  .dashboardtotals {
+    flex-direction: row;
+    align-items: stretch;
+  }
+
+  .totalcard {
+    width: min(calc((100% - 20px) / 2), 380px);
+  }
+
+  .charts {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .dashboardpanel {
+    padding-right: 0;
+  }
+
+  .dashboardtotals {
+    min-height: 0;
+    padding: 15px;
+    gap: 10px;
+    border-radius: 12px;
+  }
+
+  .totalcard {
+    width: min(calc((100% - 10px) / 2), 300px);
+    min-height: 90px;
+    padding: 12px;
+    gap: 12px;
+    border-radius: 12px;
+  }
+
+  .totalicon {
+    width: 50px;
+    height: 50px;
+  }
+
+  .totaldetails h2 {
+    font-size: clamp(1.1rem, 5vw, 1.4rem);
+  }
+
+  .totaldetails p {
+    font-size: 2rem;
+  }
+
+  .performance {
+    margin-top: 20px;
+    padding: 15px;
+    border-radius: 12px;
+  }
+
+  .performancehead {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 18px;
+  }
+
+  .performancehead h2 {
+    font-size: 1.5rem;
+  }
+
+  .performancehead select {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .charts {
+    gap: 16px;
+  }
+}
+
+@media (max-width: 550px) {
+  .totalcard {
+    min-height: 120px;
+    padding: 10px 6px;
+    gap: 5px;
+
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+  }
+
+  .totalicon {
+    width: 38px;
+    height: 38px;
+  }
+
+  .totaldetails {
+    align-items: center;
+  }
+
+  .totaldetails h2 {
+    font-size: 0.9rem;
+    white-space: normal;
+  }
+
+  .totaldetails p {
+    margin-top: 2px;
+    font-size: 1.5rem;
+  }
+}

@@ -3,3 +3,10 @@
   width: 100%;
   min-height: 100vh;
 }
+
+@media (max-width: 768px) {
+  .teacherlayout {
+    display: block;
+    padding-bottom: 72px;
+  }
+}

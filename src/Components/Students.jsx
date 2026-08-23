@@ -352,6 +352,14 @@ function Students() {
 
               <button
                 type="button"
+                id="addmobile"
+                onClick={openAddPopup}
+              >
+                Add Student
+              </button>
+
+              <button
+                type="button"
                 id="remove"
                 onClick={handleRemoveSelected}
                 disabled={selectedStudentIDs.length === 0}

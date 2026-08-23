@@ -198,3 +198,127 @@
   opacity: 0.5;
   cursor: not-allowed;
 }
+
+@media (max-width: 1100px) {
+  .questionspanel {
+    grid-template-columns: minmax(0, 1fr) 80px;
+  }
+
+  .questiontools {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .questiondelete {
+    width: 100%;
+    justify-self: stretch;
+  }
+
+  .questionadd {
+    width: 60px;
+    height: 60px;
+    font-size: 2rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .questionspanel {
+    height: calc(100dvh - 168px);
+    min-height: 0;
+    padding: 0;
+
+    grid-template-columns: 1fr;
+    grid-template-rows: minmax(0, 1fr) auto;
+    gap: 8px;
+  }
+
+  .questionsbox {
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .questiontools {
+    min-height: 0;
+    padding: 8px;
+
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .questiontools select {
+    padding: 7px;
+    font-size: 0.9rem;
+  }
+
+  .questionswitch {
+    justify-content: center;
+    padding: 5px;
+    font-size: 0.8rem;
+  }
+
+  .switchmark {
+    width: 38px;
+    height: 20px;
+  }
+
+  .switchmark::after {
+    width: 14px;
+    height: 14px;
+  }
+
+  .questionswitch input:checked + .switchmark::after {
+    transform: translateX(18px);
+  }
+
+  .questiondelete {
+    padding: 7px;
+    font-size: 0.8rem;
+  }
+
+  .questiongrid {
+    flex: 1;
+    min-height: 0;
+    padding: 8px;
+
+    grid-template-columns: 1fr;
+    grid-template-rows: none;
+    grid-auto-rows: minmax(135px, auto);
+    gap: 8px;
+
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+
+  .questioncontrols {
+    min-height: 46px;
+    padding: 6px 8px;
+  }
+
+  .questioncheck {
+    font-size: 0.9rem;
+  }
+
+  .questioncheck input {
+    width: 21px;
+    height: 21px;
+  }
+
+  .questionsside {
+    min-height: 42px;
+    padding: 0;
+
+    flex-direction: row;
+    justify-content: space-between;
+  }
+
+  .questionsback {
+    padding: 8px;
+  }
+
+  .questionadd {
+    width: 44px;
+    height: 40px;
+    border-radius: 6px;
+    font-size: 1.6rem;
+  }
+}

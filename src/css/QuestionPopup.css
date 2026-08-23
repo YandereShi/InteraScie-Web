@@ -108,3 +108,88 @@
   opacity: 0.5;
   cursor: not-allowed;
 }
+
+@media (max-width: 768px) {
+  .questionoverlay {
+    padding: 8px;
+  }
+
+  .questionpopup {
+    width: min(100%, 480px);
+    max-height: calc(100dvh - 16px);
+    padding: 14px;
+  }
+
+  .questionpopuphead {
+    padding: 0 0 8px;
+  }
+
+  .questionpopuphead h2 {
+    font-size: 1.15rem;
+  }
+
+  .questionpopuphead button {
+    font-size: 1.7rem;
+  }
+
+  .questioninput {
+    min-height: 70px;
+    margin-top: 12px;
+    padding: 8px;
+    font-size: 1rem;
+  }
+
+  .choiceinputs {
+    margin-top: 12px;
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .choiceinput {
+    grid-template-columns: 28px minmax(0, 1fr);
+    gap: 6px;
+  }
+
+  .choiceinput input[type="radio"] {
+    width: 24px;
+    height: 24px;
+  }
+
+  .choiceinput input[type="text"] {
+    padding: 7px;
+    font-size: 0.9rem;
+  }
+
+  .questionpopupactions {
+    padding-top: 12px;
+  }
+
+  .questionpopupactions button {
+    min-width: 100px;
+    padding: 7px 16px;
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .questionpopup {
+    padding: 10px;
+  }
+
+  .questioninput {
+    min-height: 60px;
+  }
+
+  .choiceinputs {
+    gap: 6px;
+  }
+
+  .choiceinput {
+    grid-template-columns: 26px minmax(0, 1fr);
+  }
+
+  .choiceinput input[type="radio"] {
+    width: 22px;
+    height: 22px;
+  }
+}

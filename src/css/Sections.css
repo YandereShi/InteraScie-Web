@@ -162,3 +162,127 @@
   opacity: 0.5;
   cursor: not-allowed;
 }
+
+@media (max-width: 1100px) {
+  .sectionspanel {
+    width: 100%;
+    padding-right: 20px;
+  }
+
+  .sectiontools {
+    grid-template-columns: minmax(150px, 28%) minmax(180px, 1fr) auto;
+  }
+
+  .sectionpick {
+    padding: 0 12px;
+    font-size: 1.35rem;
+  }
+
+  .sectionsearch {
+    padding: 0 12px;
+  }
+
+  .sectionactions {
+    gap: 12px;
+  }
+
+  .sectionactions button {
+    min-width: 150px;
+  }
+}
+
+@media (max-width: 768px) {
+  .sectionspanel {
+    width: 100%;
+    height: calc(100dvh - 168px);
+    min-height: 0;
+    padding: 0;
+  }
+
+  .sectionbox {
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .sectiontools {
+    min-height: 0;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas:
+      "pick remove"
+      "search search";
+  }
+
+  .sectionpick {
+    grid-area: pick;
+    height: 48px;
+    padding: 0 10px;
+    border-right: 1px solid #454545;
+    border-bottom: 1px solid #454545;
+    font-size: 1.1rem;
+  }
+
+  .sectionsearch {
+    grid-area: search;
+    padding: 8px;
+  }
+
+  .sectionsearch input {
+    width: 100%;
+  }
+
+  .sectionremove {
+    grid-area: remove;
+    margin: 7px;
+    padding: 7px 9px;
+    font-size: 0.85rem;
+  }
+
+  .sectionlist {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+
+  .sectionrow {
+    min-height: 42px;
+    font-size: 0.9rem;
+  }
+
+  .sectionrow span {
+    min-width: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .sectionrow input,
+  .sectioncheck input {
+    width: 21px;
+    height: 21px;
+    flex-shrink: 0;
+  }
+
+  .sectionfoot {
+    min-height: 48px;
+    grid-template-columns: 1fr auto;
+    padding: 0 8px;
+  }
+
+  .sectioncheck label {
+    font-size: 0.9rem;
+  }
+
+  .sectionactions {
+    flex-shrink: 0;
+    gap: 8px;
+  }
+
+  .sectionactions button {
+    flex: 1;
+    min-width: 0;
+    padding: 8px;
+    font-size: 0.9rem;
+  }
+}

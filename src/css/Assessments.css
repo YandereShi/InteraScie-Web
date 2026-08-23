@@ -154,3 +154,119 @@
   text-align: center;
   font-size: 1.2rem;
 }
+
+@media (max-width: 1100px) {
+  .assessmentspanel {
+    width: 100%;
+    padding-right: 20px;
+  }
+
+  .assessmenttable {
+    min-width: 760px;
+  }
+
+  .assessmenttable th,
+  .assessmenttable td {
+    font-size: 0.95rem;
+  }
+
+  .assessmenttop select {
+    padding: 0 10px;
+    font-size: 1.25rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .assessmentspanel {
+    width: 100%;
+    height: calc(100dvh - 168px);
+    min-height: 0;
+    padding: 0;
+  }
+
+  .assessmentmanage {
+    min-height: 40px;
+    flex-shrink: 0;
+  }
+
+  .assessmentmanage button {
+    padding: 6px 0;
+    font-size: 0.9rem;
+  }
+
+  .assessmentbox {
+    flex: 1;
+    min-height: 0;
+    overflow: auto;
+    overscroll-behavior: contain;
+  }
+
+  .assessmenttable {
+    min-width: 650px;
+  }
+
+  .assessmenttable col {
+    width: 20%;
+  }
+
+  .assessmenttable .assessmentname {
+    width: 22%;
+  }
+
+  .assessmenttable .assessmenttotal {
+    width: 18%;
+  }
+
+  .assessmenttable thead {
+    position: sticky;
+    top: 0;
+    z-index: 3;
+    background-color: #ffffff;
+  }
+
+  .assessmenttable th:first-child,
+  .assessmenttable td:first-child {
+    position: sticky;
+    left: 0;
+    z-index: 2;
+    background-color: #ffffff;
+    box-shadow: 1px 0 0 #333333;
+  }
+
+  .assessmenttable thead th:first-child {
+    z-index: 4;
+  }
+
+  .assessmenttable th,
+  .assessmenttable td {
+    height: 38px;
+    padding: 3px 6px;
+    font-size: 0.85rem;
+  }
+
+  .assessmenttable tbody td:first-child {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 0.78rem;
+  }
+
+  .assessmenttop th {
+    height: 52px;
+    font-size: 1rem;
+  }
+
+  .assessmenttop select {
+    padding: 0 8px;
+    font-size: 1.05rem;
+  }
+
+  .assessmentpager {
+    min-height: 42px;
+    flex-shrink: 0;
+  }
+
+  .assessmentpager span {
+    font-size: 1rem;
+  }
+}
