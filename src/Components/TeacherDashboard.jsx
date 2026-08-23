@@ -4,6 +4,24 @@ import {useEffect, useState} from "react";
 import {PiStudentFill} from "react-icons/pi";
 import {TbUsersGroup} from "react-icons/tb";
 import {supabase} from "../lib/supabase";
+import ScoreGraph from "./ScoreGraph";
+
+function makeData(scores) {
+  const data = Array.from({length: 15}, (_, index) => ({
+    score: index + 1,
+    students: 0,
+  }));
+
+  scores.forEach((item) => {
+    const value = Number(item.score);
+
+    if (Number.isInteger(value) && value >= 1 && value <= 15) {
+      data[value - 1].students += 1;
+    }
+  });
+
+  return data;
+}
 
 function TeacherDashboard() {
 
@@ -11,6 +29,11 @@ function TeacherDashboard() {
   const [sectionTotal, setSectionTotal] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [charts, setCharts] = useState(() => [
+    makeData([]),
+    makeData([]),
+    makeData([]),
+  ]);
 
   useEffect(() => {
     const timer = window.setTimeout(() => {
@@ -65,18 +88,100 @@ function TeacherDashboard() {
         return;
       }
 
-      const {count, error: studentError,} = await supabase
+      const {data: students, error: studentError} = await supabase
         .from("Student")
-        .select("studentID", {count: "exact", head: true})
+        .select("studentID")
         .in("sectionID", sectionIDs);
 
       if (studentError) {
-        setError("Failed to fetch student count");
+        setError("Failed to fetch students");
         setLoading(false);
         return;
       }
 
-      setStudentTotal(count ?? 0);
+      const studentList = students ?? [];
+
+      setStudentTotal(studentList.length);
+      const {data: levels, error: levelError} = await supabase
+        .from("Level")
+        .select("levelID, levelName")
+        .eq("branchName", "Chemistry")
+        .in("levelName", ["ChemLab1", "ChemLab2", "ChemLab3"])
+        .order("levelID", {ascending: true});
+
+      if (levelError) {
+        setError("Failed to fetch Chemistry lessons");
+        setLoading(false);
+        return;
+      }
+
+const levelList = levels ?? [];
+const levelIDs = levelList.map((level) => level.levelID);
+
+if (levelIDs.length === 0) {
+  setError("No Chemistry lessons found");
+  setLoading(false);
+  return;
+}
+
+const {data: tests, error: testError} = await supabase
+  .from("Assessment")
+  .select("assessmentID, levelID")
+  .eq("staffID", staff.staffID)
+  .in("levelID", levelIDs)
+  .order("assessmentID", {ascending: true});
+
+if (testError) {
+  setError("Failed to fetch assessments");
+  setLoading(false);
+  return;
+}
+
+const testList = tests ?? [];
+const studentIDs = studentList.map((student) => student.studentID);
+const testIDs = testList.map((test) => test.assessmentID);
+
+let scoreList = [];
+
+if (studentIDs.length > 0 && testIDs.length > 0) {
+  const {data: scores, error: scoreError} = await supabase
+    .from("StudentAssessment")
+    .select("studentID, assessmentID, score, totalQuestions")
+    .in("studentID", studentIDs)
+    .in("assessmentID", testIDs);
+
+  if (scoreError) {
+    setError("Failed to fetch assessment scores");
+    setLoading(false);
+    return;
+  }
+
+  scoreList = scores ?? [];
+}
+
+const chartList = levelList.map((level) => {
+  const test = testList.find(
+    (item) => item.levelID === level.levelID
+  );
+
+  if (!test) {
+    return makeData([]);
+  }
+
+  const testScores = scoreList.filter(
+    (item) =>
+      item.assessmentID === test.assessmentID &&
+      Number(item.totalQuestions) === 15
+  );
+
+  return makeData(testScores);
+});
+
+setCharts([
+  chartList[0] ?? makeData([]),
+  chartList[1] ?? makeData([]),
+  chartList[2] ?? makeData([]),
+]);
       setLoading(false);
     }
 
@@ -114,6 +219,16 @@ function TeacherDashboard() {
         </div>
 
         {error && (<p className="dashboardmessage">{error}</p>)}
+
+        <div className="performance">
+          <h2>Performance Overview</h2>
+
+          <div className="charts">
+            <ScoreGraph title="Lesson1" data={charts[0]} />
+            <ScoreGraph title="Lesson2" data={charts[1]} />
+            <ScoreGraph title="Lesson3" data={charts[2]} />
+          </div>
+        </div>
       </section>
     </TeacherPage>
   );
