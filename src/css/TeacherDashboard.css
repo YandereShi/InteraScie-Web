@@ -1,3 +1,74 @@
 .dashboardpanel {
   width: 100%;
+  padding-right: 30px;
+  box-sizing: border-box;
+}
+
+.dashboardtotals {
+  width: 100%;
+  min-height: 180px;
+  padding: 25px;
+  box-sizing: border-box;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 55px;
+
+  background-color: #ffffff;
+  border: 1px solid #dddddd;
+  border-radius: 20px;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+}
+
+.totalcard {
+  width: 335px;
+  min-height: 140px;
+  padding: 20px;
+  box-sizing: border-box;
+
+  display: flex;
+  align-items: center;
+  gap: 25px;
+
+  color: #ffffff;
+  border-radius: 16px;
+}
+
+.totalstudentcard {
+  background-color: #006b3c;
+}
+
+.totalsectioncard {
+  background-color: #118bf2;
+}
+
+.totalicon {
+  width: 85px;
+  height: 85px;
+  flex-shrink: 0;
+}
+
+.totaldetails {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.totaldetails h2 {
+  margin: 0;
+  font-size: 1.7rem;
+  white-space: nowrap;
+}
+
+.totaldetails p {
+  margin: 5px 0 0;
+  font-size: 2.5rem;
+  font-weight: bold;
+}
+
+.error-message {
+  margin: 15px 0 0;
+  color: #d00000;
+  text-align: center;
 }
