@@ -43,6 +43,7 @@ function TeacherDashboard() {
   const [scores, setScores] = useState([]);
   const [active, setActive] = useState(null);
   const [section, setSection] = useState("all");
+  const [reload, setReload] = useState(0);
 
   useEffect(() => {
     const timer = window.setTimeout(() => {
@@ -55,8 +56,6 @@ function TeacherDashboard() {
         setLevels([]);
         setTests([]);
         setScores([]);
-        setActive(null);
-        setSection("all");
 
         const {
           data: {user},
@@ -212,7 +211,28 @@ setCharts([
   }, 0);
 
   return () => window.clearTimeout(timer);
-  }, [branch]);
+  }, [branch, reload]);
+
+  useEffect(() => {
+    const channel = supabase
+      .channel("chart-changes")
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "StudentAssessment",
+        },
+        () => {
+          setReload((current) => current + 1);
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
 
   function getData(index) {
     const level = levels[index];

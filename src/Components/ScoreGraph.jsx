@@ -8,6 +8,16 @@ function ScoreGraph({
     onOpen,
     showTip = false,
 }) {
+    const top = Math.max(
+        50,
+        ...(data ?? []).map((item) => Number(item.students) || 0)
+    );
+    const ticks = top === 50
+        ? [0, 10, 20, 30, 40, 50]
+        : [0, 0.25, 0.5, 0.75, 1].map((value) =>
+            Math.round(top * value)
+        );
+
     return (
         <div
             className={`scoregraph${onOpen ? " scoregraphclick" : ""}`}
@@ -24,9 +34,41 @@ function ScoreGraph({
             <h3>{title}</h3>
 
             <ResponsiveContainer width="100%" height={height}>
-                <BarChart data={data}>
-                    <XAxis dataKey="score" />
-                    <YAxis domain={[0, 100]}  allowDecimals={false} />
+                <BarChart
+                    data={data}
+                    margin={{top: 0, right: 10, bottom: 10, left: 12}}
+                >
+                    <XAxis
+                        dataKey="score"
+                        height={42}
+                        label={{
+                            value: "Scores",
+                            position: "insideBottom",
+                            offset: 0,
+                            style: {
+                                fill: "#00bf6f",
+                                fontSize: "0.85rem",
+                                fontWeight: 600,
+                            },
+                        }}
+                    />
+                    <YAxis
+                        width={68}
+                        domain={[0, top]}
+                        ticks={ticks}
+                        allowDecimals={false}
+                        label={{
+                            value: "No. of Students",
+                            angle: -90,
+                            position: "insideLeft",
+                            style: {
+                                fill: "#00bf6f",
+                                fontSize: "0.85rem",
+                                fontWeight: 600,
+                                textAnchor: "middle",
+                            },
+                        }}
+                    />
                     {showTip && <Tooltip />}
                     <Bar dataKey="students" fill="#aaa6ff" />
                 </BarChart>

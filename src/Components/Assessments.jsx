@@ -228,6 +228,27 @@ function Assessments() {
     return () => window.clearTimeout(timer);
   }, [loadScores]);
 
+  useEffect(() => {
+    const channel = supabase
+      .channel("score-changes")
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "StudentAssessment",
+        },
+        () => {
+          loadScores();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [loadScores]);
+
   function pickSection(event) {
     setSection(event.target.value);
     setPage(1);

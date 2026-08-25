@@ -191,7 +191,7 @@
 
   .assessmentmanage button {
     padding: 6px 0;
-    font-size: 0.9rem;
+    font-size: clamp(0.78rem, 2.8vw, 0.9rem);
   }
 
   .assessmentbox {
@@ -241,24 +241,36 @@
   .assessmenttable td {
     height: 38px;
     padding: 3px 6px;
-    font-size: 0.85rem;
+    font-size: clamp(0.7rem, 2.5vw, 0.85rem);
   }
 
   .assessmenttable tbody td:first-child {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    font-size: 0.78rem;
+    font-size: clamp(0.62rem, 2.1vw, 0.78rem);
+    line-height: 1.1;
   }
 
   .assessmenttop th {
     height: 52px;
-    font-size: 1rem;
+    font-size: clamp(0.75rem, 2.8vw, 1rem);
   }
 
   .assessmenttop select {
-    padding: 0 8px;
-    font-size: 1.05rem;
+    padding: 0 clamp(4px, 1.5vw, 8px);
+    overflow: hidden;
+    font-size: clamp(0.72rem, 2.7vw, 1.05rem);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .assessmentsort {
+    gap: clamp(2px, 1vw, 6px);
+  }
+
+  .assessmentsort span {
+    min-width: 10px;
   }
 
   .assessmentpager {

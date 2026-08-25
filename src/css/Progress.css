@@ -190,7 +190,7 @@
     width: 100%;
     min-width: 0;
     padding: 7px 10px;
-    font-size: 1rem;
+    font-size: clamp(0.82rem, 2.6vw, 1rem);
   }
 
   .progressbox {
@@ -235,11 +235,35 @@
     z-index: 4;
   }
 
+  .progresstop th {
+    font-size: clamp(0.9rem, 3vw, 1.2rem);
+  }
+
+  .progresstop select {
+    padding: 0 8px;
+    font-size: clamp(0.9rem, 3vw, 1.2rem);
+  }
+
+  .progresstasks th {
+    font-size: clamp(0.7rem, 2vw, 0.9rem);
+    line-height: 1.1;
+  }
+
+  .progresstasks p {
+    font-size: clamp(0.62rem, 2vw, 0.78rem);
+    line-height: 1.1;
+  }
+
+  .progresstasks th:first-child {
+    font-size: clamp(0.72rem, 2.2vw, 0.9rem);
+  }
+
   .progresstable tbody td:first-child {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    font-size: 0.78rem;
+    font-size: clamp(0.62rem, 2vw, 0.78rem);
+    line-height: 1.1;
   }
 
   .progresspager {

@@ -193,6 +193,27 @@ function Progress() {
     return () => window.clearTimeout(timer);
   }, [loadStudents]);
 
+  useEffect(() => {
+    const channel = supabase
+      .channel("progress-changes")
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "Progress",
+        },
+        () => {
+          loadStudents();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [loadStudents]);
+
   function pickSection(event) {
     setSection(event.target.value);
     setPage(1);
