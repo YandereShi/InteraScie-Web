@@ -1,6 +1,7 @@
 import "../css/Students.css";
 import StudentCard from "./StudentCard";
 import StudentPopup from "./StudentPopup";
+import BatchStudentPopup from "./BatchStudentPopup";
 import TeacherPage from "./TeacherPage";
 import {useCallback,useEffect,useState,} from "react";
 import { supabase } from "../lib/supabase";
@@ -18,6 +19,11 @@ function Students() {
   const [selectedStudent, setSelectedStudent] =useState(null);
 
   const [isPopupOpen, setIsPopupOpen] =useState(false);
+
+  const [
+    IsBatchPopupOpen,
+    SetIsBatchPopupOpen,
+  ] = useState(false);
 
   const [selectedStudentIDs, setSelectedStudentIDs,] = useState([]);
 
@@ -104,6 +110,72 @@ function Students() {
   function closePopup() {
     setSelectedStudent(null);
     setIsPopupOpen(false);
+  }
+
+  function OpenBatchPopup() {
+    SetIsBatchPopupOpen(true);
+  }
+
+  function CloseBatchPopup() {
+    SetIsBatchPopupOpen(false);
+  }
+
+  async function HandleBatchUpload(BatchData) {
+    const {
+      data: BatchResult,
+      error: BatchError,
+    } = await supabase.functions.invoke(
+      "studentbatch",
+      {
+        body: {
+          action: "batchcreate",
+          sectionID: BatchData.sectionID,
+          students: BatchData.students,
+        },
+      }
+    );
+
+    if (BatchError) {
+      let ErrorMessage = BatchError.message;
+
+      try {
+        const ErrorBody =
+          await BatchError.context?.json();
+
+        ErrorMessage =
+          ErrorBody?.error ?? ErrorMessage;
+      } catch {
+        ErrorMessage = BatchError.message;
+      }
+
+      throw new Error(ErrorMessage);
+    }
+
+    if (!BatchResult) {
+      throw new Error(
+        "The batch upload returned no result."
+      );
+    }
+
+    await loadStudents();
+    CloseBatchPopup();
+
+    const CreatedCount =
+      BatchResult.createdCount ??
+      BatchResult.created?.length ??
+      0;
+
+    const FailedCount =
+      BatchResult.failedCount ??
+      BatchResult.failed?.length ??
+      0;
+
+    window.alert(
+      `${CreatedCount} student(s) created.\n` +
+      `${FailedCount} student(s) failed.`
+    );
+
+    return BatchResult;
   }
 
   async function handleSaveStudent(studentData) {
@@ -346,7 +418,11 @@ function Students() {
             </div>
 
             <div className="buttons">
-              <button type="button" id="batch">
+              <button
+                type="button"
+                id="batch"
+                onClick={OpenBatchPopup}
+              >
                 Batch Upload
               </button>
 
@@ -463,6 +539,14 @@ function Students() {
           onClose={closePopup}
           onSave={handleSaveStudent}
           onReset={resetPassword}
+        />
+      )}
+
+      {IsBatchPopupOpen && (
+        <BatchStudentPopup
+          Sections={sections}
+          OnClose={CloseBatchPopup}
+          OnUpload={HandleBatchUpload}
         />
       )}
     </TeacherPage>
