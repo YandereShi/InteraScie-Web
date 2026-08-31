@@ -1,13 +1,14 @@
 import "../css/Login.css";
 import teacherImage from "../assets/teacher.png";
 import { useState } from "react";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 import SuperAdminLogin from "./SuperAdminLogin";
 import { supabase } from "../lib/supabase";
 import { useNavigate } from "react-router";
 
 function Login() {
   const navigate = useNavigate();
-
+  const [ShowPassword, SetShowPassword] = useState(false);
   async function handleLogin(event) {
     event.preventDefault();
 
@@ -72,24 +73,33 @@ function Login() {
                         />
 
                         <label htmlFor="password" className="logintext">Password</label>
-                        <input
-                          type="password"
-                          id="password"
-                          name="password"
-                          placeholder="Password"
-                          required
-                        />
+                        <div className="passwordfield">
+                          <input
+                            type={ShowPassword ? "text" : "password"}
+                            id="password"
+                            name="password"
+                            placeholder="Password"
+                            required
+                          />
+
+                          <button
+                            type="button"
+                            className="passwordeye"
+                            onClick={() => SetShowPassword(!ShowPassword)}
+                            title={ShowPassword ? "Hide password" : "Show password"}
+                          >
+                            {ShowPassword ? <FaEye /> : <FaEyeSlash />}
+                          </button>
+                        </div>
 
                         <a href="#">Forgot Password</a>
 
                         <button type="submit" className="loginbutton">Log in</button>
 
-                        <a href="#"
-                          onClick={(event) => {
+                        <a href="#" onClick={(event) => {
                             event.preventDefault();
                             setLoginType("admin");
-                          }}
-                        >
+                          }}>
                           Super Admin?
                         </a>
                       </form>
