@@ -1,6 +1,6 @@
 import "../css/Login.css";
 import teacherImage from "../assets/teacher.png";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import SuperAdminLogin from "./SuperAdminLogin";
 import { supabase } from "../lib/supabase";
@@ -9,41 +9,96 @@ import { useNavigate } from "react-router";
 function Login() {
   const navigate = useNavigate();
   const [ShowPassword, SetShowPassword] = useState(false);
-  async function handleLogin(event) {
+  const [IsLoading, SetIsLoading] = useState(false);
+  const [LoginType, SetLoginType] = useState("teacher");
+  const [LoginMessage, SetLoginMessage] = useState("");
+  const [LockedSeconds, SetLockedSeconds] = useState(0);
+
+  useEffect(() => {
+    if (LockedSeconds <= 0) {
+      return;
+    }
+
+    const Timer = window.setTimeout(() => {
+      SetLockedSeconds((CurrentSeconds) => Math.max(CurrentSeconds - 1, 0));
+    }, 1000);
+
+    return () => window.clearTimeout(Timer);
+  }, [LockedSeconds]);
+
+  async function HandleLogin(event) {
     event.preventDefault();
 
-    const formData = new FormData(event.currentTarget);
-
-    const email = String(formData.get("email"));
-    const password = String(formData.get("password"));
-
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-
-    if (error) {
-      console.error(error.message);
-      alert("Invalid email or password.");
+    if (IsLoading || LockedSeconds > 0) {
       return;
     }
 
-    const { data: staff, error: staffError } = await supabase
-      .from("SchoolStaff")
-      .select("role")
-      .eq("authUserID", data.user.id)
-      .single();
+    SetIsLoading(true);
+    SetLoginMessage("");
 
-    if (staffError || staff.role !== "teacher") {
-      await supabase.auth.signOut();
-      alert("This account is not registered as a teacher.");
-      return;
+    try {
+      const FormDataValue = new FormData(event.currentTarget);
+      const Email = String(FormDataValue.get("email"));
+      const Password = String(FormDataValue.get("password"));
+
+      const { data: LoginData, error: LoginError } = await supabase.functions.invoke(
+        "teacherlogin",
+        {
+          body: {
+            email: Email,
+            password: Password,
+          },
+        }
+      );
+
+      if (LoginError) {
+        let ErrorMessage = "Unable to log in. Please try again.";
+
+        if (LoginError.context) {
+          try {
+            const ErrorData = await LoginError.context.json();
+            ErrorMessage = ErrorData.error || ErrorData.message || ErrorMessage;
+          } catch {
+            ErrorMessage = LoginError.message || ErrorMessage;
+          }
+        }
+
+        if (ErrorMessage.startsWith("Too many failed attempts")) {
+          SetLoginMessage("");
+          SetLockedSeconds(30);
+        } else {
+          SetLoginMessage(ErrorMessage);
+        }
+        return;
+      }
+
+      if (!LoginData?.accessToken || !LoginData?.refreshToken) {
+        SetLoginMessage("The login response was incomplete. Please try again.");
+        return;
+      }
+
+      const { error: SessionError } = await supabase.auth.setSession({
+        access_token: LoginData.accessToken,
+        refresh_token: LoginData.refreshToken,
+      });
+
+      if (SessionError) {
+        SetLoginMessage("Unable to start your session. Please try again.");
+        return;
+      }
+
+      navigate("/teacher", { replace: true });
+    } catch {
+      SetLoginMessage("Unable to reach the login service. Please try again.");
+    } finally {
+      SetIsLoading(false);
     }
-
-    navigate("/teacher", { replace: true });
   }
 
-  const [loginType, setLoginType] = useState("teacher");
+  const DisplayMessage = LockedSeconds > 0
+    ? `Too many failed attempts. Try again in ${LockedSeconds} seconds.`
+    : LoginMessage;
+
   return (
     <>
         <div className="mainbackground">
@@ -53,7 +108,7 @@ function Login() {
                 </div>
 
                 <div className="loginside">
-                  {loginType === "teacher" ? (
+                  {LoginType === "teacher" ? (
                   <>
                     <div className="loginheaders">
                       <img className="teachericon" src={teacherImage} alt="Teacher icon" />
@@ -61,7 +116,7 @@ function Login() {
                     </div>
 
                     <div className="loginform">
-                      <form onSubmit={handleLogin}>
+                      <form onSubmit={HandleLogin}>
                         <label htmlFor="email" className="logintext">Email</label>
                         <input
                           type="email"
@@ -94,11 +149,21 @@ function Login() {
 
                         <a href="#">Forgot Password</a>
 
-                        <button type="submit" className="loginbutton">Log in</button>
+                        {DisplayMessage && (
+                          <p className="loginmessage" role="alert">{DisplayMessage}</p>
+                        )}
+
+                        <button
+                          type="submit"
+                          className="loginbutton"
+                          disabled={IsLoading || LockedSeconds > 0}
+                        >
+                          {IsLoading ? "Logging in..." : LockedSeconds > 0 ? "Login locked" : "Log in"}
+                        </button>
 
                         <a href="#" onClick={(event) => {
                             event.preventDefault();
-                            setLoginType("admin");
+                            SetLoginType("admin");
                           }}>
                           Super Admin?
                         </a>
@@ -106,7 +171,7 @@ function Login() {
                     </div>
                   </>
                   ) : (
-                    <SuperAdminLogin showTeacher={() => setLoginType("teacher")} />
+                    <SuperAdminLogin showTeacher={() => SetLoginType("teacher")} />
                   )}
                 </div>
             </div>    

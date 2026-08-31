@@ -20,8 +20,26 @@
 }
 
 .loginside{
+    position: relative;
     display: flex;
     flex-direction: column;
+}
+
+.loginside::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: url('../assets/Probex.png');
+    background-position: center calc(100% - 1.5rem);
+    background-repeat: no-repeat;
+    background-size: 30rem auto;
+    opacity: .2;
+    pointer-events: none;
+}
+
+.loginside > * {
+    position: relative;
+    z-index: 1;
 }
 
 .loginheaders{
@@ -63,6 +81,24 @@ input{
     border-radius: 5px;
     cursor: pointer;
     margin-top: 2rem;
+}
+
+.loginbutton:disabled {
+    background-color: #7a8b99;
+    cursor: not-allowed;
+    opacity: .75;
+}
+
+.loginmessage {
+    color: #c62828;
+    font-size: 1rem;
+    line-height: 1.4;
+    text-align: center;
+    margin: 1rem 0 0;
+}
+
+.loginmessage + .loginbutton {
+    margin-top: .5rem;
 }
 
 .loginform form{
@@ -111,6 +147,10 @@ input{
         width: 84%;
     }
 
+    .loginside::before {
+        background-size: 22rem auto;
+    }
+
     .loginheaders {
         margin-top: 7%;
         margin-bottom: 7%;
@@ -125,6 +165,10 @@ input{
 @media (max-width: 768px) {
     .loginbox {
         width: 94%;
+    }
+
+    .loginside::before {
+        background-size: 16rem auto;
     }
 
     .loginheaders {
@@ -150,7 +194,6 @@ input{
         height: auto;
         min-height: 600px;
         grid-template-columns: 1fr;
-        background-color: #e3f9e9;
     }
 
     .gameside {
@@ -161,6 +204,10 @@ input{
         width: 100%;
         padding: 2rem 0;
         box-sizing: border-box;
+    }
+
+    .loginside::before {
+        background-size: 12rem auto;
     }
 
     .loginheaders {
