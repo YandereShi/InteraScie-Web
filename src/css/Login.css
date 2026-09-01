@@ -43,13 +43,18 @@
 }
 
 .loginheaders{
-    font-size: 2rem;
+    font-size: 2.5rem;
     display: flex;
     flex-direction: column;
     align-items: center;
     margin-top: 10%;
     margin-bottom: 10%;
     gap: 2rem;
+}
+
+.loginpaneltext {
+    font-size: 2.5rem;
+    font-family: Georgia, 'Times New Roman', Times, serif;
 }
 
 .teachericon {
@@ -80,7 +85,7 @@ input{
     border: none;
     border-radius: 5px;
     cursor: pointer;
-    margin-top: 2rem;
+    margin-top: 3.2rem;
 }
 
 .loginbutton:disabled {
@@ -91,6 +96,7 @@ input{
 
 .loginmessage {
     color: #c62828;
+    font-weight: bold;
     font-size: 1rem;
     line-height: 1.4;
     text-align: center;

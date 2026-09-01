@@ -73,8 +73,7 @@ function Login() {
       }
 
       if (!LoginData?.accessToken || !LoginData?.refreshToken) {
-        SetLoginMessage("The login response was incomplete. Please try again.");
-        return;
+        throw new Error();
       }
 
       const { error: SessionError } = await supabase.auth.setSession({
@@ -83,21 +82,19 @@ function Login() {
       });
 
       if (SessionError) {
-        SetLoginMessage("Unable to start your session. Please try again.");
-        return;
+        throw SessionError;
       }
 
       navigate("/teacher", { replace: true });
-    } catch {
-      SetLoginMessage("Unable to reach the login service. Please try again.");
-    } finally {
-      SetIsLoading(false);
-    }
+      } catch {
+        SetLoginMessage("An error has occurred. Please try again.");
+      } finally {
+        SetIsLoading(false);
+      }
   }
 
   const DisplayMessage = LockedSeconds > 0
-    ? `Too many failed attempts. Try again in ${LockedSeconds} seconds.`
-    : LoginMessage;
+    ? `Too many failed attempts. Try again in ${LockedSeconds} seconds.` : LoginMessage;
 
   return (
     <>
@@ -112,7 +109,7 @@ function Login() {
                   <>
                     <div className="loginheaders">
                       <img className="teachericon" src={teacherImage} alt="Teacher icon" />
-                      <h2>Login</h2>
+                      <h2 className="loginpaneltext">Login</h2>
                     </div>
 
                     <div className="loginform">

@@ -1,7 +1,11 @@
 import "../css/Login.css";
 import superadminImage from "../assets/SuperAdmin.png";
+import { useState } from "react";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 function SuperAdminLogin({ showTeacher }) {
+    const [ShowPassword, SetShowPassword] = useState(false);
+
     function ClickSuperAdmin(event) {
         event.preventDefault();
 
@@ -11,7 +15,7 @@ function SuperAdminLogin({ showTeacher }) {
         <>
             <div className="loginheaders">
                 <img className="superadminicon" src={superadminImage} alt="Super Admin icon" />
-                <h2>Login</h2>
+                <h2 className="loginpaneltext">Login</h2>
             </div>
 
             <div className="loginform">
@@ -33,14 +37,25 @@ function SuperAdminLogin({ showTeacher }) {
                     Password
                 </label>
 
-                <input
-                    type="password"
-                    id="admin-password"
-                    name="password"
-                    placeholder="Password"
-                    autoComplete="current-password"
-                    required
-                />
+                <div className="passwordfield">
+                    <input
+                        type={ShowPassword ? "text" : "password"}
+                        id="admin-password"
+                        name="password"
+                        placeholder="Password"
+                        autoComplete="current-password"
+                        required
+                    />
+
+                    <button
+                        type="button"
+                        className="passwordeye"
+                        onClick={() => SetShowPassword(!ShowPassword)}
+                        title={ShowPassword ? "Hide password" : "Show password"}
+                    >
+                        {ShowPassword ? <FaEye /> : <FaEyeSlash />}
+                    </button>
+                </div>
 
                 <a href="#">Forgot Password</a>
 
