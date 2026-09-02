@@ -16,6 +16,7 @@ function Login() {
   const [LoginType, SetLoginType] = useState("teacher");
   const [LoginMessage, SetLoginMessage] = useState("");
   const [LockedSeconds, SetLockedSeconds] = useState(0);
+  const [ShowGame, SetShowGame] = useState(false);
 
   useEffect(() => {
     if (LockedSeconds <= 0) {
@@ -103,7 +104,7 @@ function Login() {
     <>
         <div className="mainbackground">
             <div className="loginbox">
-                <div className="gameside">
+                <div className={`gameside ${ShowGame ? "mobilevisible" : ""}`}>
                   <div className="gameheader">
                     <h1>Welcome to</h1>
                     <img className="gameicon" src={interascie} alt="Game background" />
@@ -119,9 +120,17 @@ function Login() {
                     </button>
                     <h3>Science is No Longer Just a Subject, It's an Experience </h3>
                   </div>
+
+                  <button
+                    className="mobilegamelink"
+                    type="button"
+                    onClick={() => SetShowGame(false)}
+                  >
+                    Back to login
+                  </button>
                 </div>
 
-                <div className="loginside">
+                <div className={`loginside ${ShowGame ? "mobilehidden" : ""}`}>
                   {LoginType === "teacher" ? (
                   <>
                     <div className="loginheaders">
@@ -175,7 +184,7 @@ function Login() {
                           {IsLoading ? "Logging in..." : LockedSeconds > 0 ? "Login locked" : "Log in"}
                         </button>
 
-                        <a href="#" onClick={(event) => {
+                        <a className="roleswitchlink" href="#" onClick={(event) => {
                             event.preventDefault();
                             SetLoginType("admin");
                           }}>
@@ -187,6 +196,14 @@ function Login() {
                   ) : (
                     <SuperAdminLogin showTeacher={() => SetLoginType("teacher")} />
                   )}
+
+                  <button
+                    className="mobilegamelink"
+                    type="button"
+                    onClick={() => SetShowGame(true)}
+                  >
+                    Play the game
+                  </button>
                 </div>
             </div>    
         </div>

@@ -228,6 +228,25 @@ input{
     height: auto;
 }
 
+.mobilegamelink {
+    display: none;
+    border: none;
+    background: transparent;
+    color: #007bff;
+    font-size: 1rem;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.gameside .mobilegamelink {
+    color: #ffffff;
+}
+
+.roleswitchlink {
+    align-self: center;
+    width: fit-content;
+}
+
 .gamesidebutton h3 {
     width: min(80%, 22rem);
     color: #ffffff;
@@ -335,10 +354,24 @@ input{
         display: none;
     }
 
+    .gameside.mobilevisible {
+        display: flex;
+        min-height: 600px;
+    }
+
     .loginside {
         width: 100%;
         padding: 2rem 0;
         box-sizing: border-box;
+    }
+
+    .loginside.mobilehidden {
+        display: none;
+    }
+
+    .mobilegamelink {
+        display: block;
+        margin: 1.5rem auto 0;
     }
 
     .loginside::before {

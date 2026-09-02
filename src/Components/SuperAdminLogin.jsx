@@ -64,13 +64,14 @@ function SuperAdminLogin({ showTeacher }) {
                 </button>
 
                 <a
+                    className="roleswitchlink"
                     href="#"
                     onClick={(event) => {
                     event.preventDefault();
                     showTeacher();
                     }}
                 >
-                    Teacher Login?
+                    Teacher?
                 </a>
                 </form>
             </div>
