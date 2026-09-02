@@ -5,6 +5,9 @@ import { FaEye, FaEyeSlash } from "react-icons/fa";
 import SuperAdminLogin from "./SuperAdminLogin";
 import { supabase } from "../lib/supabase";
 import { useNavigate } from "react-router";
+import interascie from "../assets/InteraScie.png";
+import interalogo from "../assets/interalogo.png";
+import PlayImage from "../assets/play.png";
 
 function Login() {
   const navigate = useNavigate();
@@ -101,7 +104,21 @@ function Login() {
         <div className="mainbackground">
             <div className="loginbox">
                 <div className="gameside">
-                  
+                  <div className="gameheader">
+                    <h1>Welcome to</h1>
+                    <img className="gameicon" src={interascie} alt="Game background" />
+                  </div>
+
+                  <div className="gamesidelogo">
+                    <img src={interalogo} alt="Game logo" />
+                  </div>
+
+                  <div className="gamesidebutton">
+                    <button className="playbutton" type="button">
+                      <img src={PlayImage} alt="Play Now" />
+                    </button>
+                    <h3>Science is No Longer Just a Subject, It's an Experience </h3>
+                  </div>
                 </div>
 
                 <div className="loginside">
