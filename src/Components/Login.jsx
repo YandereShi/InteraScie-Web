@@ -115,9 +115,10 @@ function Login() {
                   </div>
 
                   <div className="gamesidebutton">
-                    <button className="playbutton" type="button">
+                    <button className="playbutton" type="button" onClick={() => navigate("/download")}>
                       <img src={PlayImage} alt="Play Now" />
                     </button>
+
                     <h3>Science is No Longer Just a Subject, It's an Experience </h3>
                   </div>
 

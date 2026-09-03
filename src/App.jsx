@@ -7,13 +7,14 @@ import Sections from "./Components/Sections";
 import Students from "./Components/Students";
 import TeacherDashboard from "./Components/TeacherDashboard";
 import TeacherLayout from "./Components/TeacherLayout";
+import Downloadpage from "./Components/Downloadpage";
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Login />} />
-
+        <Route path="download" element={<Downloadpage />} />
         <Route path="/teacher" element={<TeacherLayout />}>
           <Route index element={<TeacherDashboard />} />
           <Route path="students" element={<Students />} />

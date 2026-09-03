@@ -46,20 +46,14 @@ function BatchStudentPopup({
   const [IsUploading, SetIsUploading] = useState(false);
 
   function HandleDownload() {
-    const Template = "\ufefffirstName,lastName\r\n";
-    const FileBlob = new Blob([Template], {
-      type: "text/csv;charset=utf8",
-    });
-
-    const FileURL = URL.createObjectURL(FileBlob);
     const Anchor = document.createElement("a");
 
-    Anchor.href = FileURL;
+    Anchor.href = "/files/students.csv";
     Anchor.download = "students.csv";
+
     document.body.append(Anchor);
     Anchor.click();
     Anchor.remove();
-    URL.revokeObjectURL(FileURL);
   }
 
   function HandleFile(Event) {
@@ -80,24 +74,32 @@ function BatchStudentPopup({
       skipEmptyLines: "greedy",
       transformHeader: (Header) => Header.trim(),
       complete: (Result) => {
-        const Fields = Result.meta.fields ?? [];
+        const Fields = (Result.meta.fields ?? []).slice(0, 2);
 
         if (
           !Fields.includes("firstName") ||
           !Fields.includes("lastName")
         ) {
           SetFileError(
-            "The CSV must contain firstName and lastName columns."
+            "The first two CSV columns must be lastName and firstName."
           );
           return;
         }
 
-        if (Result.data.length === 0) {
+        const StudentRows = Result.data
+          .map((Student, Index) => ({
+            RowNumber: Index + 2,
+            FirstName: String(Student.firstName ?? "").trim(),
+            LastName: String(Student.lastName ?? "").trim(),
+          }))
+          .filter((Student) => Student.FirstName || Student.LastName);
+
+        if (StudentRows.length === 0) {
           SetFileError("The CSV does not contain any students.");
           return;
         }
 
-        if (Result.data.length > 50) {
+        if (StudentRows.length > 50) {
           SetFileError(
             "Only 50 students can be uploaded at one time."
           );
@@ -106,16 +108,8 @@ function BatchStudentPopup({
 
         const UsedUsernames = new Set();
 
-        const ParsedRows = Result.data.map(
-          (Student, Index) => {
-            const FirstName = String(
-              Student.firstName ?? ""
-            ).trim();
-
-            const LastName = String(
-              Student.lastName ?? ""
-            ).trim();
-
+        const ParsedRows = StudentRows.map(
+          ({ RowNumber, FirstName, LastName }) => {
             const Username = MakeUsername(
               FirstName,
               LastName,
@@ -133,7 +127,7 @@ function BatchStudentPopup({
             }
 
             return {
-              RowNumber: Index + 2,
+              RowNumber,
               FirstName,
               LastName,
               Username,

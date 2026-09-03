@@ -1,0 +1,11 @@
+﻿lastName,firstName,,,,
+,,,,"Copy and Paste the students lastname, firstname ",
+,,,,and paste it under the first row.,
+,,,,,
+,,,,EXAMPLE:,
+,,,,lastName,firstName
+,,,,Dela Cruz,Juan
+,,,,Santos,Anna
+,,,,,
+,,,,"after pasting all the students name, save the file",
+,,,,then click CHOOSE CSV and choose this file,

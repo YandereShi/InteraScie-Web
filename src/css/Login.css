@@ -238,6 +238,10 @@ input{
     cursor: pointer;
 }
 
+.loginside .mobilegamelink {
+    margin-top: 6.2rem;
+}
+
 .gameside .mobilegamelink {
     color: #ffffff;
 }
