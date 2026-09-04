@@ -34,8 +34,21 @@ function MakeUsername(FirstName, LastName, UsedUsernames) {
   return Username;
 }
 
+function MakeNameKey(firstname, lastname) {
+  return JSON.stringify(
+    [firstname, lastname].map((name) =>
+      String(name ?? "")
+        .normalize("NFC")
+        .trim()
+        .replace(/\s+/g, " ")
+        .toLowerCase()
+    )
+  );
+}
+
 function BatchStudentPopup({
   Sections,
+  students = [],
   OnClose,
   OnUpload,
 }) {
@@ -44,6 +57,7 @@ function BatchStudentPopup({
   const [FileName, SetFileName] = useState("");
   const [FileError, SetFileError] = useState("");
   const [IsUploading, SetIsUploading] = useState(false);
+  const [hasresults, SetHasResults] = useState(false);
 
   function HandleDownload() {
     const Anchor = document.createElement("a");
@@ -62,6 +76,7 @@ function BatchStudentPopup({
     SetRows([]);
     SetFileError("");
     SetFileName("");
+    SetHasResults(false);
 
     if (!SelectedFile) {
       return;
@@ -106,37 +121,42 @@ function BatchStudentPopup({
           return;
         }
 
-        const UsedUsernames = new Set();
-
-        const ParsedRows = StudentRows.map(
-          ({ RowNumber, FirstName, LastName }) => {
-            const Username = MakeUsername(
-              FirstName,
-              LastName,
-              UsedUsernames
-            );
-
-            let ErrorMessage = "";
-
-            if (!FirstName || !LastName) {
-              ErrorMessage =
-                "First name and last name are required.";
-            } else if (!Username) {
-              ErrorMessage =
-                "The name cannot produce a valid username.";
-            }
-
-            return {
-              RowNumber,
-              FirstName,
-              LastName,
-              Username,
-              ErrorMessage,
-            };
-          }
+        const usedusernames = new Set();
+        const usednames = new Set(
+          students.map((student) =>
+            MakeNameKey(student.firstName, student.lastName)
+          )
         );
 
-        SetRows(ParsedRows);
+        const parsedrows = StudentRows.map((student) => {
+          const firstname = student.FirstName;
+          const lastname = student.LastName;
+          const namekey = MakeNameKey(firstname, lastname);
+          let username = "";
+          let errormessage = "";
+
+          if (!firstname || !lastname) {
+            errormessage = "First name and last name are required.";
+          } else if (usednames.has(namekey)) {
+            errormessage = "Duplicate";
+          } else {
+            username = MakeUsername(firstname, lastname, usedusernames);
+
+            if (!username) {
+              errormessage = "The name cannot produce a valid username.";
+            } else {
+              usednames.add(namekey);
+            }
+          }
+
+          return {
+            ...student,
+            Username: username,
+            ErrorMessage: errormessage,
+          };
+        });
+
+        SetRows(parsedrows);
       },
       error: () => {
         SetFileError("Unable to read the CSV file.");
@@ -146,6 +166,10 @@ function BatchStudentPopup({
 
   async function HandleSubmit(Event) {
     Event.preventDefault();
+
+    if (IsUploading || hasresults) {
+      return;
+    }
 
     if (!SectionID) {
       SetFileError("Select a section.");
@@ -157,9 +181,9 @@ function BatchStudentPopup({
       return;
     }
 
-    if (Rows.some((Row) => Row.ErrorMessage)) {
+    if (Rows.every((row) => row.ErrorMessage)) {
       SetFileError(
-        "Correct the invalid rows before uploading."
+        "No valid students to upload."
       );
       return;
     }
@@ -168,15 +192,32 @@ function BatchStudentPopup({
     SetFileError("");
 
     try {
-      await OnUpload({
+      const result = await OnUpload({
         sectionID: Number(SectionID),
         students: Rows.map((Row) => ({
           firstName: Row.FirstName,
           lastName: Row.LastName,
         })),
       });
-    } catch (Error) {
-      SetFileError(Error.message);
+
+      if (result.failed?.length > 0) {
+        SetRows(Rows.map((row, index) => {
+          const failed = result.failed.find((student) => student.row === index + 2);
+          const created = result.created?.find((student) => student.row === index + 2);
+
+          return {
+            ...row,
+            Username: created?.username ?? row.Username,
+            ErrorMessage: failed?.error ?? "",
+            status: created ? "Created" : "Failed",
+          };
+        }));
+        SetHasResults(true);
+        SetFileError("Some students failed. Review the statuses and choose a corrected CSV to try again.");
+      }
+    } catch (error) {
+      SetFileError(error.message);
+    } finally {
       SetIsUploading(false);
     }
   }
@@ -285,7 +326,7 @@ function BatchStudentPopup({
                       <td>{Row.LastName}</td>
                       <td>{Row.Username}</td>
                       <td>
-                        {Row.ErrorMessage || "Ready"}
+                        {Row.ErrorMessage || Row.status || "Ready"}
                       </td>
                     </tr>
                   ))}
@@ -307,13 +348,16 @@ function BatchStudentPopup({
               type="submit"
               disabled={
                 IsUploading ||
+                hasresults ||
                 Rows.length === 0 ||
-                Rows.some((Row) => Row.ErrorMessage)
+                Rows.every((row) => row.ErrorMessage)
               }
             >
               {IsUploading
                 ? "Uploading..."
-                : `Upload ${Rows.length} Students`}
+                : hasresults
+                  ? "Upload completed"
+                  : `Upload ${Rows.filter((row) => !row.ErrorMessage).length} Students`}
             </button>
           </div>
         </form>

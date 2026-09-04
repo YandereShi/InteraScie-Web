@@ -160,21 +160,6 @@ function Students() {
     await loadStudents();
     CloseBatchPopup();
 
-    const CreatedCount =
-      BatchResult.createdCount ??
-      BatchResult.created?.length ??
-      0;
-
-    const FailedCount =
-      BatchResult.failedCount ??
-      BatchResult.failed?.length ??
-      0;
-
-    window.alert(
-      `${CreatedCount} student(s) created.\n` +
-      `${FailedCount} student(s) failed.`
-    );
-
     return BatchResult;
   }
 
@@ -340,7 +325,7 @@ function Students() {
 
         message = body?.error ?? message;
       } catch {
-        // Keep the original error message.
+       
       }
 
       console.error(message);
@@ -349,20 +334,15 @@ function Students() {
     }
 
     setSelectedStudentIDs([]);
-    await loadStudents();
+      await loadStudents();
 
-    const deleted =
-      data?.deleted?.length ?? 0;
+      const failed = data?.failed?.length ?? 0;
 
-    const failed =
-      data?.failed?.length ?? 0;
-
-    if (failed > 0) {
-      alert(
-        `${deleted} student record(s) were deleted, but ${failed} Auth account(s) could not be removed.`
-      );
-      return;
-    }
+      if (failed > 0) {
+        setStudentError(
+          `${failed} student Auth account(s) could not be removed.`
+        );
+      }
 
     alert(`${deleted} student(s) deleted.`);
   }
@@ -422,6 +402,7 @@ function Students() {
                 type="button"
                 id="batch"
                 onClick={OpenBatchPopup}
+                disabled={loadingStudents || Boolean(studentError)}
               >
                 Batch Upload
               </button>
@@ -545,6 +526,7 @@ function Students() {
       {IsBatchPopupOpen && (
         <BatchStudentPopup
           Sections={sections}
+          students={students}
           OnClose={CloseBatchPopup}
           OnUpload={HandleBatchUpload}
         />
