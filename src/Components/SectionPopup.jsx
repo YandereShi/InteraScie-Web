@@ -1,18 +1,24 @@
 import "../css/SectionPopup.css";
 import { useState } from "react";
+import { limits } from "../lib/inputLimits";
 
 function SectionPopup({ onClose, onCreate }) {
   const [name, setName] = useState("");
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
 
-  async function submit(event) {
+  async function Submit(event) {
     event.preventDefault();
 
     const cleanName = name.trim();
 
     if (!cleanName) {
       setError("Please enter a section name.");
+      return;
+    }
+
+    if (name.length > limits.section) {
+      setError(`Section name must be ${limits.section} characters or fewer.`);
       return;
     }
 
@@ -52,13 +58,13 @@ function SectionPopup({ onClose, onCreate }) {
           </button>
         </div>
 
-        <form onSubmit={submit}>
+        <form onSubmit={Submit}>
           <input
             className="createinput"
             type="text"
             placeholder="Section Name"
             value={name}
-            maxLength={100}
+            maxLength={limits.section}
             autoFocus
             onChange={(event) =>
               setName(event.target.value)

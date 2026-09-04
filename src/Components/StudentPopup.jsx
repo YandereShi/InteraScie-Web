@@ -1,6 +1,8 @@
 import "../css/StudentPopup.css";
 import { useState } from "react";
 import studentImage from "../assets/pfp.png";
+import { GetNameError } from "../lib/nameValidation";
+import { limits } from "../lib/inputLimits";
 
 function StudentPopup({
   student,
@@ -47,8 +49,33 @@ function StudentPopup({
     }
   }
 
-  async function handleSubmit(event) {
+  function HandleNameChange(value, SetName) {
+    if (!/^[\p{L}\p{M} ]*$/u.test(value)) {
+      setSaveError("Names can contain letters and spaces only.");
+      return;
+    }
+
+    SetName(value);
+    setSaveError("");
+  }
+
+  async function HandleSubmit(event) {
     event.preventDefault();
+
+    const nameerror = GetNameError(firstName, lastName);
+
+    if (nameerror) {
+      setSaveError(nameerror);
+      return;
+    }
+
+    if (
+      username.length > limits.username ||
+      username.trim().toLowerCase().length > limits.username
+    ) {
+      setSaveError(`Username must be ${limits.username} characters or fewer.`);
+      return;
+    }
 
     setSaving(true);
     setSaveError("");
@@ -94,7 +121,7 @@ function StudentPopup({
 
         <form
           className="studentpopupcontent"
-          onSubmit={handleSubmit}
+          onSubmit={HandleSubmit}
         >
           <img
             className="studentpopupimage"
@@ -110,9 +137,10 @@ function StudentPopup({
             <input
               type="text"
               id="student-first-name"
+              maxLength={limits.firstname}
               value={firstName}
               onChange={(event) =>
-                setFirstName(event.target.value)
+                HandleNameChange(event.target.value, setFirstName)
               }
               required
             />
@@ -124,9 +152,10 @@ function StudentPopup({
             <input
               type="text"
               id="student-last-name"
+              maxLength={limits.lastname}
               value={lastName}
               onChange={(event) =>
-                setLastName(event.target.value)
+                HandleNameChange(event.target.value, setLastName)
               }
               required
             />
@@ -138,6 +167,7 @@ function StudentPopup({
             <input
               type="text"
               id="student-username"
+              maxLength={limits.username}
               value={username}
               onChange={(event) =>
                 setUsername(event.target.value)

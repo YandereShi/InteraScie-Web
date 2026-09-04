@@ -5,6 +5,8 @@ import BatchStudentPopup from "./BatchStudentPopup";
 import TeacherPage from "./TeacherPage";
 import {useCallback,useEffect,useState,} from "react";
 import { supabase } from "../lib/supabase";
+import { GetNameError } from "../lib/nameValidation";
+import { limits } from "../lib/inputLimits";
 
 const maxCards = 12;
 
@@ -121,6 +123,14 @@ function Students() {
   }
 
   async function HandleBatchUpload(BatchData) {
+    for (const student of BatchData.students) {
+      const nameerror = GetNameError(student.firstName, student.lastName);
+
+      if (nameerror) {
+        throw new Error(nameerror);
+      }
+    }
+
     const {
       data: BatchResult,
       error: BatchError,
@@ -164,6 +174,19 @@ function Students() {
   }
 
   async function handleSaveStudent(studentData) {
+    const nameerror = GetNameError(studentData.firstName, studentData.lastName);
+
+    if (nameerror) {
+      throw new Error(nameerror);
+    }
+
+    if (
+      studentData.username.length > limits.username ||
+      studentData.username.trim().toLowerCase().length > limits.username
+    ) {
+      throw new Error(`Username must be ${limits.username} characters or fewer.`);
+    }
+
     const payload = {
       firstName: studentData.firstName.trim(),
       lastName: studentData.lastName.trim(),

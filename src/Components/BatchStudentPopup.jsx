@@ -1,6 +1,8 @@
 import "../css/BatchStudentPopup.css";
 import Papa from "papaparse";
 import { useState } from "react";
+import { GetNameError } from "../lib/nameValidation";
+import { limits } from "../lib/inputLimits";
 
 function NormalizeName(Value) {
   return String(Value)
@@ -13,25 +15,26 @@ function NormalizeName(Value) {
     );
 }
 
-function MakeUsername(FirstName, LastName, UsedUsernames) {
-  const CleanFirstName = NormalizeName(FirstName);
-  const CleanLastName = NormalizeName(LastName);
+function MakeUsername(firstname, lastname, usedusernames) {
+  const cleanfirstname = NormalizeName(firstname);
+  const cleanlastname = NormalizeName(lastname);
 
-  if (!CleanFirstName || !CleanLastName) {
+  if (!cleanfirstname || !cleanlastname) {
     return "";
   }
 
-  const BaseUsername = `${CleanFirstName}.${CleanLastName}`;
-  let Username = BaseUsername;
-  let NumberValue = 2;
+  const baseusername = `${cleanfirstname}.${cleanlastname}`.slice(0, limits.username);
+  let username = baseusername;
+  let number = 2;
 
-  while (UsedUsernames.has(Username)) {
-    Username = `${BaseUsername}${NumberValue}`;
-    NumberValue += 1;
+  while (usedusernames.has(username)) {
+    const suffix = String(number);
+    username = `${baseusername.slice(0, limits.username - suffix.length)}${suffix}`;
+    number += 1;
   }
 
-  UsedUsernames.add(Username);
-  return Username;
+  usedusernames.add(username);
+  return username;
 }
 
 function MakeNameKey(firstname, lastname) {
@@ -132,11 +135,14 @@ function BatchStudentPopup({
           const firstname = student.FirstName;
           const lastname = student.LastName;
           const namekey = MakeNameKey(firstname, lastname);
+          const nameerror = GetNameError(firstname, lastname);
           let username = "";
           let errormessage = "";
 
           if (!firstname || !lastname) {
             errormessage = "First name and last name are required.";
+          } else if (nameerror) {
+            errormessage = nameerror;
           } else if (usednames.has(namekey)) {
             errormessage = "Duplicate";
           } else {
@@ -181,7 +187,12 @@ function BatchStudentPopup({
       return;
     }
 
-    if (Rows.every((row) => row.ErrorMessage)) {
+    const validrows = Rows.filter((row) =>
+      !row.ErrorMessage &&
+      !GetNameError(row.FirstName, row.LastName)
+    );
+
+    if (validrows.length === 0) {
       SetFileError(
         "No valid students to upload."
       );
@@ -194,14 +205,20 @@ function BatchStudentPopup({
     try {
       const result = await OnUpload({
         sectionID: Number(SectionID),
-        students: Rows.map((Row) => ({
-          firstName: Row.FirstName,
-          lastName: Row.LastName,
+        students: validrows.map((row) => ({
+          firstName: row.FirstName,
+          lastName: row.LastName,
         })),
       });
 
       if (result.failed?.length > 0) {
-        SetRows(Rows.map((row, index) => {
+        SetRows(Rows.map((row) => {
+          const index = validrows.findIndex((student) => student.RowNumber === row.RowNumber);
+
+          if (index === -1) {
+            return row;
+          }
+
           const failed = result.failed.find((student) => student.row === index + 2);
           const created = result.created?.find((student) => student.row === index + 2);
 

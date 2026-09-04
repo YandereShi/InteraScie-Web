@@ -4,6 +4,7 @@ import AddPopup from "./AddPopup";
 import SectionPopup from "./SectionPopup";
 import {useCallback,useEffect,useState,} from "react";
 import { supabase } from "../lib/supabase";
+import { limits } from "../lib/inputLimits";
 
 const maxRows = 10;
 
@@ -297,6 +298,10 @@ function Sections() {
   }
 
   async function createSection(name) {
+    if (name.length > limits.section) {
+      throw new Error(`Section name must be ${limits.section} characters or fewer.`);
+    }
+
     const {
       data: { user },
       error: userError,

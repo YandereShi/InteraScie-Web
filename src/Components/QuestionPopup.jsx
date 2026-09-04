@@ -1,5 +1,6 @@
 import "../css/QuestionPopup.css";
 import { useState } from "react";
+import { limits } from "../lib/inputLimits";
 
 function QuestionPopup({
   question,
@@ -22,7 +23,7 @@ function QuestionPopup({
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
 
-  function changeChoice(index, value) {
+  function ChangeChoice(index, value) {
     setChoices((current) =>
       current.map((choice, choiceIndex) =>
         choiceIndex === index ? value : choice
@@ -30,7 +31,7 @@ function QuestionPopup({
     );
   }
 
-  async function submit(event) {
+  async function Submit(event) {
     event.preventDefault();
 
     const cleanText = text.trim();
@@ -40,6 +41,16 @@ function QuestionPopup({
 
     if (!cleanText || cleanChoices.some((choice) => !choice)) {
       setError("Enter the question and all four choices.");
+      return;
+    }
+
+    if (text.length > limits.question) {
+      setError(`Question must be ${limits.question} characters or fewer.`);
+      return;
+    }
+
+    if (choices.some((choice) => choice.length > limits.choice)) {
+      setError(`Each choice must be ${limits.choice} characters or fewer.`);
       return;
     }
 
@@ -84,12 +95,12 @@ function QuestionPopup({
           </button>
         </div>
 
-        <form onSubmit={submit}>
+        <form onSubmit={Submit}>
           <textarea
             className="questioninput"
             placeholder="Type the question..."
             value={text}
-            maxLength={500}
+            maxLength={limits.question}
             autoFocus
             onChange={(event) =>
               setText(event.target.value)
@@ -111,9 +122,9 @@ function QuestionPopup({
                   type="text"
                   placeholder={`Choice ${index + 1}`}
                   value={choice}
-                  maxLength={200}
+                  maxLength={limits.choice}
                   onChange={(event) =>
-                    changeChoice(index, event.target.value)
+                    ChangeChoice(index, event.target.value)
                   }
                 />
               </label>

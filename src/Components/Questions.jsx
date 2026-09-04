@@ -3,6 +3,7 @@ import { useCallback, useEffect, useState } from "react";
 import { supabase } from "../lib/supabase";
 import QuestionCard from "./QuestionCard";
 import QuestionPopup from "./QuestionPopup";
+import { limits } from "../lib/inputLimits";
 
 const maxCards = 6;
 
@@ -254,6 +255,14 @@ function Questions({ onBack }) {
   }
 
   async function saveQuestion(form) {
+    if (form.text.length > limits.question) {
+      throw new Error(`Question must be ${limits.question} characters or fewer.`);
+    }
+
+    if (form.choices.some((choice) => choice.length > limits.choice)) {
+      throw new Error(`Each choice must be ${limits.choice} characters or fewer.`);
+    }
+
     let activeTest = test;
 
     if (!activeTest) {
