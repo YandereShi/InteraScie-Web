@@ -8,12 +8,14 @@ import Students from "./Components/Students";
 import TeacherDashboard from "./Components/TeacherDashboard";
 import TeacherLayout from "./Components/TeacherLayout";
 import Downloadpage from "./Components/Downloadpage";
+import ResetPassword from "./Components/resetpassword";
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Login />} />
+        <Route path="/resetpassword" element={<ResetPassword />} />
         <Route path="download" element={<Downloadpage />} />
         <Route path="/teacher" element={<TeacherLayout />}>
           <Route index element={<TeacherDashboard />} />

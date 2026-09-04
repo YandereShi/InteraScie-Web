@@ -3,6 +3,7 @@ import teacherImage from "../assets/teacher.png";
 import { useEffect, useState } from "react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import SuperAdminLogin from "./SuperAdminLogin";
+import ForgotPasswordPopup from "./ForgotPasswordPopup";
 import { supabase } from "../lib/supabase";
 import { useNavigate } from "react-router";
 import interascie from "../assets/InteraScie.png";
@@ -17,6 +18,7 @@ function Login() {
   const [LoginMessage, SetLoginMessage] = useState("");
   const [LockedSeconds, SetLockedSeconds] = useState(0);
   const [ShowGame, SetShowGame] = useState(false);
+  const [forgotpassword, SetForgotPassword] = useState(false);
 
   useEffect(() => {
     if (LockedSeconds <= 0) {
@@ -171,7 +173,9 @@ function Login() {
                           </button>
                         </div>
 
-                        <a href="#">Forgot Password</a>
+                        <button type="button" className="forgotpasswordlink" onClick={() => SetForgotPassword(true)}>
+                          Forgot Password
+                        </button>
 
                         {DisplayMessage && (
                           <p className="loginmessage" role="alert">{DisplayMessage}</p>
@@ -208,7 +212,7 @@ function Login() {
                 </div>
             </div>    
         </div>
-        
+        {forgotpassword && <ForgotPasswordPopup onclose={() => SetForgotPassword(false)} />}
     </>
     
   );
