@@ -1,8 +1,8 @@
-import "../css/Progress.css";
+import "../../css/Progress.css";
 import { useCallback, useEffect, useState } from "react";
 import { FaCheck } from "react-icons/fa";
 import { TbProgress } from "react-icons/tb";
-import { supabase } from "../lib/supabase";
+import { supabase } from "../../lib/supabase";
 import TeacherPage from "./TeacherPage";
 
 const maxRows = 10;

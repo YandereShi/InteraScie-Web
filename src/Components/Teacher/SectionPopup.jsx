@@ -1,6 +1,6 @@
-import "../css/SectionPopup.css";
+import "../../css/SectionPopup.css";
 import { useState } from "react";
-import { limits } from "../lib/inputLimits";
+import { limits } from "../../lib/inputLimits";
 
 function SectionPopup({ onClose, onCreate }) {
   const [name, setName] = useState("");

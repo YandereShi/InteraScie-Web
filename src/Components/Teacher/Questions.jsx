@@ -1,9 +1,9 @@
-import "../css/Questions.css";
+import "../../css/Questions.css";
 import { useCallback, useEffect, useState } from "react";
-import { supabase } from "../lib/supabase";
+import { supabase } from "../../lib/supabase";
 import QuestionCard from "./QuestionCard";
 import QuestionPopup from "./QuestionPopup";
-import { limits } from "../lib/inputLimits";
+import { limits } from "../../lib/inputLimits";
 
 const maxCards = 6;
 

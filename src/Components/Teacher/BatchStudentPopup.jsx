@@ -1,8 +1,8 @@
-import "../css/BatchStudentPopup.css";
+import "../../css/BatchStudentPopup.css";
 import Papa from "papaparse";
 import { useState } from "react";
-import { GetNameError } from "../lib/nameValidation";
-import { limits } from "../lib/inputLimits";
+import { GetNameError } from "../../lib/nameValidation";
+import { limits } from "../../lib/inputLimits";
 
 function NormalizeName(Value) {
   return String(Value)

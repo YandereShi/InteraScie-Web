@@ -1,6 +1,6 @@
-import "../css/TeacherPage.css";
+import "../../css/TeacherPage.css";
 import { useNavigate } from "react-router";
-import { supabase } from "../lib/supabase";
+import { supabase } from "../../lib/supabase";
 
 function TeacherPage({ title, children }) {
   const navigate = useNavigate();

@@ -1,4 +1,4 @@
-import "../css/AddPopup.css";
+import "../../css/AddPopup.css";
 import { useState } from "react";
 
 function AddPopup({

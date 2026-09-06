@@ -1,9 +1,9 @@
-import "../css/TeacherDashboard.css";
+import "../../css/TeacherDashboard.css";
 import TeacherPage from "./TeacherPage";
 import {useEffect, useState} from "react";
 import {PiStudentFill} from "react-icons/pi";
 import {TbUsersGroup} from "react-icons/tb";
-import {supabase} from "../lib/supabase";
+import {supabase} from "../../lib/supabase";
 import ScoreGraph from "./ScoreGraph";
 import GraphPopup from "./GraphPopup";
 

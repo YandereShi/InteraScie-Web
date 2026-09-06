@@ -1,10 +1,10 @@
-import "../css/Sections.css";
+import "../../css/Sections.css";
 import TeacherPage from "./TeacherPage";
 import AddPopup from "./AddPopup";
 import SectionPopup from "./SectionPopup";
 import {useCallback,useEffect,useState,} from "react";
-import { supabase } from "../lib/supabase";
-import { limits } from "../lib/inputLimits";
+import { supabase } from "../../lib/supabase";
+import { limits } from "../../lib/inputLimits";
 
 const maxRows = 10;
 

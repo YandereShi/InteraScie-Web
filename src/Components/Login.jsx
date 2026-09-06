@@ -2,7 +2,7 @@ import "../css/Login.css";
 import teacherImage from "../assets/teacher.png";
 import { useEffect, useState } from "react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
-import SuperAdminLogin from "./SuperAdminLogin";
+import SuperAdminLogin from "./SuperAdmin/SuperAdminLogin";
 import ForgotPasswordPopup from "./ForgotPasswordPopup";
 import { supabase } from "../lib/supabase";
 import { useNavigate } from "react-router";

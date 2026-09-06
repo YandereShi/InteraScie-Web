@@ -1,5 +1,5 @@
 import {BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer} from 'recharts';
-import "../css/ScoreGraph.css";
+import "../../css/ScoreGraph.css";
 
 function ScoreGraph({
     title,

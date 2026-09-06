@@ -1,5 +1,5 @@
-import "../css/StudentCard.css";
-import studentImage from "../assets/pfp.png";
+import "../../css/StudentCard.css";
+import studentImage from "../../assets/pfp.png";
 
 function StudentCard({
   student,

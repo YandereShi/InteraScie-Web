@@ -1,12 +1,12 @@
-import "../css/Students.css";
+import "../../css/Students.css";
 import StudentCard from "./StudentCard";
 import StudentPopup from "./StudentPopup";
 import BatchStudentPopup from "./BatchStudentPopup";
 import TeacherPage from "./TeacherPage";
 import {useCallback,useEffect,useState,} from "react";
-import { supabase } from "../lib/supabase";
-import { GetNameError } from "../lib/nameValidation";
-import { limits } from "../lib/inputLimits";
+import { supabase } from "../../lib/supabase";
+import { GetNameError } from "../../lib/nameValidation";
+import { limits } from "../../lib/inputLimits";
 
 const maxCards = 12;
 

@@ -1,8 +1,8 @@
-import "../css/StudentPopup.css";
+import "../../css/StudentPopup.css";
 import { useState } from "react";
-import studentImage from "../assets/pfp.png";
-import { GetNameError } from "../lib/nameValidation";
-import { limits } from "../lib/inputLimits";
+import studentImage from "../../assets/pfp.png";
+import { GetNameError } from "../../lib/nameValidation";
+import { limits } from "../../lib/inputLimits";
 
 function StudentPopup({
   student,

@@ -1,6 +1,6 @@
-import "../css/QuestionPopup.css";
+import "../../css/QuestionPopup.css";
 import { useState } from "react";
-import { limits } from "../lib/inputLimits";
+import { limits } from "../../lib/inputLimits";
 
 function QuestionPopup({
   question,

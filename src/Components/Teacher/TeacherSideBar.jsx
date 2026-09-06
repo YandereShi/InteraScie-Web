@@ -1,6 +1,6 @@
-import "../css/TeacherSideBar.css";
-import InteraScie from "../assets/InteraScie.png";
-import teacherPfp from "../assets/pfp.png";
+import "../../css/TeacherSideBar.css";
+import InteraScie from "../../assets/InteraScie.png";
+import teacherPfp from "../../assets/pfp.png";
 import { NavLink } from "react-router";
 import { FaHome, FaPen } from "react-icons/fa";
 import { FaPeopleGroup } from "react-icons/fa6";

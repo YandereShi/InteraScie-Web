@@ -1,4 +1,4 @@
-import "../css/QuestionCard.css";
+import "../../css/QuestionCard.css";
 
 function QuestionCard({
   question,

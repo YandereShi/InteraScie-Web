@@ -1,9 +1,9 @@
-import "../css/Login.css";
-import superadminImage from "../assets/SuperAdmin.png";
+import "../../css/Login.css";
+import superadminImage from "../../assets/SuperAdmin.png";
 import { useEffect, useState } from "react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { useNavigate } from "react-router";
-import { supabase } from "../lib/supabase";
+import { supabase } from "../../lib/supabase";
 
 function SuperAdminLogin({ showTeacher }) {
     const navigate = useNavigate();

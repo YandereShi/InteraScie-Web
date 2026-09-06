@@ -1,6 +1,6 @@
-import "../css/Assessments.css";
+import "../../css/Assessments.css";
 import { useCallback, useEffect, useState } from "react";
-import { supabase } from "../lib/supabase";
+import { supabase } from "../../lib/supabase";
 import Questions from "./Questions";
 import TeacherPage from "./TeacherPage";
 

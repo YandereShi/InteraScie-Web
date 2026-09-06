@@ -1,4 +1,4 @@
-import "../css/GraphPopup.css";
+import "../../css/GraphPopup.css";
 import { useEffect, useState } from "react";
 import ScoreGraph from "./ScoreGraph";
 
