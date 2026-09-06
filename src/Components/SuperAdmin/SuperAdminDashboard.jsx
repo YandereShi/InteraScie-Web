@@ -20,7 +20,7 @@ function SuperAdminDashboard() {
 
             const { data, error: loadError } =
                 await supabase.functions.invoke(
-                    "superadmin-dashboard"
+                    "superadmindashboard"
                 );
 
             if (loadError || !data) {

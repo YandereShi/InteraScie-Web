@@ -152,7 +152,7 @@ function SuperAdminLogin({ showTeacher }) {
                     onSubmit={HandleSuperAdminLogin}
                 >
                     <label
-                        htmlFor="admin-email"
+                        htmlFor="adminemail"
                         className="logintext"
                     >
                         Email
@@ -160,7 +160,7 @@ function SuperAdminLogin({ showTeacher }) {
 
                     <input
                         type="email"
-                        id="admin-email"
+                        id="adminemail"
                         name="email"
                         placeholder="example@gmail.com"
                         autoComplete="email"
@@ -169,7 +169,7 @@ function SuperAdminLogin({ showTeacher }) {
                     />
 
                     <label
-                        htmlFor="admin-password"
+                        htmlFor="adminpassword"
                         className="logintext"
                     >
                         Password
@@ -182,7 +182,7 @@ function SuperAdminLogin({ showTeacher }) {
                                     ? "text"
                                     : "password"
                             }
-                            id="admin-password"
+                            id="adminpassword"
                             name="password"
                             placeholder="Password"
                             autoComplete="current-password"
