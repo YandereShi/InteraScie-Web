@@ -130,13 +130,13 @@ function StudentPopup({
           />
 
           <div className="studentpopupform">
-            <label htmlFor="student-first-name">
+            <label htmlFor="studentfirstname">
               First name
             </label>
 
             <input
               type="text"
-              id="student-first-name"
+              id="studentfirstname"
               maxLength={limits.firstname}
               value={firstName}
               onChange={(event) =>
@@ -145,13 +145,13 @@ function StudentPopup({
               required
             />
 
-            <label htmlFor="student-last-name">
+            <label htmlFor="studentlastname">
               Last name
             </label>
 
             <input
               type="text"
-              id="student-last-name"
+              id="studentlastname"
               maxLength={limits.lastname}
               value={lastName}
               onChange={(event) =>
@@ -160,13 +160,13 @@ function StudentPopup({
               required
             />
 
-            <label htmlFor="student-username">
+            <label htmlFor="studentusername">
               Username
             </label>
 
             <input
               type="text"
-              id="student-username"
+              id="studentusername"
               maxLength={limits.username}
               value={username}
               onChange={(event) =>
@@ -175,12 +175,12 @@ function StudentPopup({
               required
             />
 
-            <label htmlFor="student-section">
+            <label htmlFor="studentsection">
               Section
             </label>
 
             <select
-              id="student-section"
+              id="studentsection"
               value={sectionID}
               onChange={(event) =>
                 setSectionID(event.target.value)
@@ -196,7 +196,7 @@ function StudentPopup({
                   key={section.sectionID}
                   value={section.sectionID}
                 >
-                  {section.sectionName}
+                  {section.displayName ?? section.sectionName}
                 </option>
               ))}
             </select>

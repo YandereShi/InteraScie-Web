@@ -1,13 +1,8 @@
 import SuperAdminPage from "./SuperAdminPage";
+import Students from "../Teacher/Students";
 
 function SuperAdminStudents() {
-    return (
-        <SuperAdminPage title="Students">
-            <section className="superadmincontentpanel">
-                <h2>Students</h2>
-            </section>
-        </SuperAdminPage>
-    );
+  return <Students PageComponent={SuperAdminPage} />;
 }
 
 export default SuperAdminStudents;

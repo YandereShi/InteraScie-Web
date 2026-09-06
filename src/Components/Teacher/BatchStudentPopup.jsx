@@ -285,7 +285,7 @@ function BatchStudentPopup({
                 key={Section.sectionID}
                 value={Section.sectionID}
               >
-                {Section.sectionName}
+                {Section.displayName ?? Section.sectionName}
               </option>
             ))}
           </select>

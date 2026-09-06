@@ -1,13 +1,8 @@
 import SuperAdminPage from "./SuperAdminPage";
+import Sections from "../Teacher/Sections";
 
 function SuperAdminSections() {
-    return (
-        <SuperAdminPage title="Sections">
-            <section className="superadmincontentpanel">
-                <h2>Sections</h2>
-            </section>
-        </SuperAdminPage>
-    );
+  return <Sections PageComponent={SuperAdminPage} />;
 }
 
 export default SuperAdminSections;
