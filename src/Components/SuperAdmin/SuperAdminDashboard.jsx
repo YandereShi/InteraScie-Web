@@ -1,4 +1,5 @@
 import "../../css/SuperAdminDashboard.css";
+import "../../css/TeacherDashboard.css";
 import { useEffect, useState } from "react";
 import { FaChalkboardTeacher } from "react-icons/fa";
 import { PiStudentFill } from "react-icons/pi";
@@ -44,27 +45,27 @@ function SuperAdminDashboard() {
 
     return (
         <SuperAdminPage title="Dashboard">
-            <section className="superadmindashboard">
-                <div className="superadmintotals">
-                    <article className="superadmintotalcard superadminstudentcard">
-                        <PiStudentFill className="superadmintotalicon" aria-hidden="true" />
-                        <div>
+            <section className="dashboardpanel">
+                <div className="dashboardtotals superadmindashboardtotals">
+                    <article className="totalcard totalstudentcard">
+                        <PiStudentFill className="totalicon" aria-hidden="true" />
+                        <div className="totaldetails">
                             <h2>Total Students</h2>
                             <p>{studentValue}</p>
                         </div>
                     </article>
 
-                    <article className="superadmintotalcard superadminteachercard">
-                        <FaChalkboardTeacher className="superadmintotalicon" aria-hidden="true" />
-                        <div>
+                    <article className="totalcard totalteachercard">
+                        <FaChalkboardTeacher className="totalicon" aria-hidden="true" />
+                        <div className="totaldetails">
                             <h2>Total Teachers</h2>
                             <p>{teacherValue}</p>
                         </div>
                     </article>
 
-                    <article className="superadmintotalcard superadminsectioncard">
-                        <TbUsersGroup className="superadmintotalicon" aria-hidden="true" />
-                        <div>
+                    <article className="totalcard totalsectioncard">
+                        <TbUsersGroup className="totalicon" aria-hidden="true" />
+                        <div className="totaldetails">
                             <h2>Total Sections</h2>
                             <p>{sectionValue}</p>
                         </div>

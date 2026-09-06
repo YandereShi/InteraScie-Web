@@ -1,97 +1,19 @@
-.superadmindashboard {
-    width: 100%;
+.superadmindashboardtotals {
+  flex-wrap: wrap;
 }
 
-.superadmintotals {
-    width: 100%;
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 20px;
-}
-
-.superadmintotalcard {
-    min-height: 118px;
-    padding: 18px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 18px;
-    border-radius: 15px;
-    color: #ffffff;
-}
-
-.superadminstudentcard {
-    background-color: #006b3c;
-}
-
-.superadminteachercard {
-    background-color: #ff3338;
-}
-
-.superadminsectioncard {
-    background-color: #118bf2;
-}
-
-.superadmintotalicon {
-    width: 66px;
-    height: 66px;
-    flex-shrink: 0;
-}
-
-.superadmintotalcard h2 {
-    margin: 0;
-    font-size: clamp(1.25rem, 2vw, 1.7rem);
-    white-space: nowrap;
-}
-
-.superadmintotalcard p {
-    margin: 2px 0 0;
-    font-size: 2.35rem;
-    font-weight: 700;
+.totalteachercard {
+  background-color: #ff3338;
 }
 
 .superadmindashboardmessage {
-    margin: 18px 0 0;
-    color: #c40000;
-    text-align: center;
-}
-
-@media (max-width: 1050px) {
-    .superadmintotals {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-
-    .superadminsectioncard {
-        grid-column: 1 / -1;
-    }
+  margin: 18px 30px 0 0;
+  color: #c40000;
+  text-align: center;
 }
 
 @media (max-width: 768px) {
-    .superadmintotals {
-        gap: 12px;
-    }
-
-    .superadmintotalcard {
-        min-height: 100px;
-        padding: 14px;
-    }
-
-    .superadmintotalicon {
-        width: 50px;
-        height: 50px;
-    }
-}
-
-@media (max-width: 560px) {
-    .superadmintotals {
-        grid-template-columns: 1fr;
-    }
-
-    .superadminsectioncard {
-        grid-column: auto;
-    }
-
-    .superadmintotalcard {
-        justify-content: flex-start;
-    }
+  .superadmindashboardmessage {
+    margin-right: 0;
+  }
 }

@@ -1,13 +1,13 @@
 .superadminlayout {
-    display: flex;
-    width: 100%;
-    min-height: 100vh;
-    background-color: #f4f4f4;
+  display: flex;
+  width: 100%;
+  min-height: 100vh;
+  background-color: #ffffff;
 }
 
 @media (max-width: 768px) {
-    .superadminlayout {
-        display: block;
-        padding-bottom: 72px;
-    }
+  .superadminlayout {
+    display: block;
+    padding-bottom: 72px;
+  }
 }
