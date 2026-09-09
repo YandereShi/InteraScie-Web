@@ -1,9 +1,11 @@
 import "../../css/SuperAdminPage.css";
+import { useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router";
 import { supabase } from "../../lib/supabase";
 
 function SuperAdminPage({ title, children }) {
     const navigate = useNavigate();
+    const queryClient = useQueryClient();
 
     async function HandleLogout() {
         const { error } = await supabase.auth.signOut();
@@ -13,6 +15,7 @@ function SuperAdminPage({ title, children }) {
             return;
         }
 
+        queryClient.clear();
         navigate("/", { replace: true });
     }
 

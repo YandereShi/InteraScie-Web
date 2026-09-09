@@ -2,103 +2,109 @@ import "../../css/Sections.css";
 import TeacherPage from "./TeacherPage";
 import AddPopup from "./AddPopup";
 import SectionPopup from "./SectionPopup";
-import { useCallback, useEffect, useState } from "react";
+import { useState } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { limits } from "../../lib/inputLimits";
 import { InvokeStudentManagement } from "../../lib/supabase";
+import { GetNoSectionStudents, GetSections, GetSectionStudents, GetSectionStudentsQueryKey, noSectionStudentsQueryKey, sectionsQueryKey } from "../../lib/sectionQueries";
+import { superAdminDashboardQueryKey, teacherDashboardQueryKey } from "../../lib/dashboardQueries";
 
 const maxRows = 10;
 
 function Sections({ PageComponent = TeacherPage }) {
-  const [role, setRole] = useState("");
-  const [sections, setSections] = useState([]);
-  const [section, setSection] = useState("");
-  const [students, setStudents] = useState([]);
+  const queryClient = useQueryClient();
+  const [selectedSection, setSelectedSection] = useState("");
   const [selected, setSelected] = useState([]);
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
   const [addOpen, setAddOpen] = useState(false);
-  const [addList, setAddList] = useState([]);
-  const [addLoad, setAddLoad] = useState(false);
-  const [addError, setAddError] = useState("");
   const [createOpen, setCreateOpen] = useState(false);
 
-  const LoadSections = useCallback(async () => {
-    setError("");
+  const sectionsQuery = useQuery({
+    queryKey: sectionsQueryKey,
+    queryFn: GetSections,
+    staleTime: 5 * 60 * 1000,
+  });
 
-    try {
-      const data = await InvokeStudentManagement("loadsections");
-      const list = data.sections ?? [];
-      const choices =
-        data.role === "superadmin"
-          ? list
-          : list.filter((item) => !item.isShared);
+  const role = sectionsQuery.data?.role ?? "";
+  const sections = sectionsQuery.data?.sections ?? [];
+  const choices =
+    role === "superadmin"
+      ? sections
+      : sections.filter((item) => !item.isShared);
+  const section = choices.some(
+    (item) => String(item.sectionID) === selectedSection
+  )
+    ? selectedSection
+    : String(choices[0]?.sectionID ?? "");
+  const sectionID = Number(section) || 0;
 
-      setRole(data.role ?? "");
-      setSections(list);
-      setSection((active) => {
-        const exists = choices.some(
-          (item) => String(item.sectionID) === active
-        );
+  const studentsQuery = useQuery({
+    queryKey: GetSectionStudentsQueryKey(sectionID),
+    queryFn: () => GetSectionStudents(sectionID),
+    enabled: sectionID > 0,
+    staleTime: 5 * 60 * 1000,
+  });
 
-        return exists ? active : String(choices[0]?.sectionID ?? "");
-      });
+  const noSectionStudentsQuery = useQuery({
+    queryKey: noSectionStudentsQueryKey,
+    queryFn: GetNoSectionStudents,
+    enabled: addOpen,
+    staleTime: 5 * 60 * 1000,
+  });
 
-      if (choices.length === 0) {
-        setStudents([]);
-        setLoading(false);
-      }
-    } catch (loadError) {
-      console.error(loadError.message);
-      setError(loadError.message || "Unable to load sections.");
-      setLoading(false);
-    }
-  }, []);
+  const students = studentsQuery.data ?? [];
+  const loading =
+    sectionsQuery.isPending ||
+    (sectionID > 0 && studentsQuery.isPending);
+  const requestError =
+    sectionsQuery.error || studentsQuery.error;
+  const error =
+    requestError instanceof Error
+      ? requestError.message
+      : requestError
+        ? "Unable to load sections."
+        : "";
+  const addList = noSectionStudentsQuery.data ?? [];
+  const addLoad = noSectionStudentsQuery.isPending;
+  const addError =
+    noSectionStudentsQuery.error instanceof Error
+      ? noSectionStudentsQuery.error.message
+      : noSectionStudentsQuery.error
+        ? "Unable to load No Section students."
+        : "";
 
-  const LoadStudents = useCallback(async () => {
-    if (!section) {
-      setStudents([]);
-      setLoading(false);
+  async function RefreshSections() {
+    await queryClient.invalidateQueries({
+      queryKey: sectionsQueryKey,
+      exact: true,
+    });
+  }
+
+  async function RefreshSectionStudents() {
+    if (!sectionID) {
       return;
     }
 
-    setLoading(true);
-    setError("");
+    await queryClient.invalidateQueries({
+      queryKey: GetSectionStudentsQueryKey(sectionID),
+      exact: true,
+    });
+  }
 
-    try {
-      const data = await InvokeStudentManagement("loadsectionstudents", {
-        sectionID: Number(section),
-      });
-      setStudents(data.students ?? []);
-      setSelected([]);
-      setPage(1);
-    } catch (loadError) {
-      console.error(loadError.message);
-      setError(loadError.message || "Unable to load students.");
-    } finally {
-      setLoading(false);
-    }
-  }, [section]);
-
-  useEffect(() => {
-    const timer = window.setTimeout(() => {
-      LoadSections();
-    }, 0);
-
-    return () => window.clearTimeout(timer);
-  }, [LoadSections]);
-
-  useEffect(() => {
-    const timer = window.setTimeout(() => {
-      LoadStudents();
-    }, 0);
-
-    return () => window.clearTimeout(timer);
-  }, [LoadStudents]);
+  async function RefreshDashboards() {
+    await Promise.all([
+      queryClient.invalidateQueries({
+        queryKey: teacherDashboardQueryKey,
+      }),
+      queryClient.invalidateQueries({
+        queryKey: superAdminDashboardQueryKey,
+      }),
+    ]);
+  }
 
   function PickSection(event) {
-    setSection(event.target.value);
+    setSelectedSection(event.target.value);
     setSearch("");
     setSelected([]);
     setPage(1);
@@ -144,10 +150,6 @@ function Sections({ PageComponent = TeacherPage }) {
   const allChecked =
     filtered.length > 0 &&
     filtered.every((student) => selected.includes(student.studentID));
-  const choices =
-    role === "superadmin"
-      ? sections
-      : sections.filter((item) => !item.isShared);
   const activeSection = sections.find(
     (item) => String(item.sectionID) === section
   );
@@ -181,7 +183,14 @@ function Sections({ PageComponent = TeacherPage }) {
         studentIDs: selected,
       });
       setSelected([]);
-      await LoadStudents();
+      await Promise.all([
+        RefreshSectionStudents(),
+        RefreshDashboards(),
+        queryClient.invalidateQueries({
+          queryKey: noSectionStudentsQueryKey,
+          exact: true,
+        }),
+      ]);
       alert(`${data.moved?.length ?? 0} student(s) moved to No Section.`);
     } catch (moveError) {
       console.error(moveError.message);
@@ -189,44 +198,31 @@ function Sections({ PageComponent = TeacherPage }) {
     }
   }
 
-  async function LoadShared() {
-    setAddLoad(true);
-    setAddError("");
-
-    try {
-      const data = await InvokeStudentManagement("loadnostudents");
-      setAddList(data.students ?? []);
-    } catch (loadError) {
-      console.error(loadError.message);
-      setAddError(loadError.message || "Unable to load No Section students.");
-    } finally {
-      setAddLoad(false);
-    }
-  }
-
-  async function OpenAdd() {
-    setAddList([]);
-    setAddError("");
+  function OpenAdd() {
     setAddOpen(true);
-    await LoadShared();
   }
 
   function CloseAdd() {
     setAddOpen(false);
-    setAddList([]);
-    setAddError("");
   }
 
   async function AddStudents(studentIDs) {
-    if (!section) {
+    if (!sectionID) {
       throw new Error("No active section was selected.");
     }
 
     await InvokeStudentManagement("movetosection", {
-      sectionID: Number(section),
+      sectionID,
       studentIDs,
     });
-    await LoadStudents();
+    await Promise.all([
+      RefreshSectionStudents(),
+      RefreshDashboards(),
+      queryClient.invalidateQueries({
+        queryKey: noSectionStudentsQueryKey,
+        exact: true,
+      }),
+    ]);
     CloseAdd();
   }
 
@@ -247,11 +243,14 @@ function Sections({ PageComponent = TeacherPage }) {
       sectionName: name,
     });
 
-    await LoadSections();
-    setSection(String(data.sectionID ?? ""));
+    setSelectedSection(String(data.sectionID ?? ""));
     setSearch("");
     setSelected([]);
     setPage(1);
+    await Promise.all([
+      RefreshSections(),
+      RefreshDashboards(),
+    ]);
     CloseCreate();
   }
 

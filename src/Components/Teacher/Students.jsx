@@ -9,6 +9,7 @@ import { GetNameError } from "../../lib/nameValidation";
 import { limits } from "../../lib/inputLimits";
 import { InvokeStudentManagement } from "../../lib/supabase";
 import { GetStudents, studentQueryKey } from "../../lib/studentQueries";
+import { superAdminDashboardQueryKey, teacherDashboardQueryKey } from "../../lib/dashboardQueries";
 
 const maxCards = 12;
 
@@ -42,10 +43,18 @@ function Students({ PageComponent = TeacherPage }) {
   async function RefreshStudents() {
     setActionError("");
 
-    await queryClient.invalidateQueries({
-      queryKey: studentQueryKey,
-      exact: true,
-    });
+    await Promise.all([
+      queryClient.invalidateQueries({
+        queryKey: studentQueryKey,
+        exact: true,
+      }),
+      queryClient.invalidateQueries({
+        queryKey: teacherDashboardQueryKey,
+      }),
+      queryClient.invalidateQueries({
+        queryKey: superAdminDashboardQueryKey,
+      }),
+    ]);
   }
 
   function OpenAddPopup() {

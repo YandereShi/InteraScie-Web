@@ -1,43 +1,29 @@
 import "../../css/SuperAdminDashboard.css";
 import "../../css/TeacherDashboard.css";
-import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { FaChalkboardTeacher } from "react-icons/fa";
 import { PiStudentFill } from "react-icons/pi";
 import { TbUsersGroup } from "react-icons/tb";
-import { supabase } from "../../lib/supabase";
+import { GetSuperAdminDashboard, superAdminDashboardQueryKey } from "../../lib/dashboardQueries";
 import SuperAdminPage from "./SuperAdminPage";
 
 function SuperAdminDashboard() {
-    const [studentTotal, setStudentTotal] = useState(0);
-    const [teacherTotal, setTeacherTotal] = useState(0);
-    const [sectionTotal, setSectionTotal] = useState(0);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState("");
+    const dashboardQuery = useQuery({
+        queryKey: superAdminDashboardQueryKey,
+        queryFn: GetSuperAdminDashboard,
+        staleTime: 2 * 60 * 1000,
+    });
 
-    useEffect(() => {
-        async function LoadTotals() {
-            setLoading(true);
-            setError("");
-
-            const { data, error: loadError } =
-                await supabase.functions.invoke(
-                    "superadmindashboard"
-                );
-
-            if (loadError || !data) {
-                setError("Unable to load dashboard totals.");
-                setLoading(false);
-                return;
-            }
-
-            setStudentTotal(Number(data.studentTotal) || 0);
-            setTeacherTotal(Number(data.teacherTotal) || 0);
-            setSectionTotal(Number(data.sectionTotal) || 0);
-            setLoading(false);
-        }
-
-        LoadTotals();
-    }, []);
+    const studentTotal = dashboardQuery.data?.studentTotal ?? 0;
+    const teacherTotal = dashboardQuery.data?.teacherTotal ?? 0;
+    const sectionTotal = dashboardQuery.data?.sectionTotal ?? 0;
+    const loading = dashboardQuery.isPending;
+    const error =
+        dashboardQuery.error instanceof Error
+            ? dashboardQuery.error.message
+            : dashboardQuery.error
+                ? "Unable to load dashboard totals."
+                : "";
 
     const studentValue = loading ? "..." : studentTotal;
     const teacherValue = loading ? "..." : teacherTotal;

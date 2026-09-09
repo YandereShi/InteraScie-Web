@@ -1,14 +1,24 @@
 import "../../css/TeacherDashboard.css";
+import { useEffect, useMemo, useState } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { PiStudentFill } from "react-icons/pi";
+import { TbUsersGroup } from "react-icons/tb";
+import { supabase } from "../../lib/supabase";
+import { GetTeacherDashboard, teacherDashboardQueryKey } from "../../lib/dashboardQueries";
 import TeacherPage from "./TeacherPage";
-import {useEffect, useState} from "react";
-import {PiStudentFill} from "react-icons/pi";
-import {TbUsersGroup} from "react-icons/tb";
-import {supabase} from "../../lib/supabase";
 import ScoreGraph from "./ScoreGraph";
 import GraphPopup from "./GraphPopup";
 
-function makeData(scores) {
-  const data = Array.from({length: 15}, (_, index) => ({
+const emptyDashboard = {
+  sections: [],
+  students: [],
+  levels: [],
+  tests: [],
+  scores: [],
+};
+
+function MakeData(scores) {
+  const data = Array.from({ length: 15 }, (_, index) => ({
     score: index + 1,
     students: 0,
   }));
@@ -24,198 +34,63 @@ function makeData(scores) {
   return data;
 }
 
-function TeacherDashboard() {
+function GetCharts(levels, tests, scores) {
+  const chartList = levels.map((level) => {
+    const test = tests.find(
+      (item) => item.levelID === level.levelID
+    );
 
-  const [studentTotal, setStudentTotal] = useState(0);
-  const [sectionTotal, setSectionTotal] = useState(0);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-  const [branch, setBranch] = useState("Chemistry");
-  const [charts, setCharts] = useState(() => [
-    makeData([]),
-    makeData([]),
-    makeData([]),
-  ]);
-  const [sections, setSections] = useState([]);
-  const [students, setStudents] = useState([]);
-  const [levels, setLevels] = useState([]);
-  const [tests, setTests] = useState([]);
-  const [scores, setScores] = useState([]);
-  const [active, setActive] = useState(null);
-  const [section, setSection] = useState("all");
-  const [reload, setReload] = useState(0);
-
-  useEffect(() => {
-    const timer = window.setTimeout(() => {
-      async function loadTotals() {
-        setLoading(true);
-        setError("");
-        setCharts([makeData([]), makeData([]), makeData([])]);
-        setSections([]);
-        setStudents([]);
-        setLevels([]);
-        setTests([]);
-        setScores([]);
-
-        const {
-          data: {user},
-          error: userError,
-        } = await supabase.auth.getUser();
-        
-        if (userError || !user) {
-          setError("Failed to fetch user information");
-          setLoading(false);
-          return;
-        }
-
-        const {data: staff, error:staffError} = await supabase
-          .from("SchoolStaff")
-          .select("staffID")
-          .eq("authUserID", user.id)
-          .eq("role", "teacher")
-          .single();
-
-        if (staffError || !staff) {
-          setError("Failed to fetch staff information");
-          setLoading(false);
-          return;
-        }
-
-        const {data: sectionData, error: sectionError} = await supabase
-          .from("Section")
-          .select("sectionID, sectionName")
-          .eq("staffID", staff.staffID)
-          .eq("isShared", false);
-
-        if (sectionError) {
-          setError("Failed to fetch sections");
-          setLoading(false);
-          return;
-        }
-
-        const sectionList = sectionData ?? [];
-        const sectionIDs = sectionList.map((section) => section.sectionID);
-
-        setSections(sectionList);
-        setSectionTotal(sectionList.length);
-
-      if (sectionIDs.length === 0){
-        setStudentTotal(0);
-        setLoading(false);
-        return;
-      }
-
-      const {data: studentData, error: studentError} = await supabase
-        .from("Student")
-        .select("studentID, sectionID")
-        .in("sectionID", sectionIDs);
-
-      if (studentError) {
-        setError("Failed to fetch students");
-        setLoading(false);
-        return;
-      }
-
-      const studentList = studentData ?? [];
-
-      setStudents(studentList);
-      setStudentTotal(studentList.length);
-      const {data: levelData, error: levelError} = await supabase
-        .from("Level")
-        .select("levelID, levelName")
-        .eq("branchName", branch)
-        .order("levelID", {ascending: true})
-        .limit(3);
-
-      if (levelError) {
-        setError(`Failed to fetch ${branch} lessons`);
-        setLoading(false);
-        return;
-      }
-
-const levelList = levelData ?? [];
-const levelIDs = levelList.map((level) => level.levelID);
-
-if (levelIDs.length === 0) {
-  setError(`No ${branch} lessons found`);
-  setLoading(false);
-  return;
-}
-
-const {data: testData, error: testError} = await supabase
-  .from("Assessment")
-  .select("assessmentID, levelID")
-  .eq("staffID", staff.staffID)
-  .in("levelID", levelIDs)
-  .order("assessmentID", {ascending: true});
-
-if (testError) {
-  setError("Failed to fetch assessments");
-  setLoading(false);
-  return;
-}
-
-const testList = testData ?? [];
-const studentIDs = studentList.map((student) => student.studentID);
-const testIDs = testList.map((test) => test.assessmentID);
-
-let scoreList = [];
-
-if (studentIDs.length > 0 && testIDs.length > 0) {
-  const {data: scoreData, error: scoreError} = await supabase
-    .from("StudentAssessment")
-    .select("studentID, assessmentID, score, totalQuestions")
-    .in("studentID", studentIDs)
-    .in("assessmentID", testIDs);
-
-  if (scoreError) {
-    setError("Failed to fetch assessment scores");
-    setLoading(false);
-    return;
-  }
-
-  scoreList = scoreData ?? [];
-}
-
-setLevels(levelList);
-setTests(testList);
-setScores(scoreList);
-
-const chartList = levelList.map((level) => {
-  const test = testList.find(
-    (item) => item.levelID === level.levelID
-  );
-
-  if (!test) {
-    return makeData([]);
-  }
-
-  const testScores = scoreList.filter(
-    (item) =>
-      item.assessmentID === test.assessmentID &&
-      Number(item.totalQuestions) === 15
-  );
-
-  return makeData(testScores);
-});
-
-setCharts([
-  chartList[0] ?? makeData([]),
-  chartList[1] ?? makeData([]),
-  chartList[2] ?? makeData([]),
-]);
-      setLoading(false);
+    if (!test) {
+      return MakeData([]);
     }
 
-    loadTotals();
-  }, 0);
+    const testScores = scores.filter(
+      (item) =>
+        item.assessmentID === test.assessmentID &&
+        Number(item.totalQuestions) === 15
+    );
 
-  return () => window.clearTimeout(timer);
-  }, [branch, reload]);
+    return MakeData(testScores);
+  });
+
+  return [
+    chartList[0] ?? MakeData([]),
+    chartList[1] ?? MakeData([]),
+    chartList[2] ?? MakeData([]),
+  ];
+}
+
+function TeacherDashboard() {
+  const queryClient = useQueryClient();
+  const [branch, setBranch] = useState("Chemistry");
+  const [active, setActive] = useState(null);
+  const [section, setSection] = useState("all");
+
+  const dashboardQuery = useQuery({
+    queryKey: [...teacherDashboardQueryKey, branch],
+    queryFn: () => GetTeacherDashboard(branch),
+    staleTime: 2 * 60 * 1000,
+  });
+
+  const dashboard = dashboardQuery.data ?? emptyDashboard;
+  const { sections, students, levels, tests, scores } = dashboard;
+  const studentTotal = students.length;
+  const sectionTotal = sections.length;
+  const loading = dashboardQuery.isPending;
+  const error =
+    dashboardQuery.error instanceof Error
+      ? dashboardQuery.error.message
+      : dashboardQuery.error
+        ? "Unable to load the teacher dashboard."
+        : "";
+  const charts = useMemo(
+    () => GetCharts(levels, tests, scores),
+    [levels, scores, tests]
+  );
 
   useEffect(() => {
     const channel = supabase
-      .channel("chart-changes")
+      .channel("chartChanges")
       .on(
         "postgres_changes",
         {
@@ -224,7 +99,9 @@ setCharts([
           table: "StudentAssessment",
         },
         () => {
-          setReload((current) => current + 1);
+          queryClient.invalidateQueries({
+            queryKey: teacherDashboardQueryKey,
+          });
         }
       )
       .subscribe();
@@ -232,19 +109,21 @@ setCharts([
     return () => {
       supabase.removeChannel(channel);
     };
-  }, []);
+  }, [queryClient]);
 
-  function getData(index) {
+  function GetData(index) {
     const level = levels[index];
 
     if (!level) {
-      return makeData([]);
+      return MakeData([]);
     }
 
-    const test = tests.find((item) => item.levelID === level.levelID);
+    const test = tests.find(
+      (item) => item.levelID === level.levelID
+    );
 
     if (!test) {
-      return makeData([]);
+      return MakeData([]);
     }
 
     let scoreList = scores.filter(
@@ -263,10 +142,10 @@ setCharts([
       );
     }
 
-    return makeData(scoreList);
+    return MakeData(scoreList);
   }
 
-  function GetCompareData(sectionid) {
+  function GetCompareData(sectionID) {
     const data = Array.from({ length: 16 }, (_, score) => ({
       score,
       students: 0,
@@ -281,10 +160,10 @@ setCharts([
       return data;
     }
 
-    const studentids = new Set(
+    const studentIDs = new Set(
       students
         .filter((student) =>
-          String(student.sectionID) === String(sectionid)
+          String(student.sectionID) === String(sectionID)
         )
         .map((student) => student.studentID)
     );
@@ -295,7 +174,7 @@ setCharts([
       if (
         item.assessmentID !== test.assessmentID ||
         Number(item.totalQuestions) !== 15 ||
-        !studentids.has(item.studentID) ||
+        !studentIDs.has(item.studentID) ||
         item.score === null ||
         item.score === undefined ||
         item.score === ""
@@ -316,12 +195,12 @@ setCharts([
     }));
   }
 
-  function openGraph(index) {
+  function OpenGraph(index) {
     setSection("all");
     setActive(index);
   }
 
-  function closeGraph() {
+  function CloseGraph() {
     setActive(null);
   }
 
@@ -334,9 +213,7 @@ setCharts([
 
             <div className="totaldetails">
               <h2>Total Students</h2>
-              <p>
-                {loading ? "Loading..." : studentTotal}
-              </p>
+              <p>{loading ? "Loading..." : studentTotal}</p>
             </div>
           </div>
 
@@ -345,14 +222,12 @@ setCharts([
 
             <div className="totaldetails">
               <h2>Total Sections</h2>
-              <p>
-                {loading ? "Loading..." : sectionTotal}
-              </p>
+              <p>{loading ? "Loading..." : sectionTotal}</p>
             </div>
           </div>
         </div>
 
-        {error && (<p className="dashboardmessage">{error}</p>)}
+        {error && <p className="dashboardmessage">{error}</p>}
 
         <div className="performance">
           <div className="performancehead">
@@ -373,17 +248,17 @@ setCharts([
             <ScoreGraph
               title="Lesson1"
               data={charts[0]}
-              onOpen={() => openGraph(0)}
+              onOpen={() => OpenGraph(0)}
             />
             <ScoreGraph
               title="Lesson2"
               data={charts[1]}
-              onOpen={() => openGraph(1)}
+              onOpen={() => OpenGraph(1)}
             />
             <ScoreGraph
               title="Lesson3"
               data={charts[2]}
-              onOpen={() => openGraph(2)}
+              onOpen={() => OpenGraph(2)}
             />
           </div>
         </div>
@@ -391,11 +266,11 @@ setCharts([
         {active !== null && (
           <GraphPopup
             title={`${branch} - Lesson ${active + 1}`}
-            data={getData(active)}
+            data={GetData(active)}
             sections={sections}
             section={section}
             onPick={setSection}
-            onClose={closeGraph}
+            onClose={CloseGraph}
             GetCompareData={GetCompareData}
           />
         )}
