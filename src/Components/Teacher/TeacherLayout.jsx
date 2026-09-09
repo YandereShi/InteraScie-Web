@@ -1,52 +1,50 @@
 import "../../css/TeacherLayout.css";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
+import {
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { Outlet, useNavigate } from "react-router";
 import { supabase } from "../../lib/supabase";
+import { GetTeacherProfile } from "../../lib/staffQueries";
 import TeacherSidebar from "./TeacherSideBar";
 
 function TeacherLayout() {
   const navigate = useNavigate();
-  const [loading, setLoading] = useState(true);
-  const [teacher, setTeacher] = useState(null);
+  const queryClient = useQueryClient();
+
+  const {
+    data: teacher,
+    error,
+    isPending,
+  } = useQuery({
+    queryKey: ["TeacherProfile"],
+    queryFn: GetTeacherProfile,
+    staleTime: 30 * 60 * 1000,
+  });
 
   useEffect(() => {
-    async function checkTeacher() {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-
-      if (!user) {
-        navigate("/", { replace: true });
-        return;
-      }
-
-      const { data: staff, error } = await supabase
-        .from("SchoolStaff")
-        .select("firstName, lastName, role")
-        .eq("authUserID", user.id)
-        .single();
-
-      if (error || staff.role !== "teacher") {
-        await supabase.auth.signOut();
-        navigate("/", { replace: true });
-        return;
-      }
-
-      setTeacher(staff);
-      setLoading(false);
+    if (!error) {
+      return;
     }
 
-    checkTeacher();
-  }, [navigate]);
+    async function RedirectInvalidTeacher() {
+      queryClient.clear();
+      await supabase.auth.signOut();
+      navigate("/", { replace: true });
+    }
 
-  if (loading) {
+    RedirectInvalidTeacher();
+  }, [error, navigate, queryClient]);
+
+  if (isPending || !teacher) {
     return <p>Loading...</p>;
   }
 
   return (
     <div className="teacherlayout">
       <TeacherSidebar teacher={teacher} />
-      <Outlet />
+      <Outlet context={{ teacher }} />
     </div>
   );
 }

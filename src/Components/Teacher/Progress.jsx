@@ -1,95 +1,45 @@
 import "../../css/Progress.css";
-import { useCallback, useEffect, useState } from "react";
+import {useEffect,useMemo,useState,} from "react";
+import {useMutation,useQuery,useQueryClient,} from "@tanstack/react-query";
+import { useOutletContext } from "react-router";
 import { FaCheck } from "react-icons/fa";
 import { TbProgress } from "react-icons/tb";
-import {
-  InvokeStudentManagement,
-  supabase,
-} from "../../lib/supabase";
+import { supabase } from "../../lib/supabase";
+import {GetLessonAccess,GetProgressOptions,GetSectionProgress,UpdateLessonAccess,} from "../../lib/progressQueries";
 import TeacherPage from "./TeacherPage";
 
 const maxRows = 10;
 const maxLessons = 3;
 const maxTasks = 3;
+const emptyList = [];
 
 function Progress() {
-  const [sections, setSections] = useState([]);
-  const [section, setSection] = useState("");
-  const [levels, setLevels] = useState([]);
-  const [branch, setBranch] = useState("");
-  const [students, setStudents] = useState([]);
-  const [records, setRecords] = useState([]);
-  const [lessonAccess, setLessonAccess] = useState({});
-  const [savingLesson, setSavingLesson] = useState(null);
+  const { teacher } = useOutletContext();
+  const queryClient = useQueryClient();
+  const [selectedSection, setSelectedSection] = useState("");
+  const [selectedBranch, setSelectedBranch] = useState("");
   const [page, setPage] = useState(1);
-  const [loading, setLoading] = useState(true);
-  const [ready, setReady] = useState(false);
-  const [error, setError] = useState("");
 
-  const LoadPage = useCallback(async () => {
-    setLoading(true);
-    setError("");
+  const optionsQuery = useQuery({
+    queryKey: [
+      "ProgressOptions",
+      teacher.staffID,
+    ],
+    queryFn: () =>
+      GetProgressOptions(teacher.staffID),
+    staleTime: 30 * 60 * 1000,
+  });
 
-    const {
-      data: { user },
-      error: userError,
-    } = await supabase.auth.getUser();
+  const sections =
+    optionsQuery.data?.sections ?? emptyList;
 
-    if (userError || !user) {
-      setError("Your login session was not found.");
-      setLoading(false);
-      setReady(true);
-      return;
-    }
+  const levels =
+    optionsQuery.data?.levels ?? emptyList;
 
-    const { data: staff, error: staffError } =
-      await supabase
-        .from("SchoolStaff")
-        .select("staffID")
-        .eq("authUserID", user.id)
-        .eq("role", "teacher")
-        .single();
-
-    if (staffError || !staff) {
-      console.error(staffError?.message);
-      setError("Your teacher account was not found.");
-      setLoading(false);
-      setReady(true);
-      return;
-    }
-
-    const [sectionResult, levelResult] =
-      await Promise.all([
-        supabase
-          .from("Section")
-          .select("sectionID, sectionName, isShared")
-          .eq("staffID", staff.staffID)
-          .order("sectionName", { ascending: true }),
-        supabase
-          .from("Level")
-          .select("levelID, branchName")
-          .order("branchName", { ascending: true })
-          .order("levelID", { ascending: true }),
-      ]);
-
-    if (sectionResult.error || levelResult.error) {
-      console.error(
-        sectionResult.error?.message ||
-          levelResult.error?.message
-      );
-      setError("Unable to load progress options.");
-      setLoading(false);
-      setReady(true);
-      return;
-    }
-
-    const sectionList = (sectionResult.data ?? []).filter(
-      (item) => !item.isShared
-    );
-    const levelList = levelResult.data ?? [];
-    const branchList = [
+  const branches = useMemo(() => {
+    return [
       ...new Set(
-        levelList
+        levels
           .map((item) => item.branchName)
           .filter(Boolean)
       ),
@@ -104,138 +54,206 @@ function Progress() {
 
       return first.localeCompare(second);
     });
+  }, [levels]);
 
-    setSections(sectionList);
-    setLevels(levelList);
-    setSection(String(sectionList[0]?.sectionID ?? ""));
-    setBranch(branchList[0] ?? "");
-    setReady(true);
+  const section = sections.some(
+    (item) =>
+      String(item.sectionID) ===
+      selectedSection
+  )
+    ? selectedSection
+    : String(sections[0]?.sectionID ?? "");
 
-    if (sectionList.length === 0) {
-      setLoading(false);
-    }
-  }, []);
+  const branch = branches.includes(
+    selectedBranch
+  )
+    ? selectedBranch
+    : branches[0] ?? "";
 
-  const LoadStudents = useCallback(async () => {
-    if (!ready) {
-      return;
-    }
+  const lessons = useMemo(() => {
+    return levels
+      .filter(
+        (item) =>
+          item.branchName === branch
+      )
+      .slice(0, maxLessons);
+  }, [branch, levels]);
 
-    if (!section) {
-      setStudents([]);
-      setRecords([]);
-      setLessonAccess({});
-      setLoading(false);
-      return;
-    }
+  const lessonIDs = useMemo(() => {
+    return lessons.map(
+      (lesson) => lesson.levelID
+    );
+  }, [lessons]);
 
-    setLoading(true);
-    setError("");
+  const sectionID = Number(section) || 0;
 
-    let studentResult;
-    let accessResult;
+  const lessonAccessQuery = useQuery({
+    queryKey: [
+      "LessonAccess",
+      sectionID,
+    ],
+    queryFn: () =>
+      GetLessonAccess(sectionID),
+    enabled: sectionID > 0,
+    staleTime: 5 * 60 * 1000,
+  });
 
-    try {
-      [studentResult, accessResult] = await Promise.all([
-        supabase
-          .from("Student")
-          .select("studentID, firstName, lastName")
-          .eq("sectionID", section)
-          .order("lastName", { ascending: true })
-          .order("firstName", { ascending: true }),
-        InvokeStudentManagement("GetLessonAccess", {
-          sectionID: Number(section),
-        }),
-      ]);
-    } catch (requestError) {
-      console.error(requestError);
-      setStudents([]);
-      setRecords([]);
-      setLessonAccess({});
-      setError(
-        requestError instanceof Error
-          ? requestError.message
-          : "Unable to load lesson access."
-      );
-      setLoading(false);
-      return;
-    }
+  const progressQuery = useQuery({
+    queryKey: [
+      "SectionProgress",
+      sectionID,
+      branch,
+    ],
+    queryFn: () =>
+      GetSectionProgress(
+        sectionID,
+        lessonIDs
+      ),
+    enabled:
+      sectionID > 0 &&
+      lessonIDs.length > 0,
+    staleTime: 30 * 1000,
+  });
 
-    const { data, error: studentError } = studentResult;
-
-    if (studentError) {
-      console.error(studentError.message);
-      setError("Unable to load students.");
-      setLoading(false);
-      return;
-    }
-
+  const lessonAccess = useMemo(() => {
     const accessMap = {};
 
-    for (const item of accessResult.lessonAccess ?? []) {
-      if (item.isEnabled === true) {
-        accessMap[item.levelID] = true;
-      }
+    for (
+      const item of
+        lessonAccessQuery.data ?? emptyList
+    ) {
+      accessMap[item.levelID] =
+        item.isEnabled === true;
     }
 
-    setLessonAccess(accessMap);
+    return accessMap;
+  }, [lessonAccessQuery.data]);
 
-    const studentList = data ?? [];
-    const lessonList = levels
-      .filter((item) => item.branchName === branch)
-      .slice(0, maxLessons);
-    let progressList = [];
+  const lessonMutation = useMutation({
+    mutationFn: ({
+      sectionID: selectedSectionID,
+      levelID,
+      isEnabled,
+    }) =>
+      UpdateLessonAccess(
+        selectedSectionID,
+        levelID,
+        isEnabled
+      ),
+    onMutate: async ({
+      sectionID: selectedSectionID,
+      levelID,
+      isEnabled,
+    }) => {
+      const queryKey = [
+        "LessonAccess",
+        selectedSectionID,
+      ];
 
-    if (studentList.length > 0 && lessonList.length > 0) {
-      const studentIds = studentList.map(
-        (student) => student.studentID
+      await queryClient.cancelQueries({
+        queryKey,
+      });
+
+      const previous =
+        queryClient.getQueryData(queryKey);
+
+      queryClient.setQueryData(
+        queryKey,
+        (current = []) => {
+          let found = false;
+
+          const updated = current.map(
+            (item) => {
+              if (item.levelID !== levelID) {
+                return item;
+              }
+
+              found = true;
+
+              return {
+                ...item,
+                isEnabled,
+              };
+            }
+          );
+
+          if (found) {
+            return updated;
+          }
+
+          return [
+            ...updated,
+            {
+              sectionID: selectedSectionID,
+              levelID,
+              isEnabled,
+            },
+          ];
+        }
       );
-      const lessonIds = lessonList.map(
-        (lesson) => lesson.levelID
-      );
 
-      const { data: progressData, error: progressError } =
-        await supabase
-          .from("Progress")
-          .select("studentID, levelID, savepoint, status")
-          .in("studentID", studentIds)
-          .in("levelID", lessonIds);
+      return {
+        previous,
+        queryKey,
+      };
+    },
+    onError: (
+      mutationError,
+      variables,
+      mutationContext
+    ) => {
+      console.error(mutationError);
 
-      if (progressError) {
-        console.error(progressError.message);
-        setError("Unable to load student progress.");
-        setLoading(false);
-        return;
+      if (mutationContext) {
+        queryClient.setQueryData(
+          mutationContext.queryKey,
+          mutationContext.previous
+        );
       }
+    },
+    onSuccess: (
+      data,
+      variables
+    ) => {
+      const queryKey = [
+        "LessonAccess",
+        variables.sectionID,
+      ];
 
-      progressList = progressData ?? [];
+      queryClient.setQueryData(
+        queryKey,
+        (current = []) =>
+          current.map((item) =>
+            item.levelID === variables.levelID
+              ? {
+                  ...item,
+                  isEnabled:
+                    data.isEnabled === true,
+                }
+              : item
+          )
+      );
+    },
+  });
+
+  useEffect(() => {
+    if (
+      sectionID <= 0 ||
+      !branch
+    ) {
+      return;
     }
 
-    setStudents(studentList);
-    setRecords(progressList);
-    setPage(1);
-    setLoading(false);
-  }, [branch, levels, ready, section]);
+    const queryKey = [
+      "SectionProgress",
+      sectionID,
+      branch,
+    ];
 
-  useEffect(() => {
-    const timer = window.setTimeout(() => {
-      LoadPage();
-    }, 0);
-
-    return () => window.clearTimeout(timer);
-  }, [LoadPage]);
-
-  useEffect(() => {
-    const timer = window.setTimeout(() => {
-      LoadStudents();
-    }, 0);
-
-    return () => window.clearTimeout(timer);
-  }, [LoadStudents]);
-
-  useEffect(() => {
     const channel = supabase
-      .channel("progress-changes")
+      .channel(
+        `progresschanges${sectionID}${branch}`
+      )
       .on(
         "postgres_changes",
         {
@@ -243,8 +261,32 @@ function Progress() {
           schema: "public",
           table: "Progress",
         },
-        () => {
-          LoadStudents();
+        (payload) => {
+          const progressData =
+            queryClient.getQueryData(
+              queryKey
+            );
+
+          const changedStudentID =
+            payload.new?.studentID ??
+            payload.old?.studentID;
+
+          const isCurrentStudent =
+            progressData?.students?.some(
+              (student) =>
+                student.studentID ===
+                changedStudentID
+            );
+
+          if (
+            !changedStudentID ||
+            isCurrentStudent
+          ) {
+            queryClient.invalidateQueries({
+              queryKey,
+              exact: true,
+            });
+          }
         }
       )
       .subscribe();
@@ -252,81 +294,79 @@ function Progress() {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [LoadStudents]);
+  }, [
+    branch,
+    queryClient,
+    sectionID,
+  ]);
 
   function PickSection(event) {
-    setSection(event.target.value);
+    setSelectedSection(event.target.value);
     setPage(1);
   }
 
   function PickBranch(event) {
-    setBranch(event.target.value);
+    setSelectedBranch(event.target.value);
     setPage(1);
   }
 
-  async function ToggleLessonAccess(levelID) {
+  function ToggleLessonAccess(levelID) {
     if (
-      !section ||
+      !sectionID ||
       !levelID ||
-      savingLesson !== null
+      lessonMutation.isPending
     ) {
       return;
     }
 
-    const isEnabled = !lessonAccess[levelID];
-
-    setSavingLesson(levelID);
-    setError("");
-
-    try {
-      await InvokeStudentManagement(
-        "SetLessonAccess",
-        {
-          sectionID: Number(section),
-          levelID,
-          isEnabled,
-        }
-      );
-
-      setLessonAccess((current) => ({
-        ...current,
-        [levelID]: isEnabled,
-      }));
-    } catch (toggleError) {
-      console.error(toggleError);
-      setError(
-        toggleError instanceof Error
-          ? toggleError.message
-          : "Unable to change lesson access."
-      );
-    } finally {
-      setSavingLesson(null);
-    }
+    lessonMutation.mutate({
+      sectionID,
+      levelID,
+      isEnabled:
+        !lessonAccess[levelID],
+    });
   }
 
-  const branches = [
-    ...new Set(
-      levels
-        .map((item) => item.branchName)
-        .filter(Boolean)
-    ),
-  ].sort((first, second) => {
-    if (first === "Chemistry") {
-      return -1;
-    }
+  const students =
+    progressQuery.data?.students ??
+    emptyList;
 
-    if (second === "Chemistry") {
-      return 1;
-    }
+  const records =
+    progressQuery.data?.records ??
+    emptyList;
 
-    return first.localeCompare(second);
-  });
+  const loading =
+    optionsQuery.isPending ||
+    (
+      sections.length > 0 &&
+      sectionID === 0
+    ) ||
+    (
+      sectionID > 0 &&
+      (
+        lessonAccessQuery.isPending ||
+        progressQuery.isPending
+      )
+    );
 
-  const lessons = levels
-    .filter((item) => item.branchName === branch)
-    .slice(0, maxLessons);
+  const requestError =
+    optionsQuery.error ||
+    lessonAccessQuery.error ||
+    progressQuery.error ||
+    lessonMutation.error;
 
-  function GetIcon(studentID, levelID, taskIndex) {
+  const error =
+    requestError instanceof Error
+      ? requestError.message
+      : requestError
+        ? "Unable to load progress."
+        : "";
+
+  function GetIcon(
+    studentID,
+    levelID,
+    taskIndex
+  ) {
     const record = records.find(
       (item) =>
         item.studentID === studentID &&
@@ -337,13 +377,19 @@ function Progress() {
       return null;
     }
 
-    const savepoint = Number(record.savepoint);
+    const savepoint = Number(
+      record.savepoint
+    );
+
     const finished =
       String(record.status ?? "")
         .trim()
         .toLowerCase() === "finished";
 
-    if (finished || taskIndex < savepoint - 1) {
+    if (
+      finished ||
+      taskIndex < savepoint - 1
+    ) {
       return (
         <FaCheck
           className="progressicon progressdone"
@@ -370,9 +416,18 @@ function Progress() {
     1,
     Math.ceil(students.length / maxRows)
   );
+
   const first = (page - 1) * maxRows;
-  const shown = students.slice(first, first + maxRows);
-  const empty = Math.max(0, maxRows - shown.length);
+
+  const shown = students.slice(
+    first,
+    first + maxRows
+  );
+
+  const empty = Math.max(
+    0,
+    maxRows - shown.length
+  );
 
   return (
     <TeacherPage title="Progress">
@@ -382,14 +437,21 @@ function Progress() {
             value={branch}
             onChange={PickBranch}
             aria-label="Progress subject"
-            disabled={branches.length === 0}
+            disabled={
+              branches.length === 0
+            }
           >
             {branches.length === 0 && (
-              <option value="">No subjects</option>
+              <option value="">
+                No subjects
+              </option>
             )}
 
             {branches.map((item) => (
-              <option value={item} key={item}>
+              <option
+                value={item}
+                key={item}
+              >
                 {item}
               </option>
             ))}
@@ -400,9 +462,15 @@ function Progress() {
           <table className="progresstable">
             <colgroup>
               <col className="progressname" />
+
               {Array.from(
-                { length: maxLessons * maxTasks },
-                (_, index) => <col key={index} />
+                {
+                  length:
+                    maxLessons * maxTasks,
+                },
+                (_, index) => (
+                  <col key={index} />
+                )
               )}
             </colgroup>
 
@@ -415,11 +483,13 @@ function Progress() {
                     aria-label="Progress section"
                     disabled={
                       sections.length === 0 ||
-                      savingLesson !== null
+                      lessonMutation.isPending
                     }
                   >
                     {sections.length === 0 && (
-                      <option value="">No sections</option>
+                      <option value="">
+                        No sections
+                      </option>
                     )}
 
                     {sections.map((item) => (
@@ -436,9 +506,14 @@ function Progress() {
                 {Array.from(
                   { length: maxLessons },
                   (_, index) => (
-                    <th colSpan={maxTasks} key={index}>
+                    <th
+                      colSpan={maxTasks}
+                      key={index}
+                    >
                       <div className="progresslessonhead">
-                        <span>Lesson {index + 1}</span>
+                        <span>
+                          Lesson {index + 1}
+                        </span>
 
                         <label className="progressswitch">
                           <input
@@ -446,29 +521,33 @@ function Progress() {
                             checked={Boolean(
                               lessons[index] &&
                                 lessonAccess[
-                                  lessons[index].levelID
+                                  lessons[index]
+                                    .levelID
                                 ]
                             )}
                             disabled={
                               loading ||
                               !lessons[index] ||
-                              savingLesson !== null
+                              lessonMutation.isPending
                             }
                             onChange={() =>
                               ToggleLessonAccess(
-                                lessons[index]?.levelID
+                                lessons[index]
+                                  ?.levelID
                               )
                             }
                             aria-label={`Turn Lesson ${
                               index + 1
                             } ${
                               lessonAccess[
-                                lessons[index]?.levelID
+                                lessons[index]
+                                  ?.levelID
                               ]
                                 ? "off"
                                 : "on"
                             }`}
                           />
+
                           <span className="progressslider"></span>
                         </label>
                       </div>
@@ -482,33 +561,105 @@ function Progress() {
 
                 {branch === "Chemistry" && (
                   <>
-                    <th><p>Scientific Skills</p></th>
-                    <th><p>Scientific Method</p></th>
-                    <th><p>Scientific Model</p></th>
+                    <th>
+                      <p>Scientific Skills</p>
+                    </th>
+                    <th>
+                      <p>Scientific Method</p>
+                    </th>
+                    <th>
+                      <p>Scientific Model</p>
+                    </th>
 
-                    <th><p>State of Matter</p></th>
-                    <th><p>Particles Motion</p></th>
-                    <th><p>Phase Change</p></th>
+                    <th>
+                      <p>State of Matter</p>
+                    </th>
+                    <th>
+                      <p>Particles Motion</p>
+                    </th>
+                    <th>
+                      <p>Phase Change</p>
+                    </th>
 
-                    <th><p>Solution</p></th>
-                    <th><p>Concen- tration</p></th>
-                    <th><p>Solubility</p></th>
+                    <th>
+                      <p>Solution</p>
+                    </th>
+                    <th>
+                      <p>Concentration</p>
+                    </th>
+                    <th>
+                      <p>Solubility</p>
+                    </th>
                   </>
                 )}
 
                 {branch === "Biology" && (
                   <>
-                    <th><p>Microscope</p></th>
-                    <th><p>Cellular</p></th>
-                    <th><p>Cell Structure</p></th>
+                    <th>
+                      <p>Microscope</p>
+                    </th>
+                    <th>
+                      <p>Cellular</p>
+                    </th>
+                    <th>
+                      <p>Cell Structure</p>
+                    </th>
 
-                    <th><p>Mitosis</p></th>
-                    <th><p>Meiosis</p></th>
-                    <th><p>Asexual & Sexual</p></th>
+                    <th>
+                      <p>Mitosis</p>
+                    </th>
+                    <th>
+                      <p>Meiosis</p>
+                    </th>
+                    <th>
+                      <p>Asexual and Sexual</p>
+                    </th>
 
-                    <th><p>Biological Organization</p></th>
-                    <th><p>Energy Flow</p></th>
-                    <th><p>Review</p></th>
+                    <th>
+                      <p>
+                        Biological Organization
+                      </p>
+                    </th>
+                    <th>
+                      <p>Energy Flow</p>
+                    </th>
+                    <th>
+                      <p>Review</p>
+                    </th>
+                  </>
+                )}
+
+                {branch === "Physics" && (
+                  <>
+                    <th>
+                      <p>Task 1</p>
+                    </th>
+                    <th>
+                      <p>Task 2</p>
+                    </th>
+                    <th>
+                      <p>Task 3</p>
+                    </th>
+
+                    <th>
+                      <p>Task 1</p>
+                    </th>
+                    <th>
+                      <p>Task 2</p>
+                    </th>
+                    <th>
+                      <p>Task 3</p>
+                    </th>
+
+                    <th>
+                      <p>Task 1</p>
+                    </th>
+                    <th>
+                      <p>Task 2</p>
+                    </th>
+                    <th>
+                      <p>Task 3</p>
+                    </th>
                   </>
                 )}
               </tr>
@@ -517,7 +668,10 @@ function Progress() {
             <tbody>
               {loading && (
                 <tr>
-                  <td colSpan="10" className="progressnote">
+                  <td
+                    colSpan="10"
+                    className="progressnote"
+                  >
                     Loading progress...
                   </td>
                 </tr>
@@ -525,38 +679,48 @@ function Progress() {
 
               {!loading && error && (
                 <tr>
-                  <td colSpan="10" className="progressnote">
+                  <td
+                    colSpan="10"
+                    className="progressnote"
+                  >
                     {error}
-                  </td>
-                </tr>
-              )}
-
-              {!loading && !error && shown.length === 0 && (
-                <tr>
-                  <td colSpan="10" className="progressnote">
-                    No students found.
                   </td>
                 </tr>
               )}
 
               {!loading &&
                 !error &&
+                shown.length === 0 && (
+                  <tr>
+                    <td
+                      colSpan="10"
+                      className="progressnote"
+                    >
+                      No students found.
+                    </td>
+                  </tr>
+                )}
+
+              {!loading &&
+                !error &&
                 shown.map((student) => (
                   <tr key={student.studentID}>
                     <td>
-                      {student.lastName}, {student.firstName}
+                      {student.lastName},{" "}
+                      {student.firstName}
                     </td>
 
                     {Array.from(
                       { length: maxLessons },
                       (_, lessonIndex) => {
-                        const lesson = lessons[lessonIndex];
+                        const lesson =
+                          lessons[lessonIndex];
 
                         return Array.from(
                           { length: maxTasks },
                           (_, taskIndex) => (
                             <td
-                              key={`${lessonIndex}-${taskIndex}`}
+                              key={`${lessonIndex}${taskIndex}`}
                             >
                               {lesson &&
                                 GetIcon(
@@ -574,21 +738,30 @@ function Progress() {
 
               {!loading &&
                 !error &&
-                Array.from({ length: empty }, (_, rowIndex) => (
-                  <tr
-                    className="progressempty"
-                    key={`empty-${rowIndex}`}
-                  >
-                    <td>&nbsp;</td>
+                Array.from(
+                  { length: empty },
+                  (_, rowIndex) => (
+                    <tr
+                      className="progressempty"
+                      key={`empty${rowIndex}`}
+                    >
+                      <td>&nbsp;</td>
 
-                    {Array.from(
-                      { length: maxLessons * maxTasks },
-                      (_, cellIndex) => (
-                        <td key={cellIndex}></td>
-                      )
-                    )}
-                  </tr>
-                ))}
+                      {Array.from(
+                        {
+                          length:
+                            maxLessons *
+                            maxTasks,
+                        },
+                        (_, cellIndex) => (
+                          <td
+                            key={cellIndex}
+                          ></td>
+                        )
+                      )}
+                    </tr>
+                  )
+                )}
             </tbody>
           </table>
         </div>
@@ -599,7 +772,9 @@ function Progress() {
             aria-label="Previous page"
             disabled={page === 1}
             onClick={() =>
-              setPage((current) => current - 1)
+              setPage(
+                (current) => current - 1
+              )
             }
           >
             &lt;
@@ -612,7 +787,9 @@ function Progress() {
             aria-label="Next page"
             disabled={page === pages}
             onClick={() =>
-              setPage((current) => current + 1)
+              setPage(
+                (current) => current + 1
+              )
             }
           >
             &gt;
