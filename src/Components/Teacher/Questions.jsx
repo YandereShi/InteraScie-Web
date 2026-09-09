@@ -1,202 +1,21 @@
 import "../../css/Questions.css";
-import { useCallback, useEffect, useState } from "react";
+import { useState } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "../../lib/supabase";
+import { GetAssessmentOptions, GetAssessmentQuestions, GetAssessmentQuestionsQueryKey, assessmentOptionsQueryKey } from "../../lib/assessmentQueries";
+import { teacherDashboardQueryKey } from "../../lib/dashboardQueries";
 import QuestionCard from "./QuestionCard";
 import QuestionPopup from "./QuestionPopup";
 import { limits } from "../../lib/inputLimits";
 
 const maxCards = 6;
+const emptyQuestions = {
+  test: null,
+  questions: [],
+};
 
-function Questions({ onBack }) {
-  const [levels, setLevels] = useState([]);
-  const [branch, setBranch] = useState("");
-  const [lesson, setLesson] = useState("");
-  const [staff, setStaff] = useState("");
-  const [test, setTest] = useState(null);
-  const [questions, setQuestions] = useState([]);
-  const [selected, setSelected] = useState([]);
-  const [current, setCurrent] = useState(null);
-  const [number, setNumber] = useState(0);
-  const [page, setPage] = useState(1);
-  const [open, setOpen] = useState(false);
-  const [loading, setLoading] = useState(true);
-  const [ready, setReady] = useState(false);
-  const [error, setError] = useState("");
-
-  const loadPage = useCallback(async () => {
-    setLoading(true);
-    setError("");
-
-    const {
-      data: { user },
-      error: userError,
-    } = await supabase.auth.getUser();
-
-    if (userError || !user) {
-      setError("Your login session was not found.");
-      setLoading(false);
-      setReady(true);
-      return;
-    }
-
-    const { data: staffData, error: staffError } =
-      await supabase
-        .from("SchoolStaff")
-        .select("staffID")
-        .eq("authUserID", user.id)
-        .eq("role", "teacher")
-        .single();
-
-    if (staffError || !staffData) {
-      console.error(staffError?.message);
-      setError("Your teacher account was not found.");
-      setLoading(false);
-      setReady(true);
-      return;
-    }
-
-    const { data, error: levelError } = await supabase
-      .from("Level")
-      .select("levelID, levelName, branchName")
-      .order("branchName", { ascending: true })
-      .order("levelID", { ascending: true });
-
-    if (levelError) {
-      console.error(levelError.message);
-      setError("Unable to load branches and lessons.");
-      setLoading(false);
-      setReady(true);
-      return;
-    }
-
-    const levelList = data ?? [];
-    const branchList = [
-      ...new Set(
-        levelList
-          .map((item) => item.branchName)
-          .filter(Boolean)
-      ),
-    ].sort((first, second) => {
-      if (first === "Chemistry") {
-        return -1;
-      }
-
-      if (second === "Chemistry") {
-        return 1;
-      }
-
-      return first.localeCompare(second);
-    });
-    const firstBranch = branchList[0];
-    const firstLesson = levelList.find(
-      (item) => item.branchName === firstBranch
-    );
-
-    setStaff(staffData.staffID);
-    setLevels(levelList);
-    setBranch(firstBranch ?? "");
-    setLesson(String(firstLesson?.levelID ?? ""));
-    setReady(true);
-
-    if (!firstBranch || !firstLesson) {
-      setLoading(false);
-    }
-  }, []);
-
-  const loadQuestions = useCallback(async () => {
-    if (!ready) {
-      return;
-    }
-
-    if (!lesson || !staff) {
-      setTest(null);
-      setQuestions([]);
-      setLoading(false);
-      return;
-    }
-
-    setLoading(true);
-    setError("");
-
-    const { data: testData, error: testError } =
-      await supabase
-        .from("Assessment")
-        .select("assessmentID, levelID")
-        .eq("staffID", staff)
-        .eq("levelID", lesson)
-        .order("assessmentID", { ascending: true })
-        .limit(1)
-        .maybeSingle();
-
-    if (testError) {
-      console.error(testError.message);
-      setError("Unable to load the lesson assessment.");
-      setLoading(false);
-      return;
-    }
-
-    setTest(testData ?? null);
-
-    if (!testData) {
-      setQuestions([]);
-      setSelected([]);
-      setPage(1);
-      setLoading(false);
-      return;
-    }
-
-    const { data, error: questionError } = await supabase
-      .from("Question")
-      .select(`
-        questionID,
-        assessmentID,
-        text,
-        answer,
-        choice1,
-        choice2,
-        choice3
-      `)
-      .eq("assessmentID", testData.assessmentID)
-      .order("questionID", { ascending: true });
-
-    if (questionError) {
-      console.error(questionError.message);
-      setError("Unable to load questions.");
-      setLoading(false);
-      return;
-    }
-
-    const loadedQuestions = data ?? [];
-    const loadedPages = Math.max(
-      1,
-      Math.ceil(loadedQuestions.length / maxCards)
-    );
-
-    setQuestions(loadedQuestions);
-    setSelected([]);
-    setPage((currentPage) =>
-      Math.min(currentPage, loadedPages)
-    );
-    setLoading(false);
-  }, [lesson, ready, staff]);
-
-  useEffect(() => {
-    const timer = window.setTimeout(() => {
-      loadPage();
-    }, 0);
-
-    return () => window.clearTimeout(timer);
-  }, [loadPage]);
-
-  useEffect(() => {
-    const timer = window.setTimeout(() => {
-      loadQuestions();
-    }, 0);
-
-    return () => window.clearTimeout(timer);
-  }, [loadQuestions]);
-
-  const branches = [
+function GetBranches(levels) {
+  return [
     ...new Set(
       levels
         .map((item) => item.branchName)
@@ -213,48 +32,114 @@ function Questions({ onBack }) {
 
     return first.localeCompare(second);
   });
+}
 
+function Questions({ onBack }) {
+  const queryClient = useQueryClient();
+  const [selectedBranch, setSelectedBranch] = useState("");
+  const [selectedLesson, setSelectedLesson] = useState("");
+  const [selected, setSelected] = useState([]);
+  const [current, setCurrent] = useState(null);
+  const [number, setNumber] = useState(0);
+  const [page, setPage] = useState(1);
+  const [open, setOpen] = useState(false);
+  const [actionError, setActionError] = useState("");
+
+  const optionsQuery = useQuery({
+    queryKey: assessmentOptionsQueryKey,
+    queryFn: GetAssessmentOptions,
+    staleTime: 5 * 60 * 1000,
+  });
+
+  const levels = optionsQuery.data?.levels ?? [];
+  const staffID = optionsQuery.data?.staffID ?? 0;
+  const branches = GetBranches(levels);
+  const branch = branches.includes(selectedBranch)
+    ? selectedBranch
+    : branches[0] ?? "";
   const lessons = levels.filter(
     (item) => item.branchName === branch
   );
+  const lesson = lessons.some(
+    (item) => String(item.levelID) === selectedLesson
+  )
+    ? selectedLesson
+    : String(lessons[0]?.levelID ?? "");
+  const levelID = Number(lesson) || 0;
+  const questionQueryKey = GetAssessmentQuestionsQueryKey(
+    staffID,
+    levelID
+  );
 
-  function pickBranch(event) {
-    const value = event.target.value;
-    const firstLesson = levels.find(
-      (item) => item.branchName === value
-    );
+  const questionsQuery = useQuery({
+    queryKey: questionQueryKey,
+    queryFn: () => GetAssessmentQuestions(staffID, levelID),
+    enabled: Boolean(staffID) && levelID > 0,
+    staleTime: 5 * 60 * 1000,
+  });
 
-    setBranch(value);
-    setLesson(String(firstLesson?.levelID ?? ""));
+  const questionData = questionsQuery.data ?? emptyQuestions;
+  const test = questionData.test;
+  const questions = questionData.questions;
+  const loading =
+    optionsQuery.isPending ||
+    (Boolean(staffID) &&
+      levelID > 0 &&
+      questionsQuery.isPending);
+  const requestError = optionsQuery.error || questionsQuery.error;
+  const queryError =
+    requestError instanceof Error
+      ? requestError.message
+      : requestError
+        ? "Unable to load questions."
+        : "";
+  const error = actionError || queryError;
+
+  function PickBranch(event) {
+    setSelectedBranch(event.target.value);
     setSelected([]);
     setPage(1);
   }
 
-  function pickLesson(event) {
-    setLesson(event.target.value);
+  function PickLesson(event) {
+    setSelectedLesson(event.target.value);
     setSelected([]);
     setPage(1);
   }
 
-  function openAdd() {
+  function OpenAdd() {
     setCurrent(null);
     setNumber(questions.length + 1);
     setOpen(true);
   }
 
-  function openEdit(question, questionNumber) {
+  function OpenEdit(question, questionNumber) {
     setCurrent(question);
     setNumber(questionNumber);
     setOpen(true);
   }
 
-  function closePopup() {
+  function ClosePopup() {
     setCurrent(null);
     setNumber(0);
     setOpen(false);
   }
 
-  async function saveQuestion(form) {
+  async function RefreshQuestions() {
+    setActionError("");
+
+    await Promise.all([
+      queryClient.invalidateQueries({
+        queryKey: questionQueryKey,
+        exact: true,
+      }),
+      queryClient.invalidateQueries({
+        queryKey: teacherDashboardQueryKey,
+      }),
+    ]);
+  }
+
+  async function SaveQuestion(form) {
     if (form.text.length > limits.question) {
       throw new Error(`Question must be ${limits.question} characters or fewer.`);
     }
@@ -269,19 +154,17 @@ function Questions({ onBack }) {
       const { data, error: testError } = await supabase
         .from("Assessment")
         .insert({
-          staffID: staff,
-          levelID: Number(lesson),
+          staffID,
+          levelID,
         })
         .select("assessmentID, levelID")
         .single();
 
       if (testError) {
-        console.error(testError.message);
         throw new Error("Unable to create the lesson assessment.");
       }
 
       activeTest = data;
-      setTest(data);
     }
 
     const correct = form.choices[form.answer];
@@ -305,15 +188,16 @@ function Questions({ onBack }) {
       : await supabase.from("Question").insert(payload);
 
     if (result.error) {
-      console.error(result.error.message);
       throw new Error("Unable to save the question.");
     }
 
-    await loadQuestions();
-    closePopup();
+    await RefreshQuestions();
+    setSelected([]);
+    setPage(1);
+    ClosePopup();
   }
 
-  function selectOne(questionID, isChecked) {
+  function SelectOne(questionID, isChecked) {
     if (isChecked) {
       setSelected((currentIDs) =>
         currentIDs.includes(questionID)
@@ -328,7 +212,7 @@ function Questions({ onBack }) {
     );
   }
 
-  function selectAll(event) {
+  function SelectAll(event) {
     if (event.target.checked) {
       setSelected(
         questions.map((question) => question.questionID)
@@ -339,7 +223,7 @@ function Questions({ onBack }) {
     setSelected([]);
   }
 
-  async function deleteQuestions() {
+  async function DeleteQuestions() {
     if (selected.length === 0) {
       return;
     }
@@ -358,20 +242,21 @@ function Questions({ onBack }) {
       .in("questionID", selected);
 
     if (deleteError) {
-      console.error(deleteError.message);
-      setError("Unable to delete the selected questions.");
+      setActionError("Unable to delete the selected questions.");
       return;
     }
 
+    await RefreshQuestions();
     setSelected([]);
-    await loadQuestions();
+    setPage(1);
   }
 
   const pages = Math.max(
     1,
     Math.ceil(questions.length / maxCards)
   );
-  const first = (page - 1) * maxCards;
+  const activePage = Math.min(page, pages);
+  const first = (activePage - 1) * maxCards;
   const shown = questions.slice(first, first + maxCards);
   const allChecked =
     questions.length > 0 &&
@@ -385,7 +270,7 @@ function Questions({ onBack }) {
         <div className="questiontools">
           <select
             value={branch}
-            onChange={pickBranch}
+            onChange={PickBranch}
             aria-label="Question branch"
             disabled={branches.length === 0}
           >
@@ -402,7 +287,7 @@ function Questions({ onBack }) {
 
           <select
             value={lesson}
-            onChange={pickLesson}
+            onChange={PickLesson}
             aria-label="Question lesson"
             disabled={lessons.length === 0}
           >
@@ -430,7 +315,7 @@ function Questions({ onBack }) {
             type="button"
             className="questiondelete"
             disabled={selected.length === 0}
-            onClick={deleteQuestions}
+            onClick={DeleteQuestions}
           >
             Delete Selected
           </button>
@@ -463,8 +348,8 @@ function Questions({ onBack }) {
                 selected={selected.includes(
                   question.questionID
                 )}
-                onEdit={openEdit}
-                onSelect={selectOne}
+                onEdit={OpenEdit}
+                onSelect={SelectOne}
               />
             ))}
         </div>
@@ -475,7 +360,7 @@ function Questions({ onBack }) {
               type="checkbox"
               checked={allChecked}
               disabled={questions.length === 0}
-              onChange={selectAll}
+              onChange={SelectAll}
             />
             <span>Select All</span>
           </label>
@@ -484,7 +369,7 @@ function Questions({ onBack }) {
             <button
               type="button"
               aria-label="Previous page"
-              disabled={page === 1}
+              disabled={activePage === 1}
               onClick={() =>
                 setPage((currentPage) => currentPage - 1)
               }
@@ -492,12 +377,12 @@ function Questions({ onBack }) {
               &lt;
             </button>
 
-            <span>{page}</span>
+            <span>{activePage}</span>
 
             <button
               type="button"
               aria-label="Next page"
-              disabled={page === pages}
+              disabled={activePage === pages}
               onClick={() =>
                 setPage((currentPage) => currentPage + 1)
               }
@@ -521,8 +406,8 @@ function Questions({ onBack }) {
           type="button"
           className="questionadd"
           aria-label="Add question"
-          disabled={!lesson || !staff}
-          onClick={openAdd}
+          disabled={!lesson || !staffID}
+          onClick={OpenAdd}
         >
           +
         </button>
@@ -532,8 +417,8 @@ function Questions({ onBack }) {
         <QuestionPopup
           question={current}
           number={number}
-          onClose={closePopup}
-          onSave={saveQuestion}
+          onClose={ClosePopup}
+          onSave={SaveQuestion}
         />
       )}
     </section>
