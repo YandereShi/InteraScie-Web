@@ -71,6 +71,68 @@
   border-right: none;
 }
 
+.progresslessonhead {
+  height: 100%;
+  padding: 0 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.progressswitch {
+  position: relative;
+  width: 42px;
+  height: 24px;
+  display: inline-flex;
+  flex-shrink: 0;
+}
+
+.progressswitch input {
+  width: 0;
+  height: 0;
+  opacity: 0;
+}
+
+.progressslider {
+  position: absolute;
+  inset: 0;
+  background-color: #a5a5a5;
+  border-radius: 24px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.progressslider::before {
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  left: 3px;
+  top: 3px;
+  content: "";
+  background-color: #ffffff;
+  border-radius: 50%;
+  transition: transform 0.2s ease;
+}
+
+.progressswitch input:checked + .progressslider {
+  background-color: #00bf63;
+}
+
+.progressswitch input:checked + .progressslider::before {
+  transform: translateX(18px);
+}
+
+.progressswitch input:focus-visible + .progressslider {
+  outline: 3px solid rgba(0, 191, 99, 0.3);
+  outline-offset: 2px;
+}
+
+.progressswitch input:disabled + .progressslider {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
 .progresstop select {
   width: 100%;
   height: 100%;
@@ -208,11 +270,34 @@
   }
 
   .progresstable col {
-    width: 8.55%;
+    width: 9.22%;
   }
 
   .progresstable .progressname {
-    width: 23%;
+    width: 17%;
+  }
+
+  .progresslessonhead {
+    padding: 0 5px;
+    gap: 7px;
+  }
+
+  .progressswitch {
+    width: 36px;
+    height: 20px;
+  }
+
+  .progressslider {
+    border-radius: 20px;
+  }
+
+  .progressslider::before {
+    width: 14px;
+    height: 14px;
+  }
+
+  .progressswitch input:checked + .progressslider::before {
+    transform: translateX(16px);
   }
 
   .progresstable thead {

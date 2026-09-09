@@ -2,7 +2,10 @@ import "../../css/Progress.css";
 import { useCallback, useEffect, useState } from "react";
 import { FaCheck } from "react-icons/fa";
 import { TbProgress } from "react-icons/tb";
-import { supabase } from "../../lib/supabase";
+import {
+  InvokeStudentManagement,
+  supabase,
+} from "../../lib/supabase";
 import TeacherPage from "./TeacherPage";
 
 const maxRows = 10;
@@ -16,12 +19,14 @@ function Progress() {
   const [branch, setBranch] = useState("");
   const [students, setStudents] = useState([]);
   const [records, setRecords] = useState([]);
+  const [lessonAccess, setLessonAccess] = useState({});
+  const [savingLesson, setSavingLesson] = useState(null);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
   const [ready, setReady] = useState(false);
   const [error, setError] = useState("");
 
-  const loadPage = useCallback(async () => {
+  const LoadPage = useCallback(async () => {
     setLoading(true);
     setError("");
 
@@ -111,7 +116,7 @@ function Progress() {
     }
   }, []);
 
-  const loadStudents = useCallback(async () => {
+  const LoadStudents = useCallback(async () => {
     if (!ready) {
       return;
     }
@@ -119,6 +124,7 @@ function Progress() {
     if (!section) {
       setStudents([]);
       setRecords([]);
+      setLessonAccess({});
       setLoading(false);
       return;
     }
@@ -126,12 +132,36 @@ function Progress() {
     setLoading(true);
     setError("");
 
-    const { data, error: studentError } = await supabase
-      .from("Student")
-      .select("studentID, firstName, lastName")
-      .eq("sectionID", section)
-      .order("lastName", { ascending: true })
-      .order("firstName", { ascending: true });
+    let studentResult;
+    let accessResult;
+
+    try {
+      [studentResult, accessResult] = await Promise.all([
+        supabase
+          .from("Student")
+          .select("studentID, firstName, lastName")
+          .eq("sectionID", section)
+          .order("lastName", { ascending: true })
+          .order("firstName", { ascending: true }),
+        InvokeStudentManagement("GetLessonAccess", {
+          sectionID: Number(section),
+        }),
+      ]);
+    } catch (requestError) {
+      console.error(requestError);
+      setStudents([]);
+      setRecords([]);
+      setLessonAccess({});
+      setError(
+        requestError instanceof Error
+          ? requestError.message
+          : "Unable to load lesson access."
+      );
+      setLoading(false);
+      return;
+    }
+
+    const { data, error: studentError } = studentResult;
 
     if (studentError) {
       console.error(studentError.message);
@@ -139,6 +169,16 @@ function Progress() {
       setLoading(false);
       return;
     }
+
+    const accessMap = {};
+
+    for (const item of accessResult.lessonAccess ?? []) {
+      if (item.isEnabled === true) {
+        accessMap[item.levelID] = true;
+      }
+    }
+
+    setLessonAccess(accessMap);
 
     const studentList = data ?? [];
     const lessonList = levels
@@ -179,19 +219,19 @@ function Progress() {
 
   useEffect(() => {
     const timer = window.setTimeout(() => {
-      loadPage();
+      LoadPage();
     }, 0);
 
     return () => window.clearTimeout(timer);
-  }, [loadPage]);
+  }, [LoadPage]);
 
   useEffect(() => {
     const timer = window.setTimeout(() => {
-      loadStudents();
+      LoadStudents();
     }, 0);
 
     return () => window.clearTimeout(timer);
-  }, [loadStudents]);
+  }, [LoadStudents]);
 
   useEffect(() => {
     const channel = supabase
@@ -204,7 +244,7 @@ function Progress() {
           table: "Progress",
         },
         () => {
-          loadStudents();
+          LoadStudents();
         }
       )
       .subscribe();
@@ -212,16 +252,56 @@ function Progress() {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [loadStudents]);
+  }, [LoadStudents]);
 
-  function pickSection(event) {
+  function PickSection(event) {
     setSection(event.target.value);
     setPage(1);
   }
 
-  function pickBranch(event) {
+  function PickBranch(event) {
     setBranch(event.target.value);
     setPage(1);
+  }
+
+  async function ToggleLessonAccess(levelID) {
+    if (
+      !section ||
+      !levelID ||
+      savingLesson !== null
+    ) {
+      return;
+    }
+
+    const isEnabled = !lessonAccess[levelID];
+
+    setSavingLesson(levelID);
+    setError("");
+
+    try {
+      await InvokeStudentManagement(
+        "SetLessonAccess",
+        {
+          sectionID: Number(section),
+          levelID,
+          isEnabled,
+        }
+      );
+
+      setLessonAccess((current) => ({
+        ...current,
+        [levelID]: isEnabled,
+      }));
+    } catch (toggleError) {
+      console.error(toggleError);
+      setError(
+        toggleError instanceof Error
+          ? toggleError.message
+          : "Unable to change lesson access."
+      );
+    } finally {
+      setSavingLesson(null);
+    }
   }
 
   const branches = [
@@ -246,7 +326,7 @@ function Progress() {
     .filter((item) => item.branchName === branch)
     .slice(0, maxLessons);
 
-  function getIcon(studentID, levelID, taskIndex) {
+  function GetIcon(studentID, levelID, taskIndex) {
     const record = records.find(
       (item) =>
         item.studentID === studentID &&
@@ -300,7 +380,7 @@ function Progress() {
         <div className="progresssubject">
           <select
             value={branch}
-            onChange={pickBranch}
+            onChange={PickBranch}
             aria-label="Progress subject"
             disabled={branches.length === 0}
           >
@@ -331,9 +411,12 @@ function Progress() {
                 <th>
                   <select
                     value={section}
-                    onChange={pickSection}
+                    onChange={PickSection}
                     aria-label="Progress section"
-                    disabled={sections.length === 0}
+                    disabled={
+                      sections.length === 0 ||
+                      savingLesson !== null
+                    }
                   >
                     {sections.length === 0 && (
                       <option value="">No sections</option>
@@ -354,7 +437,41 @@ function Progress() {
                   { length: maxLessons },
                   (_, index) => (
                     <th colSpan={maxTasks} key={index}>
-                      Lesson {index + 1}
+                      <div className="progresslessonhead">
+                        <span>Lesson {index + 1}</span>
+
+                        <label className="progressswitch">
+                          <input
+                            type="checkbox"
+                            checked={Boolean(
+                              lessons[index] &&
+                                lessonAccess[
+                                  lessons[index].levelID
+                                ]
+                            )}
+                            disabled={
+                              loading ||
+                              !lessons[index] ||
+                              savingLesson !== null
+                            }
+                            onChange={() =>
+                              ToggleLessonAccess(
+                                lessons[index]?.levelID
+                              )
+                            }
+                            aria-label={`Turn Lesson ${
+                              index + 1
+                            } ${
+                              lessonAccess[
+                                lessons[index]?.levelID
+                              ]
+                                ? "off"
+                                : "on"
+                            }`}
+                          />
+                          <span className="progressslider"></span>
+                        </label>
+                      </div>
                     </th>
                   )
                 )}
@@ -442,7 +559,7 @@ function Progress() {
                               key={`${lessonIndex}-${taskIndex}`}
                             >
                               {lesson &&
-                                getIcon(
+                                GetIcon(
                                   student.studentID,
                                   lesson.levelID,
                                   taskIndex
