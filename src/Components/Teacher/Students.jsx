@@ -3,18 +3,18 @@ import StudentCard from "./StudentCard";
 import StudentPopup from "./StudentPopup";
 import BatchStudentPopup from "./BatchStudentPopup";
 import TeacherPage from "./TeacherPage";
-import { useCallback, useEffect, useState } from "react";
+import { useState } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { GetNameError } from "../../lib/nameValidation";
 import { limits } from "../../lib/inputLimits";
 import { InvokeStudentManagement } from "../../lib/supabase";
+import { GetStudents, studentQueryKey } from "../../lib/studentQueries";
 
 const maxCards = 12;
 
 function Students({ PageComponent = TeacherPage }) {
-  const [students, setStudents] = useState([]);
-  const [sections, setSections] = useState([]);
-  const [loadingStudents, setLoadingStudents] = useState(true);
-  const [studentError, setStudentError] = useState("");
+  const queryClient = useQueryClient();
+  const [actionError, setActionError] = useState("");
   const [selectedStudent, setSelectedStudent] = useState(null);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [isBatchPopupOpen, setIsBatchPopupOpen] = useState(false);
@@ -22,30 +22,31 @@ function Students({ PageComponent = TeacherPage }) {
   const [currentPage, setCurrentPage] = useState(1);
   const [search, setSearch] = useState("");
 
-  const LoadStudents = useCallback(async () => {
-    setLoadingStudents(true);
-    setStudentError("");
+  const studentsQuery = useQuery({
+    queryKey: studentQueryKey,
+    queryFn: GetStudents,
+    staleTime: 5 * 60 * 1000,
+  });
 
-    try {
-      const data = await InvokeStudentManagement("loadstudents");
-      setStudents(data.students ?? []);
-      setSections(data.sections ?? []);
-      setSelectedStudentIDs([]);
-    } catch (error) {
-      console.error(error.message);
-      setStudentError(error.message || "Unable to load students.");
-    } finally {
-      setLoadingStudents(false);
-    }
-  }, []);
+  const students = studentsQuery.data?.students ?? [];
+  const sections = studentsQuery.data?.sections ?? [];
+  const loadingStudents = studentsQuery.isPending;
+  const queryError =
+    studentsQuery.error instanceof Error
+      ? studentsQuery.error.message
+      : studentsQuery.error
+        ? "Unable to load students."
+        : "";
+  const studentError = actionError || queryError;
 
-  useEffect(() => {
-    const loadTimer = window.setTimeout(() => {
-      LoadStudents();
-    }, 0);
+  async function RefreshStudents() {
+    setActionError("");
 
-    return () => window.clearTimeout(loadTimer);
-  }, [LoadStudents]);
+    await queryClient.invalidateQueries({
+      queryKey: studentQueryKey,
+      exact: true,
+    });
+  }
 
   function OpenAddPopup() {
     setSelectedStudent(null);
@@ -84,7 +85,8 @@ function Students({ PageComponent = TeacherPage }) {
       students: batchData.students,
     });
 
-    await LoadStudents();
+    await RefreshStudents();
+    setSelectedStudentIDs([]);
     CloseBatchPopup();
 
     return batchResult;
@@ -118,7 +120,8 @@ function Students({ PageComponent = TeacherPage }) {
         : payload
     );
 
-    await LoadStudents();
+    await RefreshStudents();
+    setSelectedStudentIDs([]);
     ClosePopup();
   }
 
@@ -188,10 +191,10 @@ function Students({ PageComponent = TeacherPage }) {
       const failed = data.failed?.length ?? 0;
 
       setSelectedStudentIDs([]);
-      await LoadStudents();
+      await RefreshStudents();
 
       if (failed > 0) {
-        setStudentError(
+        setActionError(
           `${failed} student Auth account(s) could not be removed.`
         );
       }
