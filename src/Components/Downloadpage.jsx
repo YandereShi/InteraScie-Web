@@ -6,6 +6,12 @@ function Downloadpage() {
     return (
         <main className="downloadbackground">
             <section className="downloadpanel">
+                <button 
+                        className="backtologin"
+                        onClick={() => navigate("/")}
+                     >
+                        <span className="backarrow">←</span> Back
+                </button>
                 <div className="downloadleft">
                     <h1 className="downloadheading">
                         About

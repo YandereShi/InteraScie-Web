@@ -13,6 +13,28 @@
     background-size: cover;
 }
 
+.backtologin {
+    position: absolute;
+    top: clamp(1rem, 2vw, 2rem);
+    left: clamp(1rem, 2vw, 2rem);
+    
+    width: max-content;
+    
+    padding: 0;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: clamp(1.1rem, 2.5vw, 1.6rem);
+}
+
+.backarrow {
+    position: static;
+    font-size: clamp(1.1rem, 2.5vw, 1.6rem);
+    
+}
+
 .downloadpanel {
     width: 72%;
     min-height: 80vh;
