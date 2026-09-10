@@ -30,7 +30,7 @@
     position: absolute;
     inset: 0;
     background-image: url('../assets/Probex.png');
-    background-position: center calc(100% - 1.5rem);
+    background-position: center calc(100% - 5rem);
     background-repeat: no-repeat;
     background-size: 30rem auto;
     opacity: .2;
@@ -53,7 +53,7 @@
 }
 
 .loginpaneltext {
-    font-size: 2.5rem;
+    font-size: 3.5rem;
     font-family: Georgia, 'Times New Roman', Times, serif;
 }
 
@@ -68,6 +68,14 @@
     margin-bottom: .7rem;
 }
 
+.loginform input::placeholder{
+    font-style: italic;
+}
+
+.logintext {
+    font-weight: bold;
+}
+
 .logintext, input{
     font-size: 1.25rem;
 }
@@ -75,9 +83,12 @@
 input{
     border: 2px solid #000000;
     border-radius: 5px;
+    padding: 8px;
+    box-sizing: border-box;
 }
 
 .loginbutton{
+    font-weight: bold;
     font-size: 1.25rem;
     padding: 10px 20px;
     background-color: #007bff;
@@ -247,6 +258,7 @@ input{
 }
 
 .roleswitchlink {
+    font-weight: bold;
     align-self: center;
     width: fit-content;
 }
