@@ -30,3 +30,9 @@ export async function GetNoSectionStudents() {
 
   return data.students ?? [];
 }
+
+export async function DeleteSection(sectionID) {
+  return InvokeStudentManagement("deletesection", {
+    sectionID,
+  });
+}

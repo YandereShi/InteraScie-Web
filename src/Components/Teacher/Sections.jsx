@@ -6,7 +6,7 @@ import { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { limits } from "../../lib/inputLimits";
 import { InvokeStudentManagement } from "../../lib/supabase";
-import { GetNoSectionStudents, GetSections, GetSectionStudents, GetSectionStudentsQueryKey, noSectionStudentsQueryKey, sectionsQueryKey } from "../../lib/sectionQueries";
+import { DeleteSection, GetNoSectionStudents, GetSections, GetSectionStudents, GetSectionStudentsQueryKey, noSectionStudentsQueryKey, sectionsQueryKey } from "../../lib/sectionQueries";
 import { superAdminDashboardQueryKey, teacherDashboardQueryKey } from "../../lib/dashboardQueries";
 
 const maxRows = 10;
@@ -19,6 +19,7 @@ function Sections({ PageComponent = TeacherPage }) {
   const [page, setPage] = useState(1);
   const [addOpen, setAddOpen] = useState(false);
   const [createOpen, setCreateOpen] = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
   const sectionsQuery = useQuery({
     queryKey: sectionsQueryKey,
@@ -198,6 +199,59 @@ function Sections({ PageComponent = TeacherPage }) {
     }
   }
 
+  async function DeleteActiveSection() {
+    if (!sectionID || !activeSection || isNoSection || deleting) {
+      return;
+    }
+
+    const confirmed = window.confirm(
+      `Delete "${activeSection.sectionName}"? Its ${students.length} student(s) will be moved to No Section.`
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
+    setDeleting(true);
+
+    try {
+      const data = await DeleteSection(sectionID);
+
+      queryClient.removeQueries({
+        queryKey: GetSectionStudentsQueryKey(sectionID),
+        exact: true,
+      });
+      setSelectedSection("");
+      setSelected([]);
+      setSearch("");
+      setPage(1);
+
+      await Promise.all([
+        RefreshSections(),
+        RefreshDashboards(),
+        queryClient.invalidateQueries({
+          queryKey: noSectionStudentsQueryKey,
+          exact: true,
+        }),
+        queryClient.invalidateQueries({
+          queryKey: ["ProgressOptions"],
+        }),
+        queryClient.invalidateQueries({
+          queryKey: ["AssessmentOptions"],
+        }),
+        queryClient.invalidateQueries({
+          queryKey: ["Teachers"],
+        }),
+      ]);
+
+      alert(`Section deleted. ${data.moved ?? 0} student(s) moved to No Section.`);
+    } catch (deleteError) {
+      alert(deleteError.message || "Unable to delete the section.");
+    } finally {
+      setDeleting(false);
+    }
+  }
+
   function OpenAdd() {
     setAddOpen(true);
   }
@@ -283,6 +337,15 @@ function Sections({ PageComponent = TeacherPage }) {
                 onChange={ChangeSearch}
               />
             </div>
+
+            <button
+              type="button"
+              className="sectiondelete"
+              disabled={!section || isNoSection || loading || deleting}
+              onClick={DeleteActiveSection}
+            >
+              {deleting ? "Deleting..." : "Delete Section"}
+            </button>
 
             <button
               type="button"
