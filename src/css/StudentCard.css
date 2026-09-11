@@ -12,6 +12,10 @@
   cursor: pointer;
 }
 
+.teachercard {
+  cursor: default;
+}
+
 .studentcardimage {
   width: 80px;
   height: 80px;

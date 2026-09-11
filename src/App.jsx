@@ -14,6 +14,7 @@ import SuperAdminLayout from "./Components/SuperAdmin/SuperAdminLayout";
 import SuperAdminSections from "./Components/SuperAdmin/SuperAdminSections";
 import SuperAdminStudents from "./Components/SuperAdmin/SuperAdminStudents";
 import SuperAdminTeachers from "./Components/SuperAdmin/SuperAdminTeachers";
+import CreateTeacherPassword from "./Components/Teacher/CreateTeacherPassword";
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Login />} />
         <Route path="/resetpassword" element={<ResetPassword />} />
+        <Route path="/teacherpassword" element={<CreateTeacherPassword />} />
         <Route path="download" element={<Downloadpage />} />
         <Route path="/teacher" element={<TeacherLayout />}>
           <Route index element={<TeacherDashboard />} />

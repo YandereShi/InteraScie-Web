@@ -1,11 +1,20 @@
 import "../css/Downloadpage.css";
 import InteraScieLogo from "../assets/InteraScie.png";
 import { FaAndroid, FaWindows } from "react-icons/fa";
+import { useNavigate } from "react-router";
 
 function Downloadpage() {
+    const navigate = useNavigate();
+
     return (
         <main className="downloadbackground">
             <section className="downloadpanel">
+                <button 
+                        className="backtologin"
+                        onClick={() => navigate("/")}
+                     >
+                        <span className="backarrow">←</span> Back
+                </button>
                 <div className="downloadleft">
                     <h1 className="downloadheading">
                         About
@@ -31,18 +40,18 @@ function Downloadpage() {
                         </p>
                     </div>
                     <div className="downloadbuttons">
-                        <button
+                        <a
                             className="downloadbutton"
-                            type="button"
-                            title="Android download is not available yet"
-                            disabled
+                            href="https://github.com/YandereShi/InteraScieDownloads/releases/download/1.0.0/Game.apk"
+                            download="Game.apk"
+                            title="Download InteraScie for Android"
                         >
                             <FaAndroid className="downloadbuttonicon" />
                             <span className="downloadbuttonlabel">
                                 <span>Download For</span>
                                 <span>ANDROID</span>
                             </span>
-                        </button>
+                        </a>
                         <button
                             className="downloadbutton"
                             type="button"
