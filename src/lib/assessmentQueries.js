@@ -1,4 +1,4 @@
-import { supabase } from "./supabase";
+import { InvokeStudentManagement, supabase } from "./supabase";
 
 export const assessmentOptionsQueryKey = ["AssessmentOptions"];
 
@@ -8,6 +8,30 @@ export function GetAssessmentScoresQueryKey(sectionID, staffID, branch) {
 
 export function GetAssessmentQuestionsQueryKey(staffID, levelID) {
   return ["AssessmentQuestions", staffID, levelID];
+}
+
+export function GetAssessmentAccessQueryKey(sectionID) {
+  return ["AssessmentAccess", sectionID];
+}
+
+export async function GetAssessmentAccess(sectionID) {
+  if (!sectionID) {
+    return [];
+  }
+
+  const data = await InvokeStudentManagement("GetLessonAccess", {
+    sectionID,
+  });
+
+  return data.lessonAccess ?? [];
+}
+
+export async function UpdateAssessmentAccess(sectionID, levelID, isAssessmentEnabled) {
+  return InvokeStudentManagement("SetAssessmentAccess", {
+    sectionID,
+    levelID,
+    isAssessmentEnabled,
+  });
 }
 
 export async function GetAssessmentOptions() {

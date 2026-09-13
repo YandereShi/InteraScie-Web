@@ -1,8 +1,8 @@
 import "../../css/Questions.css";
 import { useState } from "react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "../../lib/supabase";
-import { GetAssessmentOptions, GetAssessmentQuestions, GetAssessmentQuestionsQueryKey, assessmentOptionsQueryKey } from "../../lib/assessmentQueries";
+import { GetAssessmentAccess, GetAssessmentAccessQueryKey, GetAssessmentOptions, GetAssessmentQuestions, GetAssessmentQuestionsQueryKey, UpdateAssessmentAccess, assessmentOptionsQueryKey } from "../../lib/assessmentQueries";
 import { teacherDashboardQueryKey } from "../../lib/dashboardQueries";
 import QuestionCard from "./QuestionCard";
 import QuestionPopup from "./QuestionPopup";
@@ -34,7 +34,7 @@ function GetBranches(levels) {
   });
 }
 
-function Questions({ onBack }) {
+function Questions({ sectionID, sectionName, onBack }) {
   const queryClient = useQueryClient();
   const [selectedBranch, setSelectedBranch] = useState("");
   const [selectedLesson, setSelectedLesson] = useState("");
@@ -78,15 +78,89 @@ function Questions({ onBack }) {
     staleTime: 5 * 60 * 1000,
   });
 
+  const accessQueryKey = GetAssessmentAccessQueryKey(sectionID);
+  const accessQuery = useQuery({
+    queryKey: accessQueryKey,
+    queryFn: () => GetAssessmentAccess(sectionID),
+    enabled: sectionID > 0,
+    staleTime: 5 * 60 * 1000,
+  });
+
   const questionData = questionsQuery.data ?? emptyQuestions;
   const test = questionData.test;
   const questions = questionData.questions;
+  const access = accessQuery.data ?? [];
+  const activeAccess = access.find(
+    (item) => item.levelID === levelID
+  );
+  const isAssessmentEnabled = activeAccess?.isAssessmentEnabled === true;
+
+  const accessMutation = useMutation({
+    mutationFn: (isEnabled) =>
+      UpdateAssessmentAccess(sectionID, levelID, isEnabled),
+    onMutate: async (isEnabled) => {
+      setActionError("");
+      await queryClient.cancelQueries({ queryKey: accessQueryKey });
+      const previous = queryClient.getQueryData(accessQueryKey);
+
+      queryClient.setQueryData(accessQueryKey, (current = []) => {
+        let found = false;
+        const updated = current.map((item) => {
+          if (item.levelID !== levelID) {
+            return item;
+          }
+
+          found = true;
+
+          return {
+            ...item,
+            isAssessmentEnabled: isEnabled,
+          };
+        });
+
+        if (found) {
+          return updated;
+        }
+
+        return [
+          ...updated,
+          {
+            sectionID,
+            levelID,
+            isAssessmentEnabled: isEnabled,
+          },
+        ];
+      });
+
+      return { previous };
+    },
+    onError: (mutationError, _, context) => {
+      queryClient.setQueryData(accessQueryKey, context?.previous);
+      setActionError(
+        mutationError.message || "Unable to change assessment access."
+      );
+    },
+    onSuccess: (data) => {
+      queryClient.setQueryData(accessQueryKey, (current = []) =>
+        current.map((item) =>
+          item.levelID === levelID
+            ? {
+                ...item,
+                isAssessmentEnabled: data.isAssessmentEnabled === true,
+              }
+            : item
+        )
+      );
+    },
+  });
+
   const loading =
     optionsQuery.isPending ||
+    (sectionID > 0 && accessQuery.isPending) ||
     (Boolean(staffID) &&
       levelID > 0 &&
       questionsQuery.isPending);
-  const requestError = optionsQuery.error || questionsQuery.error;
+  const requestError = optionsQuery.error || questionsQuery.error || accessQuery.error;
   const queryError =
     requestError instanceof Error
       ? requestError.message
@@ -105,6 +179,19 @@ function Questions({ onBack }) {
     setSelectedLesson(event.target.value);
     setSelected([]);
     setPage(1);
+  }
+
+  function ToggleAssessmentAccess() {
+    if (
+      !sectionID ||
+      !levelID ||
+      questions.length === 0 ||
+      accessMutation.isPending
+    ) {
+      return;
+    }
+
+    accessMutation.mutate(!isAssessmentEnabled);
   }
 
   function OpenAdd() {
@@ -306,7 +393,16 @@ function Questions({ onBack }) {
             <span>Open Assessment</span>
             <input
               type="checkbox"
-              aria-label="Open Assessment"
+              checked={isAssessmentEnabled}
+              disabled={
+                loading ||
+                !sectionID ||
+                !levelID ||
+                questions.length === 0 ||
+                accessMutation.isPending
+              }
+              onChange={ToggleAssessmentAccess}
+              aria-label={`Open Assessment for ${sectionName || "selected section"}`}
             />
             <span className="switchmark"></span>
           </label>

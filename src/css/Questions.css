@@ -77,6 +77,15 @@
   transform: translateX(24px);
 }
 
+.questionswitch input:checked + .switchmark {
+  background-color: #00bf63;
+}
+
+.questionswitch:has(input:disabled) {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 .questiondelete {
   justify-self: end;
   padding: 8px 12px;

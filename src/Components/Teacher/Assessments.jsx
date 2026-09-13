@@ -62,6 +62,9 @@ function Assessments() {
     ? selectedBranch
     : branches[0] ?? "";
   const sectionID = Number(section) || 0;
+  const sectionName = sections.find(
+    (item) => item.sectionID === sectionID
+  )?.sectionName ?? "";
   const lessons = levels
     .filter((item) => item.branchName === branch)
     .slice(0, maxLessons);
@@ -499,7 +502,11 @@ function Assessments() {
           </div>
         </section>
       ) : (
-        <Questions onBack={() => setView("scores")} />
+        <Questions
+          sectionID={sectionID}
+          sectionName={sectionName}
+          onBack={() => setView("scores")}
+        />
       )}
     </TeacherPage>
   );
