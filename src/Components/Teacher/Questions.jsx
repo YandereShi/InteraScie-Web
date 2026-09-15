@@ -1,5 +1,5 @@
 import "../../css/Questions.css";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "../../lib/supabase";
 import { GetAssessmentAccess, GetAssessmentAccessQueryKey, GetAssessmentOptions, GetAssessmentQuestions, GetAssessmentQuestionsQueryKey, UpdateAssessmentAccess, assessmentOptionsQueryKey } from "../../lib/assessmentQueries";
@@ -7,6 +7,7 @@ import { teacherDashboardQueryKey } from "../../lib/dashboardQueries";
 import QuestionCard from "./QuestionCard";
 import QuestionPopup from "./QuestionPopup";
 import { limits } from "../../lib/inputLimits";
+import { PopupContext } from "../../lib/PopupContext";
 
 const maxCards = 6;
 const emptyQuestions = {
@@ -35,6 +36,7 @@ function GetBranches(levels) {
 }
 
 function Questions({ sectionID, sectionName, onBack }) {
+  const { ShowConfirmation } = useContext(PopupContext);
   const queryClient = useQueryClient();
   const [selectedBranch, setSelectedBranch] = useState("");
   const [selectedLesson, setSelectedLesson] = useState("");
@@ -315,8 +317,9 @@ function Questions({ sectionID, sectionName, onBack }) {
       return;
     }
 
-    const confirmed = window.confirm(
-      "Are you sure you want to delete the selected questions?"
+    const confirmed = await ShowConfirmation(
+      "Are you sure you want to delete the selected questions?",
+      true
     );
 
     if (!confirmed) {

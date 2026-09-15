@@ -3,18 +3,20 @@ import StudentCard from "./StudentCard";
 import StudentPopup from "./StudentPopup";
 import BatchStudentPopup from "./BatchStudentPopup";
 import TeacherPage from "./TeacherPage";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { GetNameError } from "../../lib/nameValidation";
 import { limits } from "../../lib/inputLimits";
 import { InvokeStudentManagement } from "../../lib/supabase";
 import { GetStudents, studentQueryKey } from "../../lib/studentQueries";
 import { superAdminDashboardQueryKey, teacherDashboardQueryKey } from "../../lib/dashboardQueries";
+import { PopupContext } from "../../lib/PopupContext";
 
 const maxCards = 12;
 
 function Students({ PageComponent = TeacherPage }) {
   const queryClient = useQueryClient();
+  const { ShowConfirmation } = useContext(PopupContext);
   const [actionError, setActionError] = useState("");
   const [selectedStudent, setSelectedStudent] = useState(null);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
@@ -135,7 +137,7 @@ function Students({ PageComponent = TeacherPage }) {
   }
 
   async function ResetPassword(student) {
-    const confirmed = window.confirm(
+    const confirmed = await ShowConfirmation(
       `Reset ${student.firstName} ${student.lastName}'s password?`
     );
 
@@ -147,7 +149,7 @@ function Students({ PageComponent = TeacherPage }) {
       studentID: student.studentID,
     });
 
-    alert(
+    await ShowConfirmation(
       `Password reset successfully.\nTemporary password: ${data.temporaryPassword}`
     );
   }
@@ -180,12 +182,13 @@ function Students({ PageComponent = TeacherPage }) {
 
   async function HandleRemoveSelected() {
     if (selectedStudentIDs.length === 0) {
-      alert("Please select at least one student.");
+      await ShowConfirmation("Please select at least one student.");
       return;
     }
 
-    const confirmed = window.confirm(
-      "Are you sure you want to delete the selected students?"
+    const confirmed = await ShowConfirmation(
+      "Are you sure you want to delete the selected students?",
+      true
     );
 
     if (!confirmed) {
@@ -208,10 +211,10 @@ function Students({ PageComponent = TeacherPage }) {
         );
       }
 
-      alert(`${deleted} student(s) deleted.`);
+      await ShowConfirmation(`${deleted} student(s) deleted.`);
     } catch (error) {
       console.error(error.message);
-      alert(error.message);
+      await ShowConfirmation(error.message);
     }
   }
 

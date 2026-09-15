@@ -1,0 +1,70 @@
+.reusablepopupoverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 3000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.reusablepopup {
+  width: min(100%, 420px);
+  padding: 25px;
+  background-color: white;
+  border-radius: 6px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.35);
+}
+
+.reusablepopup p {
+  margin: 0;
+  font-size: 1.1rem;
+  line-height: 1.5;
+  white-space: pre-line;
+}
+
+.reusablepopupactions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 25px;
+}
+
+.reusablepopupactions button {
+  min-width: 90px;
+  padding: 10px 18px;
+  border: none;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.reusablepopupcancel {
+  background-color: #dddddd;
+  color: black;
+}
+
+.reusablepopupok {
+  background-color: #00bf63;
+  color: white;
+}
+
+.reusablepopupdanger {
+  background-color: #d00000;
+  color: white;
+}
+
+@media (max-width: 480px) {
+  .reusablepopup {
+    padding: 20px;
+  }
+
+  .reusablepopupactions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .reusablepopupactions button {
+    width: 100%;
+  }
+}

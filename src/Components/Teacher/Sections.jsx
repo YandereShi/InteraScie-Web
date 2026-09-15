@@ -2,17 +2,19 @@ import "../../css/Sections.css";
 import TeacherPage from "./TeacherPage";
 import AddPopup from "./AddPopup";
 import SectionPopup from "./SectionPopup";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { limits } from "../../lib/inputLimits";
 import { InvokeStudentManagement } from "../../lib/supabase";
 import { DeleteSection, GetNoSectionStudents, GetSections, GetSectionStudents, GetSectionStudentsQueryKey, noSectionStudentsQueryKey, sectionsQueryKey } from "../../lib/sectionQueries";
 import { superAdminDashboardQueryKey, teacherDashboardQueryKey } from "../../lib/dashboardQueries";
+import { PopupContext } from "../../lib/PopupContext";
 
 const maxRows = 10;
 
 function Sections({ PageComponent = TeacherPage }) {
   const queryClient = useQueryClient();
+  const { ShowConfirmation } = useContext(PopupContext);
   const [selectedSection, setSelectedSection] = useState("");
   const [selected, setSelected] = useState([]);
   const [search, setSearch] = useState("");
@@ -167,11 +169,11 @@ function Sections({ PageComponent = TeacherPage }) {
 
   async function RemoveStudents() {
     if (selected.length === 0) {
-      alert("Please select at least one student.");
+      await ShowConfirmation("Please select at least one student.");
       return;
     }
 
-    const confirmed = window.confirm(
+    const confirmed = await ShowConfirmation(
       "Move the selected students to No Section?"
     );
 
@@ -192,10 +194,10 @@ function Sections({ PageComponent = TeacherPage }) {
           exact: true,
         }),
       ]);
-      alert(`${data.moved?.length ?? 0} student(s) moved to No Section.`);
+      await ShowConfirmation(`${data.moved?.length ?? 0} student(s) moved to No Section.`);
     } catch (moveError) {
       console.error(moveError.message);
-      alert(moveError.message);
+      await ShowConfirmation(moveError.message);
     }
   }
 
@@ -204,8 +206,9 @@ function Sections({ PageComponent = TeacherPage }) {
       return;
     }
 
-    const confirmed = window.confirm(
-      `Delete "${activeSection.sectionName}"? Its ${students.length} student(s) will be moved to No Section.`
+    const confirmed = await ShowConfirmation(
+      `Delete "${activeSection.sectionName}"? Its ${students.length} student(s) will be moved to No Section.`,
+      true
     );
 
     if (!confirmed) {
@@ -244,9 +247,9 @@ function Sections({ PageComponent = TeacherPage }) {
         }),
       ]);
 
-      alert(`Section deleted. ${data.moved ?? 0} student(s) moved to No Section.`);
+      await ShowConfirmation(`Section deleted. ${data.moved ?? 0} student(s) moved to No Section.`);
     } catch (deleteError) {
-      alert(deleteError.message || "Unable to delete the section.");
+      await ShowConfirmation(deleteError.message || "Unable to delete the section.");
     } finally {
       setDeleting(false);
     }

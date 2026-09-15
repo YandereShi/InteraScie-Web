@@ -1,5 +1,5 @@
 import "../../css/Students.css";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { CreateTeacher, DeleteTeachers, GetTeachers, UpdateTeacherSections, teachersQueryKey } from "../../lib/teacherQueries";
 import { superAdminDashboardQueryKey } from "../../lib/dashboardQueries";
@@ -7,11 +7,13 @@ import SuperAdminPage from "./SuperAdminPage";
 import TeacherCard from "./TeacherCard";
 import TeacherPopup from "./TeacherPopup";
 import TeacherSectionPopup from "./TeacherSectionPopup";
+import { PopupContext } from "../../lib/PopupContext";
 
 const maxCards = 12;
 
 function SuperAdminTeachers() {
     const queryClient = useQueryClient();
+    const { ShowConfirmation } = useContext(PopupContext);
     const [search, setSearch] = useState("");
     const [page, setPage] = useState(1);
     const [selectedTeacherIDs, setSelectedTeacherIDs] = useState([]);
@@ -115,7 +117,7 @@ function SuperAdminTeachers() {
         setSelectedTeacherIDs([]);
         ClosePopup();
 
-        alert("Teacher invitation sent successfully. The teacher must check their email to create a password.");
+        await ShowConfirmation("Teacher invitation sent successfully. The teacher must check their email to create a password.");
     }
 
     async function HandleUpdateTeacherSections(sectionIDs) {
@@ -132,7 +134,7 @@ function SuperAdminTeachers() {
         setSelectedTeacherIDs([]);
         CloseSectionPopup();
 
-        alert("Teacher sections updated successfully.");
+        await ShowConfirmation("Teacher sections updated successfully.");
     }
 
     function HandleTeacherSelection(staffID, isChecked) {
@@ -166,8 +168,9 @@ function SuperAdminTeachers() {
             return;
         }
 
-        const confirmed = window.confirm(
-            "Delete the selected teachers? Their sections will become unassigned."
+        const confirmed = await ShowConfirmation(
+            "Delete the selected teachers? Their sections will become unassigned.",
+            true
         );
 
         if (!confirmed) {
@@ -190,7 +193,7 @@ function SuperAdminTeachers() {
                 );
             }
 
-            alert(`${deleted} teacher(s) deleted.`);
+            await ShowConfirmation(`${deleted} teacher(s) deleted.`);
         } catch (deleteError) {
             setActionError(
                 deleteError.message || "Unable to delete teachers."
