@@ -5,7 +5,7 @@ import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { useNavigate } from "react-router";
 import { supabase } from "../../lib/supabase";
 
-function SuperAdminLogin({ showTeacher }) {
+function SuperAdminLogin({ showTeacher, onForgotPassword }) {
     const navigate = useNavigate();
     const [showPassword, setShowPassword] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
@@ -210,6 +210,15 @@ function SuperAdminLogin({ showTeacher }) {
                                 : <FaEyeSlash />}
                         </button>
                     </div>
+
+                    <button
+                        type="button"
+                        className="forgotpasswordlink"
+                        onClick={onForgotPassword}
+                        disabled={isLoading}
+                    >
+                        Forgot Password
+                    </button>
 
                     {displayMessage && (
                         <p

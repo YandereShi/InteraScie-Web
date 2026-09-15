@@ -199,7 +199,7 @@ function Login() {
                     </div>
                   </>
                   ) : (
-                    <SuperAdminLogin showTeacher={() => SetLoginType("teacher")} />
+                    <SuperAdminLogin showTeacher={() => SetLoginType("teacher")} onForgotPassword={() => SetForgotPassword(true)} />
                   )}
 
                   <button

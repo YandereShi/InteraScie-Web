@@ -43,16 +43,16 @@ function ForgotPasswordPopup({ onclose }) {
   return (
     <dialog ref={dialog} className="recoverycard recoverydialog" aria-labelledby="forgotpasswordtitle"
       onCancel={(event) => { event.preventDefault(); if (!loading) onclose(); }}>
-      <h2 id="forgotpasswordtitle">Forgot password?</h2>
+      <h2 id="forgotpasswordtitle">Reset Password Email sent.</h2>
       {sent ? (
         <>
-          <p role="status">If this email belongs to an account, a reset link will be sent. Check your inbox and spam folder. Password reset on this website is for teachers only.</p>
+          <p role="status">A reset link has been sent to your email. Please check your inbox and spam folder.</p>
           <button type="button" className="recoveryprimary" onClick={onclose}>Back to login</button>
         </>
       ) : (
         <form onSubmit={SendResetLink}>
-          <p>Enter the email registered to your teacher account.</p>
-          <label htmlFor="recoveryemail">Teacher email</label>
+          <p>Enter the email registered to your staff account.</p>
+          <label htmlFor="recoveryemail">Account email</label>
           <input id="recoveryemail" name="email" type="email" autoComplete="email" required disabled={loading} />
           {message && <p className="recoveryerror" role="alert">{message}</p>}
           <button className="recoveryprimary" type="submit" disabled={loading}>{loading ? "Sending..." : "Send reset link"}</button>

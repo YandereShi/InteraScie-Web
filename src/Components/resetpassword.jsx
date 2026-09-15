@@ -26,34 +26,51 @@ function ResetPassword() {
     window.history.replaceState(window.history.state, "", window.location.pathname);
   }, []);
 
-  async function CheckTeacher() {
-    const { data, error } = await client.auth.getUser();
-    if (error || !data.user) throw new Error("Your reset session has expired. Please request a new link.");
-    const { data: staff, error: stafferror } = await client
-      .from("SchoolStaff")
-      .select("role")
-      .eq("authUserID", data.user.id)
-      .single();
-    if (stafferror || staff?.role !== "teacher") {
-      throw new Error("Unable to verify a teacher account. Please contact your administrator.");
-    }
-    return data.user;
-  }
+    async function CheckStaff() {
+      const { data, error } = await client.auth.getUser();
 
-  async function VerifyTeacher() {
-    try {
-      if (!verified.current) {
-        const { error } = await client.auth.verifyOtp({ token_hash: token, type: "recovery" });
-        if (error) throw new Error("This reset link is invalid or expired. Please request a new link.");
-        verified.current = true;
+      if (error || !data.user) {
+        throw new Error("Your reset session has expired. Please request a new link.");
       }
-      await CheckTeacher();
-    } catch (error) {
-      SetStage("invalid");
-      await client.auth.signOut({ scope: "local" });
-      throw error;
+
+      const { data: staff, error: stafferror } = await client
+        .from("SchoolStaff")
+        .select("role")
+        .eq("authUserID", data.user.id)
+        .single();
+
+      if (
+        stafferror ||
+        !["teacher", "superadmin"].includes(staff?.role)
+      ) {
+        throw new Error("Unable to verify a staff account. Please contact your administrator.");
+      }
+
+      return data.user;
     }
-  }
+
+    async function VerifyStaff() {
+      try {
+        if (!verified.current) {
+          const { error } = await client.auth.verifyOtp({
+            token_hash: token,
+            type: "recovery",
+          });
+
+          if (error) {
+            throw new Error("This reset link is invalid or expired. Please request a new link.");
+          }
+
+          verified.current = true;
+        }
+
+        await CheckStaff();
+      } catch (error) {
+        SetStage("invalid");
+        await client.auth.signOut({ scope: "local" });
+        throw error;
+      }
+    }
 
   async function SavePassword(event) {
     event.preventDefault();
@@ -72,7 +89,7 @@ function ResetPassword() {
     SetLoading(true);
     SetMessage("");
     try {
-      await VerifyTeacher();
+      await VerifyStaff();
       const { error } = await client.auth.updateUser({ password });
       if (error) throw error;
       SetStage("success");
@@ -87,9 +104,9 @@ function ResetPassword() {
   return (
     <main className="recoverypage">
       <section className="recoverycard" aria-labelledby="resetpasswordtitle">
-        <h1 id="resetpasswordtitle">Reset teacher password</h1>
+        <h1 id="resetpasswordtitle">Reset account password</h1>
         {stage !== "success" && <form onSubmit={SavePassword}>
-          <p>Enter and confirm your new teacher account password.</p>
+          <p>Enter and confirm your new account password.</p>
           <label htmlFor="newpassword">New Password</label>
           <div className="recoverypasswordfield">
             <input id="newpassword" name="password" type={visible ? "text" : "password"} autoComplete="new-password" minLength={8} maxLength={16} required disabled={loading} aria-describedby="passwordrequirements" />
