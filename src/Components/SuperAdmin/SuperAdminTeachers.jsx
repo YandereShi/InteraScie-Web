@@ -1,11 +1,12 @@
 import "../../css/Students.css";
 import { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { CreateTeacher, DeleteTeachers, GetTeachers, teachersQueryKey } from "../../lib/teacherQueries";
+import { CreateTeacher, DeleteTeachers, GetTeachers, UpdateTeacherSections, teachersQueryKey } from "../../lib/teacherQueries";
 import { superAdminDashboardQueryKey } from "../../lib/dashboardQueries";
 import SuperAdminPage from "./SuperAdminPage";
 import TeacherCard from "./TeacherCard";
 import TeacherPopup from "./TeacherPopup";
+import TeacherSectionPopup from "./TeacherSectionPopup";
 
 const maxCards = 12;
 
@@ -15,6 +16,7 @@ function SuperAdminTeachers() {
     const [page, setPage] = useState(1);
     const [selectedTeacherIDs, setSelectedTeacherIDs] = useState([]);
     const [popupOpen, setPopupOpen] = useState(false);
+    const [selectedTeacher, setSelectedTeacher] = useState(null);
     const [actionError, setActionError] = useState("");
 
     const teachersQuery = useQuery({
@@ -76,6 +78,15 @@ function SuperAdminTeachers() {
                 queryKey: superAdminDashboardQueryKey,
                 exact: true,
             }),
+            queryClient.invalidateQueries({
+                queryKey: ["Sections"],
+            }),
+            queryClient.invalidateQueries({
+                queryKey: ["ProgressOptions"],
+            }),
+            queryClient.invalidateQueries({
+                queryKey: ["AssessmentOptions"],
+            }),
         ]);
     }
 
@@ -88,6 +99,15 @@ function SuperAdminTeachers() {
         setPopupOpen(false);
     }
 
+    function OpenSectionPopup(teacher) {
+        setActionError("");
+        setSelectedTeacher(teacher);
+    }
+
+    function CloseSectionPopup() {
+        setSelectedTeacher(null);
+    }
+
     async function HandleSaveTeacher(teacherData) {
         await CreateTeacher(teacherData);
 
@@ -96,6 +116,23 @@ function SuperAdminTeachers() {
         ClosePopup();
 
         alert("Teacher invitation sent successfully. The teacher must check their email to create a password.");
+    }
+
+    async function HandleUpdateTeacherSections(sectionIDs) {
+        if (!selectedTeacher) {
+            return;
+        }
+
+        await UpdateTeacherSections(
+            selectedTeacher.staffID,
+            sectionIDs
+        );
+
+        await RefreshTeachers();
+        setSelectedTeacherIDs([]);
+        CloseSectionPopup();
+
+        alert("Teacher sections updated successfully.");
     }
 
     function HandleTeacherSelection(staffID, isChecked) {
@@ -215,6 +252,7 @@ function SuperAdminTeachers() {
                                     teacher.staffID
                                 )}
                                 onSelect={HandleTeacherSelection}
+                                onEdit={OpenSectionPopup}
                             />
                         ))}
                     </div>
@@ -281,6 +319,15 @@ function SuperAdminTeachers() {
                     sections={availableSections}
                     onClose={ClosePopup}
                     onSave={HandleSaveTeacher}
+                />
+            )}
+
+            {selectedTeacher && (
+                <TeacherSectionPopup
+                    teacher={selectedTeacher}
+                    sections={availableSections}
+                    onClose={CloseSectionPopup}
+                    onSave={HandleUpdateTeacherSections}
                 />
             )}
         </SuperAdminPage>

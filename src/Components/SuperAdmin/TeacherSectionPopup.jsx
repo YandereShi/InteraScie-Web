@@ -1,26 +1,24 @@
 import "../../css/StudentPopup.css";
 import { useState } from "react";
 import teacherImage from "../../assets/pfp.png";
-import { GetNameError } from "../../lib/nameValidation";
-import { limits } from "../../lib/inputLimits";
 
-function TeacherPopup({ sections, onClose, onSave }) {
-    const [firstName, setFirstName] = useState("");
-    const [lastName, setLastName] = useState("");
-    const [email, setEmail] = useState("");
-    const [sectionIDs, setSectionIDs] = useState([]);
+function TeacherSectionPopup({ teacher, sections, onClose, onSave }) {
+    const [sectionIDs, setSectionIDs] = useState(
+        (teacher.sections ?? []).map((section) => section.sectionID)
+    );
     const [saving, setSaving] = useState(false);
     const [saveError, setSaveError] = useState("");
+    const sectionMap = new Map();
 
-    function HandleNameChange(value, setName) {
-        if (!/^[\p{L}\p{M} ]*$/u.test(value)) {
-            setSaveError("Names can contain letters and spaces only.");
-            return;
-        }
-
-        setName(value);
-        setSaveError("");
+    for (const section of [...(teacher.sections ?? []), ...sections]) {
+        sectionMap.set(section.sectionID, section);
     }
+
+    const eligibleSections = [...sectionMap.values()].sort((first, second) =>
+        String(first.sectionName ?? "").localeCompare(
+            String(second.sectionName ?? "")
+        )
+    );
 
     function HandleSectionChange(sectionID, isChecked) {
         if (isChecked) {
@@ -39,31 +37,13 @@ function TeacherPopup({ sections, onClose, onSave }) {
 
     async function HandleSubmit(event) {
         event.preventDefault();
-
-        const nameerror = GetNameError(firstName, lastName);
-
-        if (nameerror) {
-            setSaveError(nameerror);
-            return;
-        }
-
-        if (email.trim().length > limits.username) {
-            setSaveError(`Email must be ${limits.username} characters or fewer.`);
-            return;
-        }
-
         setSaving(true);
         setSaveError("");
 
         try {
-            await onSave({
-                firstName: firstName.trim(),
-                lastName: lastName.trim(),
-                email: email.trim().toLowerCase(),
-                sectionIDs,
-            });
+            await onSave(sectionIDs);
         } catch (error) {
-            setSaveError(error.message || "Unable to create teacher.");
+            setSaveError(error.message || "Unable to update teacher sections.");
             setSaving(false);
         }
     }
@@ -71,14 +51,14 @@ function TeacherPopup({ sections, onClose, onSave }) {
     return (
         <div
             className="studentpopupoverlay"
-            onMouseDown={onClose}
+            onMouseDown={saving ? undefined : onClose}
         >
             <div
                 className="studentpopup"
                 onMouseDown={(event) => event.stopPropagation()}
             >
                 <div className="studentpopupheader">
-                    <h2>Add Teacher</h2>
+                    <h2>Edit Teacher Sections</h2>
 
                     <button
                         type="button"
@@ -101,76 +81,49 @@ function TeacherPopup({ sections, onClose, onSave }) {
                     />
 
                     <div className="studentpopupform">
-                        <label htmlFor="teacherfirstname">
-                            First name
+                        <label htmlFor="selectedteachername">
+                            Teacher
                         </label>
 
                         <input
                             type="text"
-                            id="teacherfirstname"
-                            maxLength={limits.firstname}
-                            value={firstName}
-                            onChange={(event) =>
-                                HandleNameChange(
-                                    event.target.value,
-                                    setFirstName
-                                )
-                            }
-                            required
+                            id="selectedteachername"
+                            className="teachersectionidentity"
+                            value={`${teacher.firstName} ${teacher.lastName}`}
+                            readOnly
                         />
 
-                        <label htmlFor="teacherlastname">
-                            Last name
-                        </label>
-
-                        <input
-                            type="text"
-                            id="teacherlastname"
-                            maxLength={limits.lastname}
-                            value={lastName}
-                            onChange={(event) =>
-                                HandleNameChange(
-                                    event.target.value,
-                                    setLastName
-                                )
-                            }
-                            required
-                        />
-
-                        <label htmlFor="teacheremail">
+                        <label htmlFor="selectedteacheremail">
                             Email
                         </label>
 
                         <input
-                            type="email"
-                            id="teacheremail"
-                            maxLength={limits.username}
-                            value={email}
-                            onChange={(event) =>
-                                setEmail(event.target.value)
-                            }
-                            required
+                            type="text"
+                            id="selectedteacheremail"
+                            className="teachersectionidentity"
+                            value={teacher.username || "No login email"}
+                            readOnly
                         />
 
                         <fieldset className="teachersectionlist">
                             <legend>Sections</legend>
 
                             <div className="teachersectionscroll">
-                                {sections.length === 0 && (
+                                {eligibleSections.length === 0 && (
                                     <p className="teachersectionempty">
                                         No sections are available.
                                     </p>
                                 )}
 
-                                {sections.map((section) => (
+                                {eligibleSections.map((section) => (
                                     <label
                                         className="teachersectionoption"
                                         key={section.sectionID}
-                                        htmlFor={`newteachersection${section.sectionID}`}
+                                        htmlFor={`teachersection${section.sectionID}`}
                                     >
                                         <input
                                             type="checkbox"
-                                            id={`newteachersection${section.sectionID}`}
+                                            id={`teachersection${section.sectionID}`}
                                             checked={sectionIDs.includes(section.sectionID)}
                                             onChange={(event) =>
                                                 HandleSectionChange(
@@ -180,7 +133,7 @@ function TeacherPopup({ sections, onClose, onSave }) {
                                             }
                                         />
 
-                                        <span>{section.sectionName || "Unnamed Section"}</span>
+                                    <span>{section.sectionName || "Unnamed Section"}</span>
                                     </label>
                                 ))}
                             </div>
@@ -217,4 +170,4 @@ function TeacherPopup({ sections, onClose, onSave }) {
     );
 }
 
-export default TeacherPopup;
+export default TeacherSectionPopup;

@@ -50,6 +50,13 @@ export async function CreateTeacher(teacherData) {
   return InvokeTeacherManagement("CreateTeacher", teacherData);
 }
 
+export async function UpdateTeacherSections(staffID, sectionIDs) {
+  return InvokeTeacherManagement("UpdateTeacherSections", {
+    staffID,
+    sectionIDs,
+  });
+}
+
 export async function DeleteTeachers(staffIDs) {
   return InvokeTeacherManagement("DeleteTeachers", {
     staffIDs,

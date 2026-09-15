@@ -115,6 +115,48 @@
   cursor: not-allowed;
 }
 
+.teachersectionidentity {
+  background-color: #f1f1f1;
+}
+
+.teachersectionlist {
+  margin-top: 4px;
+  padding: 10px;
+  border: 1px solid #555555;
+}
+
+.teachersectionlist legend {
+  padding: 0 5px;
+  font-weight: bold;
+}
+
+.teachersectionscroll {
+  max-height: 108px;
+  overflow-y: auto;
+}
+
+.teachersectionoption {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 36px;
+  padding: 6px 2px;
+  box-sizing: border-box;
+  cursor: pointer;
+}
+
+.teachersectionoption input {
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  accent-color: #00bf63;
+}
+
+.teachersectionempty {
+  margin: 8px 0;
+  color: #555555;
+}
+
 @media (max-width: 768px) {
   .studentpopupoverlay {
     padding: 10px;

@@ -1,7 +1,7 @@
 import "../../css/StudentCard.css";
 import teacherImage from "../../assets/pfp.png";
 
-function TeacherCard({ teacher, isSelected, onSelect }) {
+function TeacherCard({ teacher, isSelected, onSelect, onEdit }) {
     const sectionNames = (teacher.sections ?? [])
         .map((section) => section.sectionName)
         .filter(Boolean);
@@ -9,8 +9,24 @@ function TeacherCard({ teacher, isSelected, onSelect }) {
         ? sectionNames.join(", ")
         : "No sections handled";
 
+    function HandleKeyDown(event) {
+        if (
+            event.target === event.currentTarget &&
+            (event.key === "Enter" || event.key === " ")
+        ) {
+            event.preventDefault();
+            onEdit(teacher);
+        }
+    }
+
     return (
-        <article className="studentcard teachercard">
+        <article
+            className="studentcard teachercard"
+            role="button"
+            tabIndex="0"
+            onClick={() => onEdit(teacher)}
+            onKeyDown={HandleKeyDown}
+        >
             <img
                 className="studentcardimage"
                 src={teacherImage}
@@ -34,6 +50,7 @@ function TeacherCard({ teacher, isSelected, onSelect }) {
                 type="checkbox"
                 checked={isSelected}
                 aria-label={`Select ${teacher.firstName} ${teacher.lastName}`}
+                onClick={(event) => event.stopPropagation()}
                 onChange={(event) =>
                     onSelect(
                         teacher.staffID,

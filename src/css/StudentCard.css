@@ -13,7 +13,12 @@
 }
 
 .teachercard {
-  cursor: default;
+  cursor: pointer;
+}
+
+.teachercard:focus-visible {
+  outline: 3px solid #00bf63;
+  outline-offset: 2px;
 }
 
 .studentcardimage {
