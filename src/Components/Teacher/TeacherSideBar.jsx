@@ -8,6 +8,8 @@ import { IoPerson } from "react-icons/io5";
 import { TbProgressCheck } from "react-icons/tb";
 import { useState } from "react";
 import StaffProfilePopup from "../StaffProfilePopup";
+import ProfilePhoto from "../ProfilePhoto";
+import { GetStaffPhotoPath } from "../../lib/profilePhotos";
 
 function TeacherSidebar({ teacher }) {
     const [profileOpen, SetProfileOpen] = useState(false);
@@ -16,7 +18,7 @@ function TeacherSidebar({ teacher }) {
         <aside className="teachersidebar">
             <img src={InteraScie} alt="InteraScie Logo" id="interascielogo" />
             <button type="button" className="staffprofiletrigger" aria-label="Open my profile" onClick={() => SetProfileOpen(true)}>
-                <img src={teacherPfp} alt="" id="teacherpfp" />
+                <ProfilePhoto path={GetStaffPhotoPath(teacher.authUserID)} fallback={teacherPfp} alt="" id="teacherpfp" />
             </button>
             <h2>
                 {teacher.firstName} {teacher.lastName}
@@ -56,7 +58,7 @@ function TeacherSidebar({ teacher }) {
             </li>
             <li className="staffmobileprofileitem">
                 <button type="button" className="staffmobileprofilebutton" aria-label="Open my profile" onClick={() => SetProfileOpen(true)}>
-                    <img src={teacherPfp} alt="" />
+                    <ProfilePhoto path={GetStaffPhotoPath(teacher.authUserID)} fallback={teacherPfp} alt="" />
                 </button>
             </li>
         </ul>

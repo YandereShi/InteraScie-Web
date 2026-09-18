@@ -1,0 +1,47 @@
+.profilephotoeditor {
+  width: 120px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.profilephotoinput {
+  display: none;
+}
+
+.profilephotochange {
+  width: 100%;
+  min-height: 36px;
+  padding: 7px 8px;
+  border: 1px solid #006b3e;
+  border-radius: 6px;
+  background: #ffffff;
+  color: #006b3e;
+  font: inherit;
+  font-size: .85rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.profilephotochange:disabled {
+  opacity: .55;
+  cursor: not-allowed;
+}
+
+.profilephotostatus,
+.profilephotoerror {
+  width: 100%;
+  font-size: .8rem;
+  line-height: 1.3;
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+
+.profilephotostatus {
+  color: #006b3e;
+}
+
+.profilephotoerror {
+  color: #b42318;
+}

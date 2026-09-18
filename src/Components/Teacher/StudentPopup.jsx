@@ -1,6 +1,8 @@
 import "../../css/StudentPopup.css";
 import { useState } from "react";
 import studentImage from "../../assets/pfp.png";
+import ProfilePhotoEditor from "../ProfilePhotoEditor";
+import { GetStudentPhotoPath } from "../../lib/profilePhotos";
 import { GetNameError } from "../../lib/nameValidation";
 import { limits } from "../../lib/inputLimits";
 
@@ -34,6 +36,7 @@ function StudentPopup({
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState("");
   const [resetting, setResetting] = useState(false);
+  const [photoSaving, SetPhotoSaving] = useState(false);
 
   async function resetPassword() {
     setResetting(true);
@@ -97,7 +100,7 @@ function StudentPopup({
   return (
     <div
       className="studentpopupoverlay"
-      onMouseDown={onClose}
+      onMouseDown={saving || resetting || photoSaving ? undefined : onClose}
     >
       <div
         className="studentpopup"
@@ -114,6 +117,7 @@ function StudentPopup({
             type="button"
             className="closestudentpopup"
             onClick={onClose}
+            disabled={saving || resetting || photoSaving}
           >
             ×
           </button>
@@ -123,11 +127,7 @@ function StudentPopup({
           className="studentpopupcontent"
           onSubmit={HandleSubmit}
         >
-          <img
-            className="studentpopupimage"
-            src={studentImage}
-            alt="Student"
-          />
+          <ProfilePhotoEditor path={GetStudentPhotoPath(student?.studentID)} fallback={studentImage} alt="Student photo" imageClassName="studentpopupimage" onBusyChange={SetPhotoSaving} />
 
           <div className="studentpopupform">
             <label htmlFor="studentfirstname">
@@ -214,7 +214,7 @@ function StudentPopup({
                 type="button"
                 className="resetstudent"
                 onClick={resetPassword}
-                disabled={saving || resetting}
+                disabled={saving || resetting || photoSaving}
               >
                 {resetting
                   ? "Resetting..."
@@ -226,7 +226,7 @@ function StudentPopup({
               type="button"
               className="cancelstudent"
               onClick={onClose}
-              disabled={saving || resetting}
+              disabled={saving || resetting || photoSaving}
             >
               Cancel
             </button>
@@ -234,7 +234,7 @@ function StudentPopup({
             <button
               type="submit"
               className="savestudent"
-              disabled={saving || resetting}
+              disabled={saving || resetting || photoSaving}
             >
               {saving ? "Saving..." : "Save"}
             </button>

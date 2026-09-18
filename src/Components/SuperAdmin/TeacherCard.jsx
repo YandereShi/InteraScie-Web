@@ -1,5 +1,7 @@
 import "../../css/StudentCard.css";
 import teacherImage from "../../assets/pfp.png";
+import ProfilePhoto from "../ProfilePhoto";
+import { GetStaffPhotoPath } from "../../lib/profilePhotos";
 
 function TeacherCard({ teacher, isSelected, onSelect, onEdit }) {
     const sectionNames = (teacher.sections ?? [])
@@ -27,9 +29,10 @@ function TeacherCard({ teacher, isSelected, onSelect, onEdit }) {
             onClick={() => onEdit(teacher)}
             onKeyDown={HandleKeyDown}
         >
-            <img
+            <ProfilePhoto
                 className="studentcardimage"
-                src={teacherImage}
+                path={GetStaffPhotoPath(teacher.authUserID)}
+                fallback={teacherImage}
                 alt={`${teacher.firstName} ${teacher.lastName}`}
             />
 

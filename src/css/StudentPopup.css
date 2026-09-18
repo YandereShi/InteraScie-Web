@@ -56,6 +56,11 @@
   object-fit: cover;
 }
 
+.studentpopupcontent .profilephotoeditor {
+  grid-column: 1;
+  grid-row: 1;
+}
+
 .studentpopupform {
   display: flex;
   flex-direction: column;
@@ -186,6 +191,10 @@
   .studentpopupimage {
     width: 90px;
     height: 90px;
+    justify-self: center;
+  }
+
+  .studentpopupcontent .profilephotoeditor {
     justify-self: center;
   }
 

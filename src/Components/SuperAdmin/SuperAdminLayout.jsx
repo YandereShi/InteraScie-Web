@@ -23,7 +23,7 @@ function SuperAdminLayout() {
 
             const { data: staff, error } = await supabase
                 .from("SchoolStaff")
-                .select("firstName, lastName, role")
+                .select("firstName, lastName, role, authUserID")
                 .eq("authUserID", user.id)
                 .single();
 

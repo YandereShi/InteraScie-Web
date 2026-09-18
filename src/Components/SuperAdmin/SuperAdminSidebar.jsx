@@ -7,6 +7,8 @@ import { FaPeopleGroup } from "react-icons/fa6";
 import { IoPerson } from "react-icons/io5";
 import { useState } from "react";
 import StaffProfilePopup from "../StaffProfilePopup";
+import ProfilePhoto from "../ProfilePhoto";
+import { GetStaffPhotoPath } from "../../lib/profilePhotos";
 
 function SuperAdminSidebar({ superadmin }) {
     const [profileOpen, SetProfileOpen] = useState(false);
@@ -20,7 +22,7 @@ function SuperAdminSidebar({ superadmin }) {
             />
 
             <button type="button" className="staffprofiletrigger" aria-label="Open my profile" onClick={() => SetProfileOpen(true)}>
-                <img className="superadminpfp" src={superAdminPfp} alt="" />
+                <ProfilePhoto path={GetStaffPhotoPath(superadmin.authUserID)} fallback={superAdminPfp} className="superadminpfp" alt="" />
             </button>
 
             <h2>
@@ -55,7 +57,7 @@ function SuperAdminSidebar({ superadmin }) {
                 </li>
                 <li className="staffmobileprofileitem">
                     <button type="button" className="staffmobileprofilebutton" aria-label="Open my profile" onClick={() => SetProfileOpen(true)}>
-                        <img src={superAdminPfp} alt="" />
+                        <ProfilePhoto path={GetStaffPhotoPath(superadmin.authUserID)} fallback={superAdminPfp} alt="" />
                     </button>
                 </li>
             </ul>

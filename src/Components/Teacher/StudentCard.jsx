@@ -1,5 +1,7 @@
 import "../../css/StudentCard.css";
 import studentImage from "../../assets/pfp.png";
+import ProfilePhoto from "../ProfilePhoto";
+import { GetStudentPhotoPath } from "../../lib/profilePhotos";
 
 function StudentCard({
   student,
@@ -9,9 +11,10 @@ function StudentCard({
 }) {
   return (
     <article className="studentcard" onClick={() => onEdit(student)}>
-      <img
+      <ProfilePhoto
         className="studentcardimage"
-        src={studentImage}
+        path={GetStudentPhotoPath(student.studentID)}
+        fallback={studentImage}
         alt={`${student.firstName} ${student.lastName}`}
       />
 

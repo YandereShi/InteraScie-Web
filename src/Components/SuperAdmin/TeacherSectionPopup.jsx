@@ -1,6 +1,8 @@
 import "../../css/StudentPopup.css";
 import { useState } from "react";
 import teacherImage from "../../assets/pfp.png";
+import ProfilePhoto from "../ProfilePhoto";
+import { GetStaffPhotoPath } from "../../lib/profilePhotos";
 
 function TeacherSectionPopup({ teacher, sections, onClose, onSave }) {
     const [sectionIDs, setSectionIDs] = useState(
@@ -74,9 +76,10 @@ function TeacherSectionPopup({ teacher, sections, onClose, onSave }) {
                     className="studentpopupcontent"
                     onSubmit={HandleSubmit}
                 >
-                    <img
+                    <ProfilePhoto
                         className="studentpopupimage"
-                        src={teacherImage}
+                        path={GetStaffPhotoPath(teacher.authUserID)}
+                        fallback={teacherImage}
                         alt="Teacher"
                     />
 

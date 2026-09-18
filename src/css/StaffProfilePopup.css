@@ -11,6 +11,9 @@
 .staffprofiletrigger img {
   display: block;
   width: 100%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  object-fit: cover;
 }
 
 .staffprofiletrigger:focus-visible,
@@ -43,6 +46,17 @@
 .staffprofiledialog h2 {
   margin: 0 0 22px;
   font-size: 1.7rem;
+}
+
+.staffprofiledialog .profilephotoeditor {
+  margin: 0 auto 20px;
+}
+
+.staffprofileimage {
+  width: 115px;
+  height: 115px;
+  border-radius: 50%;
+  object-fit: cover;
 }
 
 .staffprofiledetails {
@@ -155,7 +169,8 @@
   .staffmobileprofilebutton img {
     width: 36px;
     height: 36px;
-    object-fit: contain;
+    border-radius: 50%;
+    object-fit: cover;
   }
 
   .staffprofiledialog {
