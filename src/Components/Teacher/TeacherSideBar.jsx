@@ -6,12 +6,18 @@ import { FaHome, FaPen } from "react-icons/fa";
 import { FaPeopleGroup } from "react-icons/fa6";
 import { IoPerson } from "react-icons/io5";
 import { TbProgressCheck } from "react-icons/tb";
+import { useState } from "react";
+import StaffProfilePopup from "../StaffProfilePopup";
 
 function TeacherSidebar({ teacher }) {
+    const [profileOpen, SetProfileOpen] = useState(false);
+
     return (
         <aside className="teachersidebar">
             <img src={InteraScie} alt="InteraScie Logo" id="interascielogo" />
-            <img src={teacherPfp} alt="Teacher Icon" id="teacherpfp" />
+            <button type="button" className="staffprofiletrigger" aria-label="Open my profile" onClick={() => SetProfileOpen(true)}>
+                <img src={teacherPfp} alt="" id="teacherpfp" />
+            </button>
             <h2>
                 {teacher.firstName} {teacher.lastName}
             </h2>
@@ -48,7 +54,13 @@ function TeacherSidebar({ teacher }) {
                     <span>Progress</span>
                 </NavLink>
             </li>
+            <li className="staffmobileprofileitem">
+                <button type="button" className="staffmobileprofilebutton" aria-label="Open my profile" onClick={() => SetProfileOpen(true)}>
+                    <img src={teacherPfp} alt="" />
+                </button>
+            </li>
         </ul>
+        {profileOpen && <StaffProfilePopup staff={teacher} onclose={() => SetProfileOpen(false)} />}
         </aside>
     )
 }

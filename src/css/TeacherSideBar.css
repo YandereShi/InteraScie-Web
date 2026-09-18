@@ -16,11 +16,10 @@
 }
 
 #teacherpfp {
-  width: 50%;
-  margin-bottom: 20px;
+  width: 100%;
 }
 
-.teachersidebar h2 {
+.teachersidebar > h2 {
   max-width: 90%;
   margin: 0;
   overflow: hidden;
@@ -31,7 +30,7 @@
   white-space: nowrap;
 }
 
-.teachersidebar h4 {
+.teachersidebar > h4 {
   margin: 7px 0 0;
   color: #ffffff;
   font-weight: 500;
@@ -89,9 +88,8 @@
     margin-top: 20px;
   }
 
-  #teacherpfp,
-  .teachersidebar h2,
-  .teachersidebar h4 {
+  .teachersidebar > h2,
+  .teachersidebar > h4 {
     display: none;
   }
 

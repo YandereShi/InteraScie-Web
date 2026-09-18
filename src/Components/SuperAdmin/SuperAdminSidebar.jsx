@@ -5,8 +5,12 @@ import { NavLink } from "react-router";
 import { FaChalkboardTeacher, FaHome } from "react-icons/fa";
 import { FaPeopleGroup } from "react-icons/fa6";
 import { IoPerson } from "react-icons/io5";
+import { useState } from "react";
+import StaffProfilePopup from "../StaffProfilePopup";
 
 function SuperAdminSidebar({ superadmin }) {
+    const [profileOpen, SetProfileOpen] = useState(false);
+
     return (
         <aside className="superadminsidebar">
             <img
@@ -15,11 +19,9 @@ function SuperAdminSidebar({ superadmin }) {
                 alt="InteraScie Logo"
             />
 
-            <img
-                className="superadminpfp"
-                src={superAdminPfp}
-                alt="Superadmin profile"
-            />
+            <button type="button" className="staffprofiletrigger" aria-label="Open my profile" onClick={() => SetProfileOpen(true)}>
+                <img className="superadminpfp" src={superAdminPfp} alt="" />
+            </button>
 
             <h2>
                 {superadmin.firstName} {superadmin.lastName}
@@ -51,7 +53,13 @@ function SuperAdminSidebar({ superadmin }) {
                         <span>Teachers</span>
                     </NavLink>
                 </li>
+                <li className="staffmobileprofileitem">
+                    <button type="button" className="staffmobileprofilebutton" aria-label="Open my profile" onClick={() => SetProfileOpen(true)}>
+                        <img src={superAdminPfp} alt="" />
+                    </button>
+                </li>
             </ul>
+            {profileOpen && <StaffProfilePopup staff={superadmin} onclose={() => SetProfileOpen(false)} />}
         </aside>
     );
 }

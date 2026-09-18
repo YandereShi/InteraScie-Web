@@ -16,11 +16,10 @@
 }
 
 .superadminpfp {
-  width: 50%;
-  margin-bottom: 20px;
+  width: 100%;
 }
 
-.superadminsidebar h2 {
+.superadminsidebar > h2 {
   max-width: 90%;
   margin: 0;
   overflow: hidden;
@@ -31,7 +30,7 @@
   white-space: nowrap;
 }
 
-.superadminsidebar h4 {
+.superadminsidebar > h4 {
   margin: 7px 0 0;
   color: #ffffff;
   font-weight: 500;
@@ -89,9 +88,8 @@
     margin-top: 20px;
   }
 
-  .superadminpfp,
-  .superadminsidebar h2,
-  .superadminsidebar h4 {
+  .superadminsidebar > h2,
+  .superadminsidebar > h4 {
     display: none;
   }
 
