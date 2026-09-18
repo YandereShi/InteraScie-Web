@@ -24,7 +24,7 @@ function ForgotPasswordPopup({ onclose }) {
 
     try {
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/resetpassword`,
+        redirectTo: "https://interascie.vercel.app/resetpassword",
       });
       if (error) {
         SetMessage(error.status === 429
