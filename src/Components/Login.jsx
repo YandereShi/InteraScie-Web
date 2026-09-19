@@ -1,8 +1,7 @@
 import "../css/Login.css";
-import teacherImage from "../assets/teacher.png";
+import loginImage from "../assets/Login.png";
 import { useEffect, useState } from "react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
-import SuperAdminLogin from "./SuperAdmin/SuperAdminLogin";
 import ForgotPasswordPopup from "./ForgotPasswordPopup";
 import { supabase } from "../lib/supabase";
 import { useNavigate } from "react-router";
@@ -14,7 +13,6 @@ function Login() {
   const navigate = useNavigate();
   const [ShowPassword, SetShowPassword] = useState(false);
   const [IsLoading, SetIsLoading] = useState(false);
-  const [LoginType, SetLoginType] = useState("teacher");
   const [LoginMessage, SetLoginMessage] = useState("");
   const [LockedSeconds, SetLockedSeconds] = useState(0);
   const [ShowGame, SetShowGame] = useState(false);
@@ -78,7 +76,7 @@ function Login() {
         return;
       }
 
-      if (!LoginData?.accessToken || !LoginData?.refreshToken) {
+      if (!LoginData?.accessToken || !LoginData?.refreshToken || !["teacher", "superadmin"].includes(LoginData?.role)) {
         throw new Error();
       }
 
@@ -91,12 +89,12 @@ function Login() {
         throw SessionError;
       }
 
-      navigate("/teacher", { replace: true });
-      } catch {
-        SetLoginMessage("An error has occurred. Please try again.");
-      } finally {
-        SetIsLoading(false);
-      }
+      navigate(LoginData.role === "superadmin" ? "/superadmin" : "/teacher", { replace: true });
+    } catch {
+      SetLoginMessage("An error has occurred. Please try again.");
+    } finally {
+      SetIsLoading(false);
+    }
   }
 
   const DisplayMessage = LockedSeconds > 0
@@ -134,11 +132,8 @@ function Login() {
                 </div>
 
                 <div className={`loginside ${ShowGame ? "mobilehidden" : ""}`}>
-                  {LoginType === "teacher" ? (
-                  <>
                     <div className="loginheaders">
-                      <img className="teachericon" src={teacherImage} alt="Teacher icon" />
-                      <h2 className="loginpaneltext">Login</h2>
+                      <img className="loginheaderimage" src={loginImage} alt="Login" />
                     </div>
 
                     <div className="loginform">
@@ -188,20 +183,8 @@ function Login() {
                         >
                           {IsLoading ? "Logging in..." : LockedSeconds > 0 ? "Login locked" : "Log in"}
                         </button>
-
-                        <a className="roleswitchlink" href="#" onClick={(event) => {
-                            event.preventDefault();
-                            SetLoginType("admin");
-                          }}>
-                          Super Admin?
-                        </a>
                       </form>
                     </div>
-                  </>
-                  ) : (
-                    <SuperAdminLogin showTeacher={() => SetLoginType("teacher")} onForgotPassword={() => SetForgotPassword(true)} />
-                  )}
-
                   <button
                     className="mobilegamelink"
                     type="button"
