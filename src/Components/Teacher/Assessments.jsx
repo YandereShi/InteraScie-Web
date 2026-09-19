@@ -1,10 +1,12 @@
 import "../../css/Assessments.css";
 import { useEffect, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useOutletContext } from "react-router";
 import { supabase } from "../../lib/supabase";
 import { GetAssessmentOptions, GetAssessmentScores, GetAssessmentScoresQueryKey, assessmentOptionsQueryKey } from "../../lib/assessmentQueries";
 import Questions from "./Questions";
 import TeacherPage from "./TeacherPage";
+import { GetPageSelection, SavePageSelection } from "../../lib/pageSelection";
 
 const maxRows = 10;
 const maxLessons = 3;
@@ -36,10 +38,12 @@ function GetBranches(levels) {
 }
 
 function Assessments() {
+  const { teacher } = useOutletContext();
+  const authUserID = teacher.authUserID;
   const queryClient = useQueryClient();
   const [view, setView] = useState("scores");
-  const [selectedSection, setSelectedSection] = useState("");
-  const [selectedBranch, setSelectedBranch] = useState("");
+  const [selectedSection, setSelectedSection] = useState(() => GetPageSelection(authUserID, "Assessments", "Section"));
+  const [selectedBranch, setSelectedBranch] = useState(() => GetPageSelection(authUserID, "Assessments", "Branch"));
   const [page, setPage] = useState(1);
   const [sort, setSort] = useState({ key: null, order: "asc" });
 
@@ -132,12 +136,16 @@ function Assessments() {
   }, [branch, queryClient, scoreQueryKey, sectionID, staffID]);
 
   function PickSection(event) {
-    setSelectedSection(event.target.value);
+    const value = event.target.value;
+    setSelectedSection(value);
+    SavePageSelection(authUserID, "Assessments", "Section", value);
     setPage(1);
   }
 
   function PickBranch(event) {
-    setSelectedBranch(event.target.value);
+    const value = event.target.value;
+    setSelectedBranch(value);
+    SavePageSelection(authUserID, "Assessments", "Branch", value);
     setPage(1);
   }
 

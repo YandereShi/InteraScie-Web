@@ -1,11 +1,12 @@
 import "../../css/Progress.css";
-import {useEffect,useMemo,useState,} from "react";
-import {useMutation,useQuery,useQueryClient,} from "@tanstack/react-query";
+import { useEffect, useMemo, useState } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useOutletContext } from "react-router";
 import { FaCheck } from "react-icons/fa";
 import { TbProgress } from "react-icons/tb";
 import { supabase } from "../../lib/supabase";
-import {GetLessonAccess,GetProgressOptions,GetSectionProgress,UpdateLessonAccess,} from "../../lib/progressQueries";
+import { GetLessonAccess, GetProgressOptions, GetSectionProgress, UpdateLessonAccess } from "../../lib/progressQueries";
+import { GetPageSelection, SavePageSelection } from "../../lib/pageSelection";
 import TeacherPage from "./TeacherPage";
 
 const maxRows = 10;
@@ -15,9 +16,10 @@ const emptyList = [];
 
 function Progress() {
   const { teacher } = useOutletContext();
+  const authUserID = teacher.authUserID;
   const queryClient = useQueryClient();
-  const [selectedSection, setSelectedSection] = useState("");
-  const [selectedBranch, setSelectedBranch] = useState("");
+  const [selectedSection, setSelectedSection] = useState(() => GetPageSelection(authUserID, "Progress", "Section"));
+  const [selectedBranch, setSelectedBranch] = useState(() => GetPageSelection(authUserID, "Progress", "Branch"));
   const [page, setPage] = useState(1);
 
   const optionsQuery = useQuery({
@@ -301,12 +303,16 @@ function Progress() {
   ]);
 
   function PickSection(event) {
-    setSelectedSection(event.target.value);
+    const value = event.target.value;
+    setSelectedSection(value);
+    SavePageSelection(authUserID, "Progress", "Section", value);
     setPage(1);
   }
 
   function PickBranch(event) {
-    setSelectedBranch(event.target.value);
+    const value = event.target.value;
+    setSelectedBranch(value);
+    SavePageSelection(authUserID, "Progress", "Branch", value);
     setPage(1);
   }
 

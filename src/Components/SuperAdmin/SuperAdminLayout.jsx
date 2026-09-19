@@ -47,7 +47,7 @@ function SuperAdminLayout() {
     return (
         <div className="superadminlayout">
             <SuperAdminSidebar superadmin={superadmin} />
-            <Outlet />
+            <Outlet context={{ superadmin }} />
         </div>
     );
 }

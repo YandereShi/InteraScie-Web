@@ -6,19 +6,23 @@ import SectionPopup from "./SectionPopup";
 import SectionStudentCard from "./SectionStudentCard";
 import { useContext, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useOutletContext } from "react-router";
 import { limits } from "../../lib/inputLimits";
 import { InvokeStudentManagement } from "../../lib/supabase";
 import { DeleteSection, GetNoSectionStudents, GetSections, GetSectionStudents, GetSectionStudentsQueryKey, noSectionStudentsQueryKey, sectionsQueryKey } from "../../lib/sectionQueries";
 import { superAdminDashboardQueryKey, teacherDashboardQueryKey } from "../../lib/dashboardQueries";
 import { PopupContext } from "../../lib/PopupContext";
 import { GetStudents, studentQueryKey } from "../../lib/studentQueries";
+import { GetPageSelection, SavePageSelection } from "../../lib/pageSelection";
 
 const maxRows = 12;
 
 function Sections({ PageComponent = TeacherPage }) {
+  const { teacher, superadmin } = useOutletContext();
+  const authUserID = teacher?.authUserID ?? superadmin?.authUserID ?? "";
   const queryClient = useQueryClient();
   const { ShowConfirmation } = useContext(PopupContext);
-  const [selectedSection, setSelectedSection] = useState("");
+  const [selectedSection, setSelectedSection] = useState(() => GetPageSelection(authUserID, "Sections", "Section"));
   const [selected, setSelected] = useState([]);
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
@@ -112,7 +116,9 @@ function Sections({ PageComponent = TeacherPage }) {
   }
 
   function PickSection(event) {
-    setSelectedSection(event.target.value);
+    const value = event.target.value;
+    setSelectedSection(value);
+    SavePageSelection(authUserID, "Sections", "Section", value);
     setSearch("");
     setSelected([]);
     setPage(1);
@@ -230,6 +236,7 @@ function Sections({ PageComponent = TeacherPage }) {
         exact: true,
       });
       setSelectedSection("");
+      SavePageSelection(authUserID, "Sections", "Section", "");
       setSelected([]);
       setSearch("");
       setPage(1);
@@ -356,7 +363,9 @@ function Sections({ PageComponent = TeacherPage }) {
       sectionName: name,
     });
 
-    setSelectedSection(String(data.sectionID ?? ""));
+    const createdSection = String(data.sectionID ?? "");
+    setSelectedSection(createdSection);
+    SavePageSelection(authUserID, "Sections", "Section", createdSection);
     setSearch("");
     setSelected([]);
     setPage(1);
