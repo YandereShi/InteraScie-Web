@@ -3,6 +3,7 @@ import TeacherPage from "./TeacherPage";
 import AddPopup from "./AddPopup";
 import BatchStudentPopup from "./BatchStudentPopup";
 import SectionPopup from "./SectionPopup";
+import SectionStudentCard from "./SectionStudentCard";
 import { useContext, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { limits } from "../../lib/inputLimits";
@@ -12,7 +13,7 @@ import { superAdminDashboardQueryKey, teacherDashboardQueryKey } from "../../lib
 import { PopupContext } from "../../lib/PopupContext";
 import { GetStudents, studentQueryKey } from "../../lib/studentQueries";
 
-const maxRows = 10;
+const maxRows = 12;
 
 function Sections({ PageComponent = TeacherPage }) {
   const queryClient = useQueryClient();
@@ -440,20 +441,12 @@ function Sections({ PageComponent = TeacherPage }) {
             {!loading &&
               !error &&
               shown.map((student) => (
-                <div className="sectionrow" key={student.studentID}>
-                  <span>
-                    {student.lastName}, {student.firstName}
-                  </span>
-
-                  <input
-                    type="checkbox"
-                    checked={selected.includes(student.studentID)}
-                    aria-label={`Select ${student.firstName} ${student.lastName}`}
-                    onChange={(event) =>
-                      SelectOne(student.studentID, event.target.checked)
-                    }
-                  />
-                </div>
+                <SectionStudentCard
+                  key={student.studentID}
+                  student={student}
+                  isSelected={selected.includes(student.studentID)}
+                  onSelect={SelectOne}
+                />
               ))}
           </div>
 
