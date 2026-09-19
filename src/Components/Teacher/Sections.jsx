@@ -1,6 +1,7 @@
 import "../../css/Sections.css";
 import TeacherPage from "./TeacherPage";
 import AddPopup from "./AddPopup";
+import BatchStudentPopup from "./BatchStudentPopup";
 import SectionPopup from "./SectionPopup";
 import { useContext, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -9,6 +10,7 @@ import { InvokeStudentManagement } from "../../lib/supabase";
 import { DeleteSection, GetNoSectionStudents, GetSections, GetSectionStudents, GetSectionStudentsQueryKey, noSectionStudentsQueryKey, sectionsQueryKey } from "../../lib/sectionQueries";
 import { superAdminDashboardQueryKey, teacherDashboardQueryKey } from "../../lib/dashboardQueries";
 import { PopupContext } from "../../lib/PopupContext";
+import { GetStudents, studentQueryKey } from "../../lib/studentQueries";
 
 const maxRows = 10;
 
@@ -20,6 +22,8 @@ function Sections({ PageComponent = TeacherPage }) {
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const [addOpen, setAddOpen] = useState(false);
+  const [batchOpen, setBatchOpen] = useState(false);
+  const [batchStudents, setBatchStudents] = useState([]);
   const [createOpen, setCreateOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
 
@@ -263,6 +267,57 @@ function Sections({ PageComponent = TeacherPage }) {
     setAddOpen(false);
   }
 
+  async function OpenBatch() {
+    if (!sectionID || !activeSection || isNoSection) {
+      throw new Error("Select a section before uploading students.");
+    }
+
+    const data = await queryClient.fetchQuery({
+      queryKey: studentQueryKey,
+      queryFn: GetStudents,
+      staleTime: 5 * 60 * 1000,
+    });
+
+    setBatchStudents(data.students ?? []);
+    setAddOpen(false);
+    setBatchOpen(true);
+  }
+
+  function CloseBatch() {
+    setBatchOpen(false);
+  }
+
+  async function HandleBatchUpload(batchData) {
+    if (!sectionID || isNoSection || Number(batchData.sectionID) !== sectionID) {
+      throw new Error("The selected section is no longer available.");
+    }
+
+    const result = await InvokeStudentManagement("batchcreate", {
+      sectionID,
+      students: batchData.students,
+    });
+
+    setBatchStudents((current) => [...current, ...(result.created ?? [])]);
+    setSelected([]);
+    setSearch("");
+    setPage(1);
+
+    await Promise.all([
+      RefreshSectionStudents(),
+      RefreshDashboards(),
+      queryClient.invalidateQueries({
+        queryKey: studentQueryKey,
+        exact: true,
+      }),
+    ]);
+
+    if (!result.failed?.length) {
+      CloseBatch();
+    }
+
+    return result;
+  }
+
   async function AddStudents(studentIDs) {
     if (!sectionID) {
       throw new Error("No active section was selected.");
@@ -360,6 +415,20 @@ function Sections({ PageComponent = TeacherPage }) {
             </button>
           </div>
 
+          <div className="sectionselectrow">
+            <div className="sectioncheck">
+              <label htmlFor="sectionall">Select All</label>
+
+              <input
+                type="checkbox"
+                id="sectionall"
+                checked={allChecked}
+                disabled={filtered.length === 0}
+                onChange={SelectAll}
+              />
+            </div>
+          </div>
+
           <div className="sectionlist">
             {loading && <p className="sectionnote">Loading students...</p>}
             {error && <p className="sectionnote">{error}</p>}
@@ -389,18 +458,6 @@ function Sections({ PageComponent = TeacherPage }) {
           </div>
 
           <div className="sectionfoot">
-            <div className="sectioncheck">
-              <input
-                type="checkbox"
-                id="sectionall"
-                checked={allChecked}
-                disabled={filtered.length === 0}
-                onChange={SelectAll}
-              />
-
-              <label htmlFor="sectionall">Select All</label>
-            </div>
-
             <div className="sectionpager">
               <button
                 type="button"
@@ -448,6 +505,18 @@ function Sections({ PageComponent = TeacherPage }) {
           error={addError}
           onClose={CloseAdd}
           onAdd={AddStudents}
+          onOpenBatch={OpenBatch}
+        />
+      )}
+
+      {batchOpen && (
+        <BatchStudentPopup
+          Sections={[activeSection]}
+          initialSectionID={sectionID}
+          lockSection
+          students={batchStudents}
+          OnClose={CloseBatch}
+          OnUpload={HandleBatchUpload}
         />
       )}
 

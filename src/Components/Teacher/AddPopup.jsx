@@ -7,10 +7,12 @@ function AddPopup({
   error,
   onClose,
   onAdd,
+  onOpenBatch,
 }) {
   const [selected, setSelected] = useState([]);
   const [search, setSearch] = useState("");
   const [saving, setSaving] = useState(false);
+  const [openingBatch, setOpeningBatch] = useState(false);
   const [saveError, setSaveError] = useState("");
 
   const term = search.trim().toLowerCase();
@@ -72,7 +74,7 @@ function AddPopup({
   async function submitAdd(event) {
     event.preventDefault();
 
-    if (selected.length === 0) {
+    if (selected.length === 0 || saving || openingBatch) {
       return;
     }
 
@@ -88,10 +90,26 @@ function AddPopup({
     }
   }
 
+  async function OpenBatchUpload() {
+    if (saving || openingBatch) {
+      return;
+    }
+
+    setOpeningBatch(true);
+    setSaveError("");
+
+    try {
+      await onOpenBatch();
+    } catch (batchError) {
+      setSaveError(batchError.message || "Unable to open batch upload.");
+      setOpeningBatch(false);
+    }
+  }
+
   return (
     <div
       className="addoverlay"
-      onMouseDown={onClose}
+      onMouseDown={saving || openingBatch ? undefined : onClose}
     >
       <div
         className="addpopup"
@@ -107,6 +125,7 @@ function AddPopup({
             className="addclose"
             aria-label="Close popup"
             onClick={onClose}
+            disabled={saving || openingBatch}
           >
             x
           </button>
@@ -191,11 +210,21 @@ function AddPopup({
 
           <div className="addactions">
             <button
+              type="button"
+              className="addbatchbutton"
+              onClick={OpenBatchUpload}
+              disabled={saving || openingBatch}
+            >
+              {openingBatch ? "Loading..." : "Batch Upload"}
+            </button>
+
+            <button
               type="submit"
               className="addbutton"
               disabled={
                 selected.length === 0 ||
                 saving ||
+                openingBatch ||
                 loading ||
                 Boolean(error)
               }

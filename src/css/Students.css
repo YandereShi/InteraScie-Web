@@ -30,6 +30,16 @@
   gap: 10px;
 }
 
+.studentselectrow {
+  display: flex;
+  justify-content: flex-end;
+  padding: 0 40px 10px;
+}
+
+.studentselectrow .check {
+  margin: 0;
+}
+
 .studentspanel button{
   border-radius: 5px;
   padding: 5px 10px;
@@ -183,6 +193,10 @@
     padding: 15px 20px;
   }
 
+  .studentselectrow {
+    padding-right: 20px;
+  }
+
   .studentcontainer {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     padding: 15px;
@@ -229,6 +243,19 @@
     flex: 1;
   }
 
+  .studentselectrow {
+    padding: 0 12px 8px;
+  }
+
+  .studentselectrow .check {
+    gap: 5px;
+  }
+
+  .studentselectrow .check label {
+    font-size: 0.9rem;
+    white-space: nowrap;
+  }
+
   .studentcontainer {
     flex: 1;
     width: 100%;
@@ -247,6 +274,10 @@
     grid-template-columns: 1fr auto;
     gap: 10px;
     padding: 0 12px 12px;
+  }
+
+  .studentspagination {
+    grid-template-columns: 1fr auto 1fr;
   }
 
   .add {

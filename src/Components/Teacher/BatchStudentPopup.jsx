@@ -52,10 +52,12 @@ function MakeNameKey(firstname, lastname) {
 function BatchStudentPopup({
   Sections,
   students = [],
+  initialSectionID = "",
+  lockSection = false,
   OnClose,
   OnUpload,
 }) {
-  const [SectionID, SetSectionID] = useState("");
+  const [SectionID, SetSectionID] = useState(String(initialSectionID));
   const [Rows, SetRows] = useState([]);
   const [FileName, SetFileName] = useState("");
   const [FileError, SetFileError] = useState("");
@@ -273,7 +275,7 @@ function BatchStudentPopup({
             onChange={(Event) =>
               SetSectionID(Event.target.value)
             }
-            disabled={IsUploading}
+            disabled={IsUploading || lockSection}
             required
           >
             <option value="" disabled>

@@ -102,7 +102,24 @@
 .addactions {
   display: flex;
   justify-content: flex-end;
+  gap: 10px;
   padding-top: 10px;
+}
+
+.addbatchbutton {
+  min-width: 125px;
+  padding: 8px 16px;
+  background-color: #006b3c;
+  color: #ffffff;
+  border: none;
+  border-radius: 22px;
+  font-size: 1.1rem;
+  cursor: pointer;
+}
+
+.addbatchbutton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .addbutton {
@@ -182,5 +199,11 @@
     min-width: 100px;
     padding: 7px 18px;
     font-size: 1rem;
+  }
+
+  .addbatchbutton {
+    min-width: 0;
+    padding: 7px 12px;
+    font-size: 0.9rem;
   }
 }

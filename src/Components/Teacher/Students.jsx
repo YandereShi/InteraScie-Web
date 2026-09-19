@@ -298,6 +298,19 @@ function Students({ PageComponent = TeacherPage }) {
             </div>
           </div>
 
+          <div className="studentselectrow">
+            <div className="check">
+              <label htmlFor="selectall">Select All</label>
+
+              <input
+                type="checkbox"
+                id="selectall"
+                checked={allChecked}
+                onChange={HandleSelectAll}
+              />
+            </div>
+          </div>
+
           <div className="studentcontainer">
             {loadingStudents && <p>Loading students...</p>}
             {studentError && <p>{studentError}</p>}
@@ -319,18 +332,7 @@ function Students({ PageComponent = TeacherPage }) {
               ))}
           </div>
 
-          <div className="studentcontrols">
-            <div className="check">
-              <input
-                type="checkbox"
-                id="selectall"
-                checked={allChecked}
-                onChange={HandleSelectAll}
-              />
-
-              <label htmlFor="selectall">Select All</label>
-            </div>
-
+          <div className="studentcontrols studentspagination">
             <div className="pagination">
               <button
                 type="button"
