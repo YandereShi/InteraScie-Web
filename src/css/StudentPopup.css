@@ -7,16 +7,16 @@
   align-items: center;
   justify-content: center;
 
-  background-color: rgba(0, 0, 0, 0.45);
+  background-color: color-mix(in srgb, #000000 45%, transparent);
 }
 
 .studentpopup {
   width: 520px;
   padding: 20px;
 
-  background-color: white;
+  background-color: #ffffff;
   border-radius: 5px;
-  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.35);
+  box-shadow: 0 5px 20px color-mix(in srgb, #000000 35%, transparent);
 }
 
 .studentpopupheader {
@@ -25,7 +25,7 @@
   justify-content: space-between;
 
   padding-bottom: 12px;
-  border-bottom: 1px solid black;
+  border-bottom: 1px solid #000000;
 }
 
 .studentpopupheader h2 {
@@ -112,7 +112,7 @@
 
 .savestudent {
   background-color: #00bf63;
-  color: white;
+  color: #ffffff;
 }
 
 .studentpopupactions button:disabled {

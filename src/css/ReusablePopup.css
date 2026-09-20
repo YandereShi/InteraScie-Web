@@ -6,15 +6,15 @@
   align-items: center;
   justify-content: center;
   padding: 20px;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: color-mix(in srgb, #000000 50%, transparent);
 }
 
 .reusablepopup {
   width: min(100%, 420px);
   padding: 25px;
-  background-color: white;
+  background-color: #ffffff;
   border-radius: 6px;
-  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.35);
+  box-shadow: 0 5px 20px color-mix(in srgb, #000000 35%, transparent);
 }
 
 .reusablepopup p {
@@ -41,17 +41,17 @@
 
 .reusablepopupcancel {
   background-color: #dddddd;
-  color: black;
+  color: #000000;
 }
 
 .reusablepopupok {
   background-color: #00bf63;
-  color: white;
+  color: #ffffff;
 }
 
 .reusablepopupdanger {
   background-color: #d00000;
-  color: white;
+  color: #ffffff;
 }
 
 @media (max-width: 480px) {

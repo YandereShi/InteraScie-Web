@@ -10,7 +10,7 @@
   flex-direction: column;
   width: 100%;
   min-width: 0;
-  border:black 1px solid;
+  border:#000000 1px solid;
   border-radius: 5px;
   box-shadow: 0 1px 5px #000000;
 }
@@ -104,7 +104,7 @@
 
 .add button{
   background-color: #00bf63;
-  color: white;
+  color: #ffffff;
   border: none;
   font-weight: bold;
   border-radius: 50px;
@@ -124,7 +124,7 @@
   align-items: center;
   justify-content: center;
   background-color: #00bf63;
-  color: white;
+  color: #ffffff;
   border: none;
   border-radius: 50%;
   font-size: 2.5rem;
@@ -151,17 +151,17 @@
   cursor: pointer;
 }
 
-#addmobile {
+#aaddddmobile {
   display: none;
   background-color: #006b3c;
-  color: white;
+  color: #ffffff;
   border: none;
   font-weight: bold;
 }
 
 #batch {
   background-color: #00bf63;
-  color: white;
+  color: #ffffff;
   border: none;
   font-weight: bold;
   border-radius: 5px;
@@ -171,7 +171,7 @@
 
 #remove {
   background-color: #ff0000;
-  color: white;
+  color: #ffffff;
   border: none;
   font-weight: bold;
   border-radius: 5px;
@@ -284,7 +284,7 @@
     display: none;
   }
 
-  #addmobile {
+  #aaddddmobile {
     display: block;
   }
 }

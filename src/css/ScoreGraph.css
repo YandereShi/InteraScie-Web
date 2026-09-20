@@ -2,10 +2,10 @@
   width: 100%;
   min-width: 0;
   padding: 12px;
-  border: 1px solid #888;
+  border: 1px solid #888888;
   border-radius: 16px;
   box-sizing: border-box;
-  background-color: white;
+  background-color: #ffffff;
 }
 
 .scoregraph h3 {
@@ -21,7 +21,7 @@
 
 .scoregraphclick:hover {
   transform: translateY(-3px);
-  box-shadow: 0 5px 12px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 5px 12px color-mix(in srgb, #000000 20%, transparent);
 }
 
 .scoregraphclick:focus-visible {

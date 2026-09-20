@@ -124,7 +124,7 @@
 }
 
 .progressswitch input:focus-visible + .progressslider {
-  outline: 3px solid rgba(0, 191, 99, 0.3);
+  outline: 3px solid color-mix(in srgb, #00bf63 30%, transparent);
   outline-offset: 2px;
 }
 

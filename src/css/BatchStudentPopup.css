@@ -6,7 +6,7 @@
     align-items: center;
     justify-content: center;
     padding: 1rem;
-    background-color: rgba(0, 0, 0, .5);
+    background-color: color-mix(in srgb, #000000 50%, transparent);
 }
 
 .batchpopup {
@@ -16,7 +16,7 @@
     overflow-y: auto;
     background-color: #ffffff;
     border-radius: 8px;
-    box-shadow: 0 5px 20px rgba(0, 0, 0, .35);
+    box-shadow: 0 5px 20px color-mix(in srgb, #000000 35%, transparent);
 }
 
 .batchheader {

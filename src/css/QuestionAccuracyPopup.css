@@ -7,7 +7,7 @@
   justify-content: center;
   padding: 24px;
   box-sizing: border-box;
-  background: rgba(0, 0, 0, 0.55);
+  background: color-mix(in srgb, #000000 55%, transparent);
 }
 
 .accuracypopup {
@@ -20,7 +20,7 @@
   overflow: hidden;
   background: #ffffff;
   border-radius: 16px;
-  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 14px 40px color-mix(in srgb, #000000 30%, transparent);
 }
 
 .accuracyheader {

@@ -36,11 +36,11 @@
   border-radius: 12px;
   background: #ffffff;
   color: #17251d;
-  box-shadow: 0 14px 40px #0004;
+  box-shadow: 0 14px 40px color-mix(in srgb, #000000 26.666667%, transparent);
 }
 
 .staffprofiledialog::backdrop {
-  background: #0008;
+  background: color-mix(in srgb, #000000 53.333333%, transparent);
 }
 
 .staffprofiledialog h2 {

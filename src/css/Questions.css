@@ -14,7 +14,7 @@
   flex-direction: column;
   border: 1px solid #8e8e8e;
   background-color: #ffffff;
-  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 1px 5px color-mix(in srgb, #000000 20%, transparent);
 }
 
 .questiontools {

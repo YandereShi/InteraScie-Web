@@ -5,7 +5,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: rgba(0, 0, 0, 0.45);
+  background-color: color-mix(in srgb, #000000 45%, transparent);
 }
 
 .createpopup {
@@ -13,7 +13,7 @@
   padding: 20px 24px;
   background-color: #ffffff;
   border-radius: 5px;
-  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.35);
+  box-shadow: 0 5px 20px color-mix(in srgb, #000000 35%, transparent);
 }
 
 .createhead {

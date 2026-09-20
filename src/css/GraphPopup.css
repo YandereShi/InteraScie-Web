@@ -9,7 +9,7 @@
   align-items: center;
   justify-content: center;
 
-  background-color: rgba(0, 0, 0, 0.55);
+  background-color: color-mix(in srgb, #000000 55%, transparent);
   overscroll-behavior: contain;
 }
 
@@ -22,7 +22,7 @@
 
   background-color: #ffffff;
   border-radius: 16px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+  box-shadow: 0 8px 24px color-mix(in srgb, #000000 35%, transparent);
 }
 
 .graphhead {
