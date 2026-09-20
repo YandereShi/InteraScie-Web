@@ -1,5 +1,6 @@
 import "../../css/AddPopup.css";
 import { useState } from "react";
+import { limits } from "../../lib/inputLimits";
 
 function AddPopup({
   students,
@@ -136,6 +137,7 @@ function AddPopup({
             className="addsearch"
             type="text"
             placeholder="Search students..."
+            maxLength={limits.search}
             value={search}
             onChange={(event) =>
               setSearch(event.target.value)

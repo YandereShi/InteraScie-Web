@@ -47,8 +47,8 @@ function TeacherPopup({ sections, onClose, onSave }) {
             return;
         }
 
-        if (email.trim().length > limits.username) {
-            setSaveError(`Email must be ${limits.username} characters or fewer.`);
+        if (email.trim().length > limits.email) {
+            setSaveError(`Email must be ${limits.email} characters or fewer.`);
             return;
         }
 
@@ -144,7 +144,7 @@ function TeacherPopup({ sections, onClose, onSave }) {
                         <input
                             type="email"
                             id="teacheremail"
-                            maxLength={limits.username}
+                            maxLength={limits.email}
                             value={email}
                             onChange={(event) =>
                                 setEmail(event.target.value)

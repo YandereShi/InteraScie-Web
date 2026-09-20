@@ -401,6 +401,7 @@ function Sections({ PageComponent = TeacherPage }) {
               <input
                 type="text"
                 placeholder="Search students..."
+                maxLength={limits.search}
                 value={search}
                 onChange={ChangeSearch}
               />

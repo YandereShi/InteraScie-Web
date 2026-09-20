@@ -260,6 +260,7 @@ function Students({ PageComponent = TeacherPage }) {
               <input
                 type="text"
                 placeholder="Search students..."
+                maxLength={limits.search}
                 value={search}
                 onChange={(event) => {
                   setSearch(event.target.value);

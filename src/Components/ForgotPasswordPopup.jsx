@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { supabase } from "../lib/supabase";
+import { limits } from "../lib/inputLimits";
 import "../css/PasswordRecovery.css";
 
 function ForgotPasswordPopup({ onclose }) {
@@ -53,7 +54,7 @@ function ForgotPasswordPopup({ onclose }) {
         <form onSubmit={SendResetLink}>
           <p>Enter the email registered to your staff account.</p>
           <label htmlFor="recoveryemail">Account email</label>
-          <input id="recoveryemail" name="email" type="email" autoComplete="email" required disabled={loading} />
+          <input id="recoveryemail" name="email" type="email" autoComplete="email" maxLength={limits.email} required disabled={loading} />
           {message && <p className="recoveryerror" role="alert">{message}</p>}
           <button className="recoveryprimary" type="submit" disabled={loading}>{loading ? "Sending..." : "Send reset link"}</button>
           <button className="recoverysecondary" type="button" onClick={onclose} disabled={loading}>Cancel</button>

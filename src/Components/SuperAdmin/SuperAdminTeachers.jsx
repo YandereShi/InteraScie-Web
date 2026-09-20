@@ -8,6 +8,7 @@ import TeacherCard from "./TeacherCard";
 import TeacherPopup from "./TeacherPopup";
 import TeacherSectionPopup from "./TeacherSectionPopup";
 import { PopupContext } from "../../lib/PopupContext";
+import { limits } from "../../lib/inputLimits";
 
 const maxCards = 12;
 
@@ -210,6 +211,7 @@ function SuperAdminTeachers() {
                             <input
                                 type="text"
                                 placeholder="Search teachers..."
+                                maxLength={limits.search}
                                 value={search}
                                 onChange={(event) => {
                                     setSearch(event.target.value);

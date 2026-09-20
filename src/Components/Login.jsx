@@ -3,6 +3,7 @@ import loginImage from "../assets/Login.png";
 import { useEffect, useState } from "react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import ForgotPasswordPopup from "./ForgotPasswordPopup";
+import { limits } from "../lib/inputLimits";
 import { supabase } from "../lib/supabase";
 import { useNavigate } from "react-router";
 import interascie from "../assets/InteraScie.png";
@@ -145,6 +146,7 @@ function Login() {
                           name="email"
                           placeholder="example@gmail.com"
                           autoComplete="email"
+                          maxLength={limits.email}
                           required
                         />
 
@@ -155,6 +157,7 @@ function Login() {
                             id="password"
                             name="password"
                             placeholder="Password"
+                            maxLength={limits.loginpassword}
                             required
                           />
 
