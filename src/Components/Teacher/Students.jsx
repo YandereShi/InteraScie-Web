@@ -281,7 +281,7 @@ function Students({ PageComponent = TeacherPage }) {
 
               <button
                 type="button"
-                id="addmobile"
+                className="studentadd"
                 onClick={OpenAddPopup}
                 disabled={loadingStudents || sections.length === 0}
               >
@@ -360,15 +360,6 @@ function Students({ PageComponent = TeacherPage }) {
           </div>
         </div>
 
-        <div className="add">
-          <button
-            type="button"
-            onClick={OpenAddPopup}
-            disabled={loadingStudents || sections.length === 0}
-          >
-            +
-          </button>
-        </div>
       </section>
 
       {isPopupOpen && (

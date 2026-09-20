@@ -356,6 +356,17 @@ function Questions({ sectionID, sectionName, onBack }) {
 
   return (
     <section className="questionspanel">
+      <div className="questionshead">
+        <span className="questionssection">Section: {sectionName || "No section selected"}</span>
+        <button
+          type="button"
+          className="questionsback"
+          onClick={onBack}
+        >
+          View Scores &rarr;
+        </button>
+      </div>
+
       <div className="questionsbox">
         <div className="questiontools">
           <select
@@ -410,14 +421,24 @@ function Questions({ sectionID, sectionName, onBack }) {
             <span className="switchmark"></span>
           </label>
 
-          <button
-            type="button"
-            className="questiondelete"
-            disabled={selected.length === 0}
-            onClick={DeleteQuestions}
-          >
-            Delete Selected
-          </button>
+          <div className="questionbuttons">
+            <button
+              type="button"
+              className="questionadd"
+              disabled={!lesson || !staffID}
+              onClick={OpenAdd}
+            >
+              Add Question
+            </button>
+            <button
+              type="button"
+              className="questiondelete"
+              disabled={selected.length === 0}
+              onClick={DeleteQuestions}
+            >
+              Delete Selected
+            </button>
+          </div>
         </div>
 
         <div className="questiongrid">
@@ -490,26 +511,6 @@ function Questions({ sectionID, sectionName, onBack }) {
             </button>
           </div>
         </div>
-      </div>
-
-      <div className="questionsside">
-        <button
-          type="button"
-          className="questionsback"
-          onClick={onBack}
-        >
-          View Scores &rarr;
-        </button>
-
-        <button
-          type="button"
-          className="questionadd"
-          aria-label="Add question"
-          disabled={!lesson || !staffID}
-          onClick={OpenAdd}
-        >
-          +
-        </button>
       </div>
 
       {open && (
