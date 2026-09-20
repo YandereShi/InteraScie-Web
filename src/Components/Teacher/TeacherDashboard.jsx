@@ -5,11 +5,14 @@ import { PiStudentFill } from "react-icons/pi";
 import { TbUsersGroup } from "react-icons/tb";
 import { supabase } from "../../lib/supabase";
 import { GetTeacherDashboard, teacherDashboardQueryKey } from "../../lib/dashboardQueries";
+import { GetBranchAccuracy, GetBranchAccuracyQueryKey, accuracyBranches } from "../../lib/questionAccuracyQueries";
 import TeacherPage from "./TeacherPage";
 import ScoreGraph from "./ScoreGraph";
 import GraphPopup from "./GraphPopup";
+import QuestionAccuracyPopup from "./QuestionAccuracyPopup";
 
 const emptyDashboard = {
+  staffID: null,
   sections: [],
   students: [],
   levels: [],
@@ -65,6 +68,7 @@ function TeacherDashboard() {
   const [branch, setBranch] = useState("Chemistry");
   const [active, setActive] = useState(null);
   const [section, setSection] = useState("all");
+  const [accuracyOpen, setAccuracyOpen] = useState(false);
 
   const dashboardQuery = useQuery({
     queryKey: [...teacherDashboardQueryKey, branch],
@@ -73,7 +77,12 @@ function TeacherDashboard() {
   });
 
   const dashboard = dashboardQuery.data ?? emptyDashboard;
-  const { sections, students, levels, tests, scores } = dashboard;
+  const { staffID, sections, students, levels, tests, scores } = dashboard;
+  const accuracyQuery = useQuery({
+    queryKey: GetBranchAccuracyQueryKey(staffID),
+    queryFn: () => GetBranchAccuracy(staffID),
+    enabled: Boolean(staffID),
+  });
   const studentTotal = students.length;
   const sectionTotal = sections.length;
   const loading = dashboardQuery.isPending;
@@ -207,24 +216,61 @@ function TeacherDashboard() {
   return (
     <TeacherPage title="Teacher Dashboard">
       <section className="dashboardpanel">
-        <div className="dashboardtotals">
-          <div className="totalcard totalstudentcard">
-            <PiStudentFill className="totalicon" aria-hidden="true" />
+        <div className="dashboardoverview">
+          <div className="dashboardtotals">
+            <div className="totalcard totalstudentcard">
+              <PiStudentFill className="totalicon" aria-hidden="true" />
 
-            <div className="totaldetails">
-              <h2>Total Students</h2>
-              <p>{loading ? "Loading..." : studentTotal}</p>
+              <div className="totaldetails">
+                <h2>Total Students</h2>
+                <p>{loading ? "Loading..." : studentTotal}</p>
+              </div>
+            </div>
+
+            <div className="totalcard totalsectioncard">
+              <TbUsersGroup className="totalicon" aria-hidden="true" />
+
+              <div className="totaldetails">
+                <h2>Total Sections</h2>
+                <p>{loading ? "Loading..." : sectionTotal}</p>
+              </div>
             </div>
           </div>
 
-          <div className="totalcard totalsectioncard">
-            <TbUsersGroup className="totalicon" aria-hidden="true" />
+          <button type="button" className="accuracycard" onClick={() => setAccuracyOpen(true)}>
+            <span className="accuracycardtitle">Question Accuracy</span>
+            <span className="accuracycardcontent">
+              {accuracyBranches.map((item) => {
+                const summary = accuracyQuery.data?.[item];
+                const percentage = summary?.total > 0
+                  ? Math.round((summary.correct / summary.total) * 100)
+                  : null;
+                const pending = loading || (Boolean(staffID) && accuracyQuery.isPending);
+                const value = pending ? "…" : percentage === null ? "—" : `${percentage}%`;
 
-            <div className="totaldetails">
-              <h2>Total Sections</h2>
-              <p>{loading ? "Loading..." : sectionTotal}</p>
-            </div>
-          </div>
+                return (
+                  <span className="accuracycardbranch" key={item}>
+                    <span
+                      className={percentage === null || pending ? "accuracycardring empty" : "accuracycardring"}
+                      style={percentage === null || pending ? undefined : {
+                        background: `conic-gradient(#77d75b 0 ${percentage}%, #ff343c ${percentage}% 100%)`,
+                      }}
+                      role="img"
+                      aria-label={pending
+                        ? `${item}: loading accuracy`
+                        : percentage === null
+                          ? `${item}: no answers yet`
+                          : `${item}: ${percentage}% correct`}
+                    >
+                      <span>{value}</span>
+                    </span>
+                    <span className="accuracycardbranchname">{item}</span>
+                  </span>
+                );
+              })}
+            </span>
+            {accuracyQuery.isError && <span className="accuracycarderror">Unable to load accuracy.</span>}
+          </button>
         </div>
 
         {error && <p className="dashboardmessage">{error}</p>}
@@ -272,6 +318,13 @@ function TeacherDashboard() {
             onPick={setSection}
             onClose={CloseGraph}
             GetCompareData={GetCompareData}
+          />
+        )}
+
+        {accuracyOpen && (
+          <QuestionAccuracyPopup
+            initialBranch={branch}
+            onClose={() => setAccuracyOpen(false)}
           />
         )}
       </section>

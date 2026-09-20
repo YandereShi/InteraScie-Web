@@ -39,6 +39,7 @@ export async function GetTeacherDashboard(branch) {
 
   if (sectionIDs.length === 0) {
     return {
+      staffID: staff.staffID,
       sections,
       students: [],
       levels: [],
@@ -110,6 +111,7 @@ export async function GetTeacherDashboard(branch) {
   }
 
   return {
+    staffID: staff.staffID,
     sections,
     students,
     levels,

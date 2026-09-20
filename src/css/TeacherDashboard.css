@@ -4,6 +4,13 @@
   box-sizing: border-box;
 }
 
+.dashboardoverview {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+  align-items: stretch;
+}
+
 .dashboardtotals {
   width: 100%;
   min-height: 180px;
@@ -19,6 +26,127 @@
   border: 1px solid #dddddd;
   border-radius: 20px;
   box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+}
+
+.dashboardoverview .dashboardtotals {
+  gap: 16px;
+}
+
+.dashboardoverview .totalcard {
+  container-type: inline-size;
+  width: min(335px, calc((100% - 16px) / 2));
+  padding: 20px;
+  gap: 16px;
+}
+
+.dashboardoverview .totalicon {
+  width: clamp(36px, 30cqw, 85px);
+  height: clamp(36px, 30cqw, 85px);
+}
+
+.dashboardoverview .totaldetails h2 {
+  font-size: clamp(0.85rem, 9cqw, 1.7rem);
+  white-space: normal;
+}
+
+.dashboardoverview .totaldetails p {
+  font-size: clamp(1.2rem, 15cqw, 2.5rem);
+}
+
+.accuracycard {
+  container-type: inline-size;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: center;
+  gap: 10px;
+  min-height: 180px;
+  padding: 18px 20px;
+  border: 1px solid #dddddd;
+  border-radius: 20px;
+  background: #ffffff;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+  color: #111111;
+  text-align: left;
+  cursor: pointer;
+}
+
+.accuracycard:hover,
+.accuracycard:focus-visible {
+  border-color: #aeb7c2;
+  box-shadow: 0 5px 12px rgba(0, 0, 0, 0.18);
+}
+
+.accuracycard:hover .accuracycardcontent,
+.accuracycard:focus-visible .accuracycardcontent {
+  border-color: #aeb7c2;
+  background: #e9edf2;
+}
+
+.accuracycardtitle {
+  font-size: clamp(0.9rem, 4cqw, 1.6rem);
+  font-weight: 800;
+  color: #00bf6f;
+}
+
+.accuracycardcontent {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  align-items: center;
+  gap: clamp(6px, 1.5cqw, 16px);
+  min-height: 112px;
+  padding: 12px;
+  box-sizing: border-box;
+  border: 1px solid #d8dde3;
+  border-radius: 14px;
+  background: #f3f5f7;
+}
+
+.accuracycardbranch {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.accuracycardring {
+  display: grid;
+  place-items: center;
+  width: clamp(50px, 11cqw, 82px);
+  height: clamp(50px, 11cqw, 82px);
+  border-radius: 50%;
+  background: #ff343c;
+}
+
+.accuracycardring.empty {
+  background: #cbd0d6;
+}
+
+.accuracycardring span {
+  display: grid;
+  place-items: center;
+  width: 72%;
+  height: 72%;
+  border-radius: 50%;
+  background: #ffffff;
+  color: #111111;
+  font-size: clamp(0.68rem, 2.4cqw, 0.95rem);
+  font-weight: 800;
+}
+
+.accuracycardbranchname {
+  color: #252b31;
+  font-size: clamp(0.72rem, 2.4cqw, 0.95rem);
+  font-weight: 700;
+  line-height: 1.15;
+  text-align: center;
+}
+
+.accuracycarderror {
+  color: #c8202c;
+  font-size: 0.85rem;
 }
 
 .totalcard {
@@ -120,10 +248,24 @@
   width: 100%;
 }
 
+@media (max-width: 1450px) {
+  .dashboardoverview {
+    grid-template-columns: 1fr;
+  }
+
+  .accuracycard {
+    min-height: 140px;
+  }
+}
+
 /* Smaller desktop and tablet */
 @media (max-width: 1100px) {
   .dashboardpanel {
     padding-right: 20px;
+  }
+
+  .dashboardoverview .totalcard {
+    padding: 14px;
   }
 
   .dashboardtotals {
@@ -167,6 +309,22 @@
 @media (max-width: 768px) {
   .dashboardpanel {
     padding-right: 0;
+  }
+
+  .dashboardoverview {
+    gap: 12px;
+  }
+
+  .accuracycard {
+    min-height: 115px;
+    padding: 14px;
+    border-radius: 12px;
+  }
+
+  .accuracycardcontent {
+    min-height: 88px;
+    padding: 8px;
+    border-radius: 10px;
   }
 
   .dashboardtotals {
@@ -225,6 +383,15 @@
 }
 
 @media (max-width: 550px) {
+  .accuracycardcontent {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  .dashboardoverview .totalcard {
+    padding: 10px 6px;
+  }
+
   .totalcard {
     min-height: 120px;
     padding: 10px 6px;
