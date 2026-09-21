@@ -223,7 +223,7 @@ function SuperAdminTeachers() {
                         <div className="buttons">
                             <button
                                 type="button"
-                                id="addmobile"
+                                className="studentadd"
                                 onClick={OpenPopup}
                                 disabled={loading}
                             >
@@ -305,17 +305,6 @@ function SuperAdminTeachers() {
                             </button>
                         </div>
                     </div>
-                </div>
-
-                <div className="add">
-                    <button
-                        type="button"
-                        onClick={OpenPopup}
-                        disabled={loading}
-                        aria-label="Add teacher"
-                    >
-                        +
-                    </button>
                 </div>
             </section>
 

@@ -52,18 +52,18 @@ function Downloadpage() {
                                 <span>ANDROID</span>
                             </span>
                         </a>
-                        <button
+                        <a
                             className="downloadbutton"
-                            type="button"
-                            title="Windows download is not available yet"
-                            disabled
+                            href="https://github.com/YandereShi/InteraScieDownloads/releases/download/1.0.0/InteraScie.zip"
+                            download="InteraScie.zip"
+                            title="Download InteraScie for Windows"
                         >
                             <FaWindows className="downloadbuttonicon" />
                             <span className="downloadbuttonlabel">
                                 <span>Download For</span>
                                 <span>WINDOWS</span>
                             </span>
-                        </button>
+                        </a>
                     </div>
                 </div>
                 <div className="downloadright"></div>

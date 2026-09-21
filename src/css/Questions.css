@@ -123,11 +123,12 @@
 }
 
 .questiondelete {
-  background-color: #ff6b6b;
+  background-color: #ff0000;
+  color: #ffffff;
 }
 
 .questionadd {
-  background-color: #55bd68;
+  background-color: #00bf63;
   color: #ffffff;
   border-radius: 6px;
 }

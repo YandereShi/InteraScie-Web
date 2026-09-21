@@ -1,12 +1,10 @@
 import "../../css/TeacherLayout.css";
 import { useEffect } from "react";
-import {
-  useQuery,
-  useQueryClient,
-} from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Outlet, useNavigate } from "react-router";
 import { supabase } from "../../lib/supabase";
 import { GetTeacherProfile } from "../../lib/staffQueries";
+import RealtimeSync from "../RealtimeSync";
 import TeacherSidebar from "./TeacherSideBar";
 
 function TeacherLayout() {
@@ -43,6 +41,7 @@ function TeacherLayout() {
 
   return (
     <div className="teacherlayout">
+      <RealtimeSync />
       <TeacherSidebar teacher={teacher} />
       <Outlet context={{ teacher }} />
     </div>

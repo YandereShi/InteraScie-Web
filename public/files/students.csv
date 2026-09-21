@@ -9,3 +9,8 @@
 ,,,,,
 ,,,,"after pasting all the students name, save the file",
 ,,,,then click CHOOSE CSV and choose this file,
+,,,,,
+,,,,The username of the students that are generated in batch upload will use this username and password:,
+,,,,,
+,,,,Username: firstname.lastname (example: anna.santos),
+,,,,Password: firstname_lastname (example: anna_santos),

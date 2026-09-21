@@ -2,6 +2,7 @@ import "../../css/SuperAdminLayout.css";
 import { useEffect, useState } from "react";
 import { Outlet, useNavigate } from "react-router";
 import { supabase } from "../../lib/supabase";
+import RealtimeSync from "../RealtimeSync";
 import SuperAdminSidebar from "./SuperAdminSidebar";
 
 function SuperAdminLayout() {
@@ -46,6 +47,7 @@ function SuperAdminLayout() {
 
     return (
         <div className="superadminlayout">
+            <RealtimeSync />
             <SuperAdminSidebar superadmin={superadmin} />
             <Outlet context={{ superadmin }} />
         </div>

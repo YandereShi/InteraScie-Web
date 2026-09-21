@@ -15,7 +15,7 @@ import { PopupContext } from "../../lib/PopupContext";
 import { GetStudents, studentQueryKey } from "../../lib/studentQueries";
 import { GetPageSelection, SavePageSelection } from "../../lib/pageSelection";
 
-const maxRows = 12;
+const maxRows = 15;
 
 function Sections({ PageComponent = TeacherPage }) {
   const { teacher, superadmin } = useOutletContext();
