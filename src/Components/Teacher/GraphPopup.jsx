@@ -2,6 +2,21 @@ import "../../css/GraphPopup.css";
 import { useEffect, useState } from "react";
 import ScoreGraph from "./ScoreGraph";
 
+function GetAccuracy(data) {
+  const students = data.reduce((total, item) => total + item.students, 0);
+
+  if (students === 0) {
+    return null;
+  }
+
+  const points = data.reduce(
+    (total, item) => total + item.score * item.students,
+    0
+  );
+
+  return Math.round((points / (students * 15)) * 1000) / 10;
+}
+
 function GraphPopup({
   title,
   data,
@@ -49,6 +64,8 @@ function GraphPopup({
   );
   const reddata = compare && redid ? GetCompareData(redid) : [];
   const greendata = compare && greenid ? GetCompareData(greenid) : [];
+  const redaccuracy = GetAccuracy(reddata);
+  const greenaccuracy = GetAccuracy(greendata);
   const maximum = Math.max(
     1,
     ...reddata.map((item) => item.students),
@@ -148,6 +165,19 @@ function GraphPopup({
                   tabIndex={0}
                 >
                   <div className="comparechart">
+                    <div className="compareaccuracy" aria-label="Section accuracy">
+                      <div className="compareaccuracyupper">
+                        <span className="compareaccuracyvalue compareredaccuracy" title={`${redsection.sectionName} accuracy`}>
+                          {redaccuracy === null ? "—" : `${redaccuracy.toFixed(1)}%`}
+                        </span>
+                      </div>
+                      <div className="compareaccuracyspacer" />
+                      <div className="compareaccuracylower">
+                        <span className="compareaccuracyvalue comparegreenaccuracy" title={`${greensection.sectionName} accuracy`}>
+                          {greenaccuracy === null ? "—" : `${greenaccuracy.toFixed(1)}%`}
+                        </span>
+                      </div>
+                    </div>
                     {reddata.map((item, index) => {
                       const redcount = item.students;
                       const greencount = greendata[index]?.students ?? 0;

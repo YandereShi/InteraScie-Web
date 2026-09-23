@@ -239,9 +239,40 @@
 
 .comparechart {
   display: grid;
-  grid-template-columns: repeat(16, minmax(44px, 1fr));
-  min-width: 704px;
+  grid-template-columns: 84px repeat(16, minmax(44px, 1fr));
+  min-width: 788px;
   padding: 28px 0;
+}
+
+.compareaccuracyupper,
+.compareaccuracylower {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 170px;
+}
+
+.compareaccuracyspacer {
+  height: 38px;
+}
+
+.compareaccuracyvalue {
+  padding: 6px;
+  border-radius: 6px;
+  background-color: #ffffff;
+  font-size: 0.9rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.compareredaccuracy {
+  color: #c8202c;
+  border: 1px solid #c8202c;
+}
+
+.comparegreenaccuracy {
+  color: #007f43;
+  border: 1px solid #007f43;
 }
 
 .comparecolumn {
@@ -330,6 +361,8 @@
     min-height: 42px;
   }
 
+  .compareaccuracyupper,
+  .compareaccuracylower,
   .compareupper,
   .comparelower {
     height: 130px;
