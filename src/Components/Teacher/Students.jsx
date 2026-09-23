@@ -226,8 +226,6 @@ function Students({ PageComponent = TeacherPage }) {
       student.lastName,
       `${student.firstName} ${student.lastName}`,
       `${student.lastName} ${student.firstName}`,
-      student.username,
-      student.section,
     ];
 
     return searchable.some((value) =>

@@ -24,7 +24,6 @@ function AddPopup({
       student.lastName,
       `${student.firstName} ${student.lastName}`,
       `${student.lastName} ${student.firstName}`,
-      student.username,
     ];
 
     return values.some((value) =>

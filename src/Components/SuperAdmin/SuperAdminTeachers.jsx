@@ -39,16 +39,11 @@ function SuperAdminTeachers() {
     const error = actionError || queryError;
     const searchterm = search.trim().toLowerCase();
     const filteredTeachers = teachers.filter((teacher) => {
-        const sections = (teacher.sections ?? [])
-            .map((section) => section.sectionName)
-            .join(" ");
         const searchable = [
             teacher.firstName,
             teacher.lastName,
             `${teacher.firstName} ${teacher.lastName}`,
             `${teacher.lastName} ${teacher.firstName}`,
-            teacher.username,
-            sections,
         ];
 
         return searchable.some((value) =>

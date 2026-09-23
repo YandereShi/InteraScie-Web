@@ -9,6 +9,7 @@ import QuestionPopup from "./QuestionPopup";
 import { limits } from "../../lib/inputLimits";
 import { PopupContext } from "../../lib/PopupContext";
 
+const maxQuestions = 15;
 const maxCards = 6;
 const emptyQuestions = {
   test: null,
@@ -183,20 +184,36 @@ function Questions({ sectionID, sectionName, onBack }) {
     setPage(1);
   }
 
-  function ToggleAssessmentAccess() {
+  async function ToggleAssessmentAccess() {
     if (
       !sectionID ||
       !levelID ||
-      questions.length === 0 ||
       accessMutation.isPending
     ) {
+      return;
+    }
+
+    if (
+      !isAssessmentEnabled &&
+      questions.length !== maxQuestions
+    ) {
+      await ShowConfirmation(
+        `The assessment requires exactly ${maxQuestions} questions before it can be opened. Current questions: ${questions.length}.`
+      );
       return;
     }
 
     accessMutation.mutate(!isAssessmentEnabled);
   }
 
-  function OpenAdd() {
+  async function OpenAdd() {
+    if (questions.length >= maxQuestions) {
+      await ShowConfirmation(
+        `This assessment already contains the maximum of ${maxQuestions} questions.`
+      );
+      return;
+    }
+
     setCurrent(null);
     setNumber(questions.length + 1);
     setOpen(true);
@@ -229,6 +246,12 @@ function Questions({ sectionID, sectionName, onBack }) {
   }
 
   async function SaveQuestion(form) {
+    if (!current && questions.length >= maxQuestions) {
+      throw new Error(
+        `This assessment can only contain ${maxQuestions} questions.`
+      );
+    }
+
     if (form.text.length > limits.question) {
       throw new Error(`Question must be ${limits.question} characters or fewer.`);
     }
@@ -412,7 +435,6 @@ function Questions({ sectionID, sectionName, onBack }) {
                 loading ||
                 !sectionID ||
                 !levelID ||
-                questions.length === 0 ||
                 accessMutation.isPending
               }
               onChange={ToggleAssessmentAccess}
@@ -425,7 +447,11 @@ function Questions({ sectionID, sectionName, onBack }) {
             <button
               type="button"
               className="questionadd"
-              disabled={!lesson || !staffID}
+              disabled={
+                !lesson ||
+                !staffID ||
+                questions.length >= maxQuestions
+              }
               onClick={OpenAdd}
             >
               Add Question
