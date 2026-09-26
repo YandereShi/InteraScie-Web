@@ -1,105 +1,124 @@
 .dashboardpanel {
+  display: grid;
+  grid-template-columns: minmax(175px, 1.1fr) minmax(0, 2.5fr) minmax(200px, 1.2fr);
+  grid-template-areas:
+    "totals progress radar"
+    "performance performance accuracy";
+  gap: 22px;
   width: 100%;
   padding-right: 30px;
   box-sizing: border-box;
+  align-items: stretch;
 }
 
-.dashboardoverview {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 18px;
-  align-items: stretch;
+.dashboardpanel > * {
+  min-width: 0;
+}
+
+.dashboardtile,
+.dashboardpanel .performance,
+.dashboardpanel .accuracycard {
+  border: 1px solid #DDE5DF;
+  border-radius: 18px;
+  background-color: #FFFFFF;
+  box-shadow: 0 5px 18px #E1E8E3;
 }
 
 .dashboardtotals {
-  width: 100%;
-  min-height: 180px;
-  padding: 25px;
-  box-sizing: border-box;
-
+  grid-area: totals;
   display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 14px;
+}
+
+.dashboardpanel .totalcard {
+  display: flex;
+  flex: 1;
   align-items: center;
-  justify-content: center;
-  gap: 55px;
-
-  background-color: #ffffff;
-  border: 1px solid #dddddd;
-  border-radius: 20px;
-  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+  gap: 12px;
+  min-width: 0;
+  min-height: 96px;
+  padding: 14px;
+  box-sizing: border-box;
+  color: #FFFFFF;
+  border-radius: 12px;
 }
 
-.dashboardoverview .dashboardtotals {
-  gap: 16px;
+.dashboardpanel .totalstudentcard {
+  background-color: #006B3C;
 }
 
-.dashboardoverview .totalcard {
-  container-type: inline-size;
-  width: min(335px, calc((100% - 16px) / 2));
-  padding: 20px;
-  gap: 16px;
+.dashboardpanel .totalsectioncard {
+  background-color: #118BF2;
 }
 
-.dashboardoverview .totalicon {
-  width: clamp(36px, 30cqw, 85px);
-  height: clamp(36px, 30cqw, 85px);
+.dashboardpanel .totalicon {
+  width: clamp(28px, 24%, 48px);
+  height: auto;
+  max-height: 48px;
+  flex-shrink: 0;
 }
 
-.dashboardoverview .totaldetails h2 {
-  font-size: clamp(0.85rem, 9cqw, 1.7rem);
-  white-space: normal;
+.dashboardpanel .totaldetails {
+  min-width: 0;
 }
 
-.dashboardoverview .totaldetails p {
-  font-size: clamp(1.2rem, 15cqw, 2.5rem);
+.dashboardpanel .totaldetails h2 {
+  margin: 0;
+  font-size: clamp(0.75rem, 1.15vw, 1rem);
+  line-height: 1.2;
+  overflow-wrap: anywhere;
+}
+
+.dashboardpanel .totaldetails p {
+  margin: 4px 0 0;
+  font-size: clamp(1.5rem, 2.4vw, 2.2rem);
+  font-weight: 800;
+  line-height: 1;
 }
 
 .accuracycard {
+  grid-area: accuracy;
   container-type: inline-size;
   display: flex;
   flex-direction: column;
-  align-items: stretch;
-  justify-content: center;
+  justify-content: flex-start;
   gap: 10px;
-  min-height: 180px;
-  padding: 18px 20px;
-  border: 1px solid #dddddd;
-  border-radius: 20px;
-  background: #ffffff;
-  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
-  color: #111111;
+  min-height: 310px;
+  padding: 16px;
+  color: #153D2B;
   text-align: left;
   cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .accuracycard:hover,
 .accuracycard:focus-visible {
-  border-color: #aeb7c2;
-  box-shadow: 0 5px 12px rgba(0, 0, 0, 0.18);
+  transform: translateY(-3px);
+  box-shadow: 0 5px 12px color-mix(in srgb, #000000 20%, transparent);
 }
 
-.accuracycard:hover .accuracycardcontent,
-.accuracycard:focus-visible .accuracycardcontent {
-  border-color: #aeb7c2;
-  background: #e9edf2;
+.accuracycard:focus-visible {
+  outline: 3px solid #00BF63;
+  outline-offset: 3px;
 }
 
 .accuracycardtitle {
-  font-size: clamp(0.9rem, 4cqw, 1.6rem);
+  font-size: clamp(1rem, 6cqw, 1.5rem);
   font-weight: 800;
-  color: #00bf6f;
+  color: #006B3C;
 }
 
 .accuracycardcontent {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   align-items: center;
-  gap: clamp(6px, 1.5cqw, 16px);
-  min-height: 112px;
-  padding: 12px;
-  box-sizing: border-box;
-  border: 1px solid #d8dde3;
+  gap: 7px;
+  margin-block: auto;
+  padding: 10px 8px;
   border-radius: 14px;
-  background: #f3f5f7;
+  background-color: #F2F7F4;
 }
 
 .accuracycardbranch {
@@ -107,21 +126,20 @@
   min-width: 0;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: 6px;
+  gap: 5px;
 }
 
 .accuracycardring {
   display: grid;
   place-items: center;
-  width: clamp(50px, 11cqw, 82px);
-  height: clamp(50px, 11cqw, 82px);
+  width: clamp(44px, 25cqw, 64px);
+  aspect-ratio: 1;
   border-radius: 50%;
-  background: #ff343c;
+  background-color: #FF343C;
 }
 
 .accuracycardring.empty {
-  background: #cbd0d6;
+  background-color: #CBD0D6;
 }
 
 .accuracycardring span {
@@ -130,109 +148,120 @@
   width: 72%;
   height: 72%;
   border-radius: 50%;
-  background: #ffffff;
+  background-color: #FFFFFF;
   color: #111111;
-  font-size: clamp(0.68rem, 2.4cqw, 0.95rem);
+  font-size: clamp(0.68rem, 2.6cqw, 0.92rem);
   font-weight: 800;
 }
 
 .accuracycardbranchname {
-  color: #252b31;
-  font-size: clamp(0.72rem, 2.4cqw, 0.95rem);
+  max-width: 100%;
+  color: #25382C;
+  font-size: clamp(0.7rem, 4cqw, 0.9rem);
   font-weight: 700;
   line-height: 1.15;
+  overflow-wrap: anywhere;
   text-align: center;
 }
 
 .accuracycarderror {
-  color: #c8202c;
+  color: #C8202C;
   font-size: 0.85rem;
 }
 
-.totalcard {
-  width: 335px;
-  min-height: 140px;
-  padding: 20px;
-  box-sizing: border-box;
-
-  display: flex;
-  align-items: center;
-  gap: 25px;
-
-  color: #ffffff;
-  border-radius: 16px;
-}
-
-.totalstudentcard {
-  background-color: #006b3c;
-}
-
-.totalsectioncard {
-  background-color: #118bf2;
-}
-
-.totalicon {
-  width: 85px;
-  height: 85px;
-  flex-shrink: 0;
-}
-
-.totaldetails {
+.dashboardradar {
+  grid-area: radar;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  align-items: center;
+  padding: 16px 12px 10px;
+  box-sizing: border-box;
+  overflow: hidden;
 }
 
-.totaldetails h2 {
+.dashboardtilehead {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.dashboardtilehead h2 {
   margin: 0;
-  font-size: 1.7rem;
+  color: #006B3C;
+  font-size: clamp(1rem, 1.5vw, 1.35rem);
+  line-height: 1.15;
+}
+
+.dashboardtilehead span {
+  color: #617269;
+  font-size: 0.72rem;
   white-space: nowrap;
 }
 
-.totaldetails p {
-  margin: 5px 0 0;
-  font-size: 2.5rem;
-  font-weight: bold;
+.dashboardradarchart {
+  width: min(100%, 240px);
+  height: auto;
+  margin: auto 0;
+  overflow: visible;
 }
 
-.error-message {
-  margin: 15px 0 0;
-  color: #d00000;
+.dashboardradarlabel {
+  fill: #355445;
+  font-family: Arial, sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.dashboardradarnote {
+  margin: 0;
+  color: #617269;
+  font-size: 0.78rem;
+  text-align: center;
+}
+
+.dashboardtilemessage {
+  margin: auto 0;
+  color: #617269;
+  font-size: 0.9rem;
   text-align: center;
 }
 
 .performance {
-  width: 100%;
-  margin-top: 30px;
-  padding: 25px;
+  grid-area: performance;
+  min-height: 350px;
+  padding: 16px;
   box-sizing: border-box;
+}
 
-  background-color: #ffffff;
-  border: 1px solid #dddddd;
-  border-radius: 20px;
-  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+.dashboardmessage {
+  margin: 0 0 15px;
+  color: #C8202C;
 }
 
 .performancehead {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 25px;
+  gap: 15px;
+  margin-bottom: 12px;
 }
 
 .performancehead h2 {
   margin: 0;
-  color: #00bf6f;
-  font-size: 1.8rem;
+  color: #006B3C;
+  font-size: clamp(1.35rem, 2vw, 1.8rem);
 }
 
 .performancehead select {
-  min-width: 180px;
+  min-width: 160px;
   padding: 8px 12px;
-  font-size: 1.1rem;
-  border: 1px solid #555555;
-  border-radius: 6px;
-  background-color: #ffffff;
+  border: 1px solid #89988E;
+  border-radius: 8px;
+  background-color: #FFFFFF;
+  color: #153D2B;
+  font-size: 1rem;
   cursor: pointer;
 }
 
@@ -244,60 +273,205 @@
 .charts {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 30px;
+  gap: 12px;
   width: 100%;
 }
 
-@media (max-width: 1450px) {
-  .dashboardoverview {
-    grid-template-columns: 1fr;
-  }
-
-  .accuracycard {
-    min-height: 140px;
-  }
+.dashboardprogress {
+  grid-area: progress;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-height: 250px;
+  padding: 18px 20px;
+  box-sizing: border-box;
 }
 
-@media (max-width: 1100px) {
+.dashboardprogresshead {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.dashboardprogresshead h2 {
+  margin: 0;
+  color: #006B3C;
+  font-size: clamp(1.1rem, 1.6vw, 1.4rem);
+}
+
+.dashboardprogresshead p {
+  margin: 3px 0 0;
+  color: #617269;
+  font-size: 0.8rem;
+}
+
+.dashboardprogresshead select {
+  min-width: 125px;
+  max-width: 45%;
+  padding: 6px 8px;
+  border: 1px solid #89988E;
+  border-radius: 7px;
+  background-color: #FFFFFF;
+  color: #153D2B;
+  font-size: 0.85rem;
+}
+
+.dashboardprogressrows {
+  display: flex;
+  flex-direction: column;
+  min-height: 175px;
+}
+
+.dashboardprogressgroup {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+
+.dashboardprogressgroup h3 {
+  margin: 0;
+  padding: 3px 0;
+  color: #006B3C;
+  font-size: 0.82rem;
+}
+
+.dashboardprogressrowhead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 5px;
+}
+
+.dashboardprogressrowhead strong {
+  color: #153D2B;
+  font-size: 0.85rem;
+}
+
+.dashboardprogressrowhead span {
+  color: #526A5C;
+  font-size: 0.76rem;
+  text-align: right;
+}
+
+.dashboardprogressbar {
+  display: flex;
+  width: 100%;
+  height: 17px;
+  overflow: hidden;
+  border-radius: 999px;
+  background-color: #1F1F1F;
+}
+
+.dashboardprogressbar span {
+  display: block;
+  height: 100%;
+}
+
+.dashboardprogressfinished,
+.legendfinished {
+  background-color: #00BF63;
+}
+
+.dashboardprogressongoing,
+.legendongoing {
+  background-color: #9AA3A9;
+}
+
+.dashboardprogressnotstarted,
+.legendnotstarted {
+  background-color: #1F1F1F;
+}
+
+.dashboardprogressfooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: auto;
+}
+
+.dashboardprogresslegend {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.dashboardprogresslegend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: #526A5C;
+  font-size: 0.72rem;
+  white-space: nowrap;
+}
+
+.dashboardprogresslegend i {
+  width: 9px;
+  height: 9px;
+  border-radius: 2px;
+}
+
+.dashboardprogresspagination {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.dashboardprogresspagination button {
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border: 0;
+  background-color: transparent;
+  color: #153D2B;
+  font-size: 1.4rem;
+  cursor: pointer;
+}
+
+.dashboardprogresspagination button:hover:not(:disabled),
+.dashboardprogresspagination button:focus-visible:not(:disabled) {
+  color: #00BF63;
+}
+
+.dashboardprogresspagination button:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.dashboardprogresspagination span {
+  min-width: 46px;
+  color: #153D2B;
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-align: center;
+  white-space: nowrap;
+}
+
+@media (max-width: 1150px) {
   .dashboardpanel {
+    grid-template-columns: minmax(180px, 1fr) minmax(0, 2fr);
+    grid-template-areas:
+      "totals progress"
+      "radar accuracy"
+      "performance performance";
+    gap: 16px;
     padding-right: 20px;
   }
 
-  .dashboardoverview .totalcard {
-    padding: 14px;
+  .dashboardradar {
+    min-height: 280px;
   }
 
-  .dashboardtotals {
-    padding: 20px;
-    gap: 20px;
-  }
-
-  .totalcard {
-    width: 300px;
-    min-height: 125px;
-    gap: 20px;
-  }
-
-  .totalicon {
-    width: 70px;
-    height: 70px;
-  }
-
-  .totaldetails h2 {
-    font-size: 1.4rem;
+  .dashboardradarchart {
+    max-width: 220px;
   }
 }
 
 @media (max-width: 900px) {
-  .dashboardtotals {
-    flex-direction: row;
-    align-items: stretch;
-  }
-
-  .totalcard {
-    width: min(calc((100% - 20px) / 2), 380px);
-  }
-
   .charts {
     grid-template-columns: 1fr;
   }
@@ -305,116 +479,78 @@
 
 @media (max-width: 768px) {
   .dashboardpanel {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      "totals"
+      "progress"
+      "radar"
+      "performance"
+      "accuracy";
+    gap: 14px;
     padding-right: 0;
   }
 
-  .dashboardoverview {
-    gap: 12px;
+  .dashboardtotals {
+    flex-direction: row;
+  }
+
+  .dashboardpanel .totalcard {
+    min-height: 90px;
   }
 
   .accuracycard {
-    min-height: 115px;
-    padding: 14px;
-    border-radius: 12px;
+    min-height: 280px;
+    padding: 16px;
   }
 
-  .accuracycardcontent {
-    min-height: 88px;
-    padding: 8px;
-    border-radius: 10px;
+  .dashboardradar {
+    min-height: 300px;
   }
 
+  .performance,
+  .dashboardprogress {
+    padding: 18px;
+  }
+}
+
+@media (max-width: 480px) {
   .dashboardtotals {
-    min-height: 0;
-    padding: 15px;
-    gap: 10px;
-    border-radius: 12px;
+    padding: 10px;
+    gap: 8px;
   }
 
-  .totalcard {
-    width: min(calc((100% - 10px) / 2), 300px);
-    min-height: 90px;
-    padding: 12px;
-    gap: 12px;
-    border-radius: 12px;
+  .dashboardpanel .totalcard {
+    flex-direction: column;
+    justify-content: center;
+    gap: 4px;
+    padding: 10px 5px;
+    text-align: center;
   }
 
-  .totalicon {
-    width: 50px;
-    height: 50px;
+  .dashboardpanel .totalicon {
+    width: 30px;
+    height: 30px;
   }
 
-  .totaldetails h2 {
-    font-size: clamp(1.1rem, 5vw, 1.4rem);
+  .dashboardpanel .totaldetails h2 {
+    font-size: 0.78rem;
   }
 
-  .totaldetails p {
-    font-size: 2rem;
+  .dashboardpanel .totaldetails p {
+    font-size: 1.5rem;
   }
 
-  .performance {
-    margin-top: 20px;
-    padding: 15px;
-    border-radius: 12px;
+  .dashboardprogresshead {
+    flex-wrap: wrap;
   }
 
   .performancehead {
     align-items: stretch;
     flex-direction: column;
-    gap: 12px;
-    margin-bottom: 18px;
-  }
-
-  .performancehead h2 {
-    font-size: 1.5rem;
   }
 
   .performancehead select {
     width: 100%;
     min-width: 0;
-  }
-
-  .charts {
-    gap: 16px;
-  }
-}
-
-@media (max-width: 550px) {
-  .accuracycardcontent {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 12px;
-  }
-
-  .dashboardoverview .totalcard {
-    padding: 10px 6px;
-  }
-
-  .totalcard {
-    min-height: 120px;
-    padding: 10px 6px;
-    gap: 5px;
-
-    flex-direction: column;
-    justify-content: center;
-    text-align: center;
-  }
-
-  .totalicon {
-    width: 38px;
-    height: 38px;
-  }
-
-  .totaldetails {
-    align-items: center;
-  }
-
-  .totaldetails h2 {
-    font-size: 0.9rem;
-    white-space: normal;
-  }
-
-  .totaldetails p {
-    margin-top: 2px;
-    font-size: 1.5rem;
   }
 }

@@ -120,6 +120,110 @@ export async function GetTeacherDashboard(branch) {
   };
 }
 
+export async function GetTeacherRadarData(staffID, studentIDs) {
+  const { data: levels, error: levelError } = await supabase
+    .from("Level")
+    .select("levelID, levelName, branchName")
+    .order("levelID", { ascending: true });
+
+  if (levelError) {
+    throw new Error("Unable to load radar levels.");
+  }
+
+  const levelList = levels ?? [];
+
+  if (!staffID || studentIDs.length === 0 || levelList.length === 0) {
+    return levelList.map((level) => ({ ...level, accuracy: null }));
+  }
+
+  const { data: assessments, error: assessmentError } = await supabase
+    .from("Assessment")
+    .select("assessmentID, levelID")
+    .eq("staffID", staffID);
+
+  if (assessmentError) {
+    throw new Error("Unable to load radar assessments.");
+  }
+
+  const assessmentList = assessments ?? [];
+
+  if (assessmentList.length === 0) {
+    return levelList.map((level) => ({ ...level, accuracy: null }));
+  }
+
+  const { data: scores, error: scoreError } = await supabase
+    .from("StudentAssessment")
+    .select("assessmentID, score, totalQuestions")
+    .in("studentID", studentIDs)
+    .in("assessmentID", assessmentList.map((item) => item.assessmentID));
+
+  if (scoreError) {
+    throw new Error("Unable to load radar scores.");
+  }
+
+  const totals = new Map();
+  const assessmentLevels = new Map(
+    assessmentList.map((item) => [item.assessmentID, item.levelID])
+  );
+
+  (scores ?? []).forEach((item) => {
+    if (item.score === null || item.score === undefined || item.score === "") {
+      return;
+    }
+
+    const score = Number(item.score);
+    const questions = Number(item.totalQuestions);
+    const levelID = assessmentLevels.get(item.assessmentID);
+
+    if (!levelID || !Number.isFinite(score) || !Number.isFinite(questions) || questions <= 0) {
+      return;
+    }
+
+    const current = totals.get(levelID) ?? { correct: 0, questions: 0 };
+    current.correct += score;
+    current.questions += questions;
+    totals.set(levelID, current);
+  });
+
+  return levelList.map((level) => {
+    const total = totals.get(level.levelID);
+
+    return {
+      ...level,
+      accuracy: total ? Math.round((total.correct / total.questions) * 100) : null,
+    };
+  });
+}
+
+export async function GetTeacherLevelProgress(studentIDs) {
+  const { data: levels, error: levelError } = await supabase
+    .from("Level")
+    .select("levelID, levelName, branchName")
+    .order("levelID", { ascending: true });
+
+  if (levelError) {
+    throw new Error("Unable to load dashboard levels.");
+  }
+
+  const levelList = levels ?? [];
+
+  if (studentIDs.length === 0 || levelList.length === 0) {
+    return { levels: levelList, records: [] };
+  }
+
+  const { data, error } = await supabase
+    .from("Progress")
+    .select("studentID, levelID, status")
+    .in("studentID", studentIDs)
+    .in("levelID", levelList.map((item) => item.levelID));
+
+  if (error) {
+    throw new Error("Unable to load dashboard progress.");
+  }
+
+  return { levels: levelList, records: data ?? [] };
+}
+
 export async function GetSuperAdminDashboard() {
   const { data, error } = await supabase.functions.invoke(
     "superadmindashboard"
