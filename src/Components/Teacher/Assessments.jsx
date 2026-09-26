@@ -4,6 +4,9 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useOutletContext } from "react-router";
 import { supabase } from "../../lib/supabase";
 import { GetAssessmentOptions, GetAssessmentScores, GetAssessmentScoresQueryKey, assessmentOptionsQueryKey } from "../../lib/assessmentQueries";
+import { GetStudentPhotoPath } from "../../lib/profilePhotos";
+import studentImage from "../../assets/pfp.png";
+import ProfilePhoto from "../ProfilePhoto";
 import Questions from "./Questions";
 import TeacherPage from "./TeacherPage";
 import { GetPageSelection, SavePageSelection } from "../../lib/pageSelection";
@@ -360,7 +363,7 @@ function Assessments() {
                   </th>
                 </tr>
 
-                <tr>
+                <tr className="assessmentlabels">
                   <th>
                     <button
                       type="button"
@@ -431,7 +434,17 @@ function Assessments() {
                   shown.map((student) => (
                     <tr key={student.studentID}>
                       <td>
-                        {student.lastName}, {student.firstName}
+                        <span className="assessmentstudent">
+                          <ProfilePhoto
+                            path={GetStudentPhotoPath(student.studentID)}
+                            fallback={studentImage}
+                            className="assessmentstudentphoto"
+                            alt=""
+                          />
+                          <span className="assessmentstudentname" title={`${student.lastName}, ${student.firstName}`}>
+                            {student.lastName}, {student.firstName}
+                          </span>
+                        </span>
                       </td>
 
                       {Array.from(

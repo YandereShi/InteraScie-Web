@@ -7,6 +7,9 @@ import { TbProgress } from "react-icons/tb";
 import { supabase } from "../../lib/supabase";
 import { GetLessonAccess, GetProgressOptions, GetSectionProgress, UpdateLessonAccess } from "../../lib/progressQueries";
 import { GetPageSelection, SavePageSelection } from "../../lib/pageSelection";
+import { GetStudentPhotoPath } from "../../lib/profilePhotos";
+import studentImage from "../../assets/pfp.png";
+import ProfilePhoto from "../ProfilePhoto";
 import TeacherPage from "./TeacherPage";
 
 const maxRows = 10;
@@ -712,8 +715,17 @@ function Progress() {
                 shown.map((student) => (
                   <tr key={student.studentID}>
                     <td>
-                      {student.lastName},{" "}
-                      {student.firstName}
+                      <span className="progressstudent">
+                        <ProfilePhoto
+                          path={GetStudentPhotoPath(student.studentID)}
+                          fallback={studentImage}
+                          className="progressstudentphoto"
+                          alt=""
+                        />
+                        <span className="progressstudentname" title={`${student.lastName}, ${student.firstName}`}>
+                          {student.lastName}, {student.firstName}
+                        </span>
+                      </span>
                     </td>
 
                     {Array.from(
