@@ -1,6 +1,7 @@
 import "../../css/Questions.css";
 import { useContext, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { FaLock, FaLockOpen } from "react-icons/fa";
 import { supabase } from "../../lib/supabase";
 import { GetAssessmentAccess, GetAssessmentAccessQueryKey, GetAssessmentOptions, GetAssessmentQuestions, GetAssessmentQuestionsQueryKey, UpdateAssessmentAccess, assessmentOptionsQueryKey } from "../../lib/assessmentQueries";
 import { teacherDashboardQueryKey } from "../../lib/dashboardQueries";
@@ -440,7 +441,9 @@ function Questions({ sectionID, sectionName, onBack }) {
               onChange={ToggleAssessmentAccess}
               aria-label={`Open Assessment for ${sectionName || "selected section"}`}
             />
-            <span className="switchmark"></span>
+            <span className="switchmark" aria-hidden="true">
+              {isAssessmentEnabled ? <FaLockOpen /> : <FaLock />}
+            </span>
           </label>
 
           <div className="questionbuttons">

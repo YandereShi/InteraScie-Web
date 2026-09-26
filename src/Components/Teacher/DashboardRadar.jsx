@@ -1,86 +1,37 @@
-function DashboardRadar({ levels, loading, error }) {
-  const center = 150;
-  const radius = 90;
-  const angle = (index) => -Math.PI / 2 + (Math.PI * 2 * index) / levels.length;
-  const point = (index, percentage) => {
-    const distance = radius * percentage / 100;
-    return [
-      center + Math.cos(angle(index)) * distance,
-      center + Math.sin(angle(index)) * distance,
-    ];
-  };
+import RadarChartJS from "./RadarChartJS";
+
+function DashboardRadar({ levels, loading, error, onOpen, expanded = false }) {
   const scored = levels.filter((level) => level.accuracy !== null).length;
+  const Container = onOpen ? "button" : "div";
 
   return (
-    <section className="dashboardradar dashboardtile" aria-labelledby="dashboardradartitle">
-      <div className="dashboardtilehead">
-        <h2 id="dashboardradartitle">Radar Graph</h2>
-        <span>All levels</span>
-      </div>
+    <Container
+      className={`dashboardradar dashboardtile${expanded ? " dashboardradarexpanded" : ""}`}
+      type={onOpen ? "button" : undefined}
+      onClick={onOpen}
+      aria-label={onOpen ? "Open radar graph details" : undefined}
+      aria-haspopup={onOpen ? "dialog" : undefined}
+    >
+      {!expanded && (
+        <span className="dashboardtilehead">
+          <span className="dashboardradartitle">Radar Graph</span>
+          <span>All levels</span>
+        </span>
+      )}
 
       {loading ? (
-        <p className="dashboardtilemessage">Loading levels...</p>
+        <span className="dashboardtilemessage">Loading levels...</span>
       ) : error ? (
-        <p className="dashboardtilemessage">Unable to load level accuracy.</p>
+        <span className="dashboardtilemessage">Unable to load level accuracy.</span>
       ) : levels.length === 0 ? (
-        <p className="dashboardtilemessage">No levels yet.</p>
+        <span className="dashboardtilemessage">No levels yet.</span>
       ) : (
         <>
-          <svg className="dashboardradarchart" viewBox="0 0 300 300" role="img" aria-label={`Accuracy recorded for ${scored} of ${levels.length} levels`}>
-            {[25, 50, 75, 100].map((value) => (
-              <polygon
-                key={value}
-                points={levels.map((_, index) => point(index, value).join(",")).join(" ")}
-                fill="none"
-                stroke="#D6E4DB"
-                strokeWidth="1.5"
-              />
-            ))}
-
-            {levels.map((level, index) => {
-              const [x, y] = point(index, 100);
-              const [labelX, labelY] = point(index, 133);
-              const label = `${level.branchName?.[0] ?? "L"}${String(level.levelName ?? "").trim().match(/\d+$/)?.[0] ?? index + 1}`;
-
-              return (
-                <g key={level.levelID}>
-                  <line x1={center} y1={center} x2={x} y2={y} stroke="#E4ECE6" strokeWidth="1.5" />
-                  <text x={labelX} y={labelY} textAnchor="middle" dominantBaseline="middle" className="dashboardradarlabel">{label}</text>
-                </g>
-              );
-            })}
-
-            {levels.map((level, index) => {
-              const next = levels[(index + 1) % levels.length];
-
-              if (level.accuracy === null || next.accuracy === null) {
-                return null;
-              }
-
-              const [x1, y1] = point(index, level.accuracy);
-              const [x2, y2] = point((index + 1) % levels.length, next.accuracy);
-
-              return <line key={`score-${level.levelID}`} x1={x1} y1={y1} x2={x2} y2={y2} stroke="#00BF63" strokeWidth="3" />;
-            })}
-
-            {levels.map((level, index) => {
-              if (level.accuracy === null) {
-                return null;
-              }
-
-              const [x, y] = point(index, level.accuracy);
-
-              return (
-                <circle key={`point-${level.levelID}`} cx={x} cy={y} r="5" fill="#00BF63" stroke="#FFFFFF" strokeWidth="2">
-                  <title>{`${level.branchName} ${String(level.levelName).trim()}: ${level.accuracy}% correct`}</title>
-                </circle>
-              );
-            })}
-          </svg>
-          <p className="dashboardradarnote">{scored} of {levels.length} levels have scores</p>
+          <RadarChartJS levels={levels} compact />
+          <span className="dashboardradarnote">{scored} of {levels.length} levels have scores</span>
         </>
       )}
-    </section>
+    </Container>
   );
 }
 

@@ -120,7 +120,7 @@ export async function GetTeacherDashboard(branch) {
   };
 }
 
-export async function GetTeacherRadarData(staffID, studentIDs) {
+export async function GetTeacherRadarData(staffID, students) {
   const { data: levels, error: levelError } = await supabase
     .from("Level")
     .select("levelID, levelName, branchName")
@@ -132,8 +132,9 @@ export async function GetTeacherRadarData(staffID, studentIDs) {
 
   const levelList = levels ?? [];
 
+  const studentIDs = students.map((student) => student.studentID);
   if (!staffID || studentIDs.length === 0 || levelList.length === 0) {
-    return levelList.map((level) => ({ ...level, accuracy: null }));
+    return levelList.map((level) => ({ ...level, accuracy: null, sectionAccuracies: {} }));
   }
 
   const { data: assessments, error: assessmentError } = await supabase
@@ -148,12 +149,12 @@ export async function GetTeacherRadarData(staffID, studentIDs) {
   const assessmentList = assessments ?? [];
 
   if (assessmentList.length === 0) {
-    return levelList.map((level) => ({ ...level, accuracy: null }));
+    return levelList.map((level) => ({ ...level, accuracy: null, sectionAccuracies: {} }));
   }
 
   const { data: scores, error: scoreError } = await supabase
     .from("StudentAssessment")
-    .select("assessmentID, score, totalQuestions")
+    .select("studentID, assessmentID, score, totalQuestions")
     .in("studentID", studentIDs)
     .in("assessmentID", assessmentList.map((item) => item.assessmentID));
 
@@ -162,8 +163,12 @@ export async function GetTeacherRadarData(staffID, studentIDs) {
   }
 
   const totals = new Map();
+  const sectionTotals = new Map();
   const assessmentLevels = new Map(
     assessmentList.map((item) => [item.assessmentID, item.levelID])
+  );
+  const studentSections = new Map(
+    students.map((student) => [student.studentID, student.sectionID])
   );
 
   (scores ?? []).forEach((item) => {
@@ -183,6 +188,15 @@ export async function GetTeacherRadarData(staffID, studentIDs) {
     current.correct += score;
     current.questions += questions;
     totals.set(levelID, current);
+
+    const sectionID = studentSections.get(item.studentID);
+    if (sectionID !== null && sectionID !== undefined) {
+      const key = `${sectionID}:${levelID}`;
+      const sectionTotal = sectionTotals.get(key) ?? { correct: 0, questions: 0 };
+      sectionTotal.correct += score;
+      sectionTotal.questions += questions;
+      sectionTotals.set(key, sectionTotal);
+    }
   });
 
   return levelList.map((level) => {
@@ -191,6 +205,14 @@ export async function GetTeacherRadarData(staffID, studentIDs) {
     return {
       ...level,
       accuracy: total ? Math.round((total.correct / total.questions) * 100) : null,
+      sectionAccuracies: Object.fromEntries(
+        [...new Set(students.map((student) => student.sectionID))].map((sectionID) => {
+          const sectionTotal = sectionTotals.get(`${sectionID}:${level.levelID}`);
+          return [sectionID, sectionTotal
+            ? Math.round((sectionTotal.correct / sectionTotal.questions) * 100)
+            : null];
+        })
+      ),
     };
   });
 }

@@ -1,5 +1,5 @@
 import "../../css/TeacherDashboard.css";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { PiStudentFill } from "react-icons/pi";
 import { TbUsersGroup } from "react-icons/tb";
@@ -12,6 +12,7 @@ import GraphPopup from "./GraphPopup";
 import QuestionAccuracyPopup from "./QuestionAccuracyPopup";
 import DashboardRadar from "./DashboardRadar";
 import DashboardLevelProgress from "./DashboardLevelProgress";
+import RadarGraphPopup from "./RadarGraphPopup";
 
 const emptyDashboard = {
   staffID: null,
@@ -71,6 +72,9 @@ function TeacherDashboard() {
   const [active, setActive] = useState(null);
   const [section, setSection] = useState("all");
   const [accuracyOpen, setAccuracyOpen] = useState(false);
+  const [radarOpen, setRadarOpen] = useState(false);
+  const OpenRadar = useCallback(() => setRadarOpen(true), []);
+  const CloseRadar = useCallback(() => setRadarOpen(false), []);
 
   const dashboardQuery = useQuery({
     queryKey: [...teacherDashboardQueryKey, branch],
@@ -87,8 +91,8 @@ function TeacherDashboard() {
     enabled: Boolean(staffID),
   });
   const radarQuery = useQuery({
-    queryKey: ["TeacherRadar", staffID, studentIDs],
-    queryFn: () => GetTeacherRadarData(staffID, studentIDs),
+    queryKey: ["TeacherRadar", staffID, students.map((student) => [student.studentID, student.sectionID])],
+    queryFn: () => GetTeacherRadarData(staffID, students),
     enabled: Boolean(staffID),
     staleTime: 2 * 60 * 1000,
   });
@@ -101,6 +105,8 @@ function TeacherDashboard() {
   const studentTotal = students.length;
   const sectionTotal = sections.length;
   const loading = dashboardQuery.isPending;
+  const radarLoading = !dashboardQuery.isError && !radarQuery.isError && (loading || radarQuery.isPending);
+  const radarError = dashboardQuery.isError || radarQuery.isError;
   const error =
     dashboardQuery.error instanceof Error
       ? dashboardQuery.error.message
@@ -266,7 +272,7 @@ function TeacherDashboard() {
             error={dashboardQuery.isError || progressQuery.isError}
           />
 
-        <DashboardRadar levels={radarQuery.data ?? []} loading={loading || radarQuery.isPending} error={radarQuery.isError} />
+        <DashboardRadar levels={radarQuery.data ?? []} loading={radarLoading} error={radarError} onOpen={OpenRadar} />
 
         <div className="performance">
           {error && <p className="dashboardmessage">{error}</p>}
@@ -345,6 +351,10 @@ function TeacherDashboard() {
             initialBranch={branch}
             onClose={() => setAccuracyOpen(false)}
           />
+        )}
+
+        {radarOpen && (
+          <RadarGraphPopup levels={radarQuery.data ?? []} sections={sections} loading={radarLoading} error={radarError} onClose={CloseRadar} />
         )}
       </section>
     </TeacherPage>

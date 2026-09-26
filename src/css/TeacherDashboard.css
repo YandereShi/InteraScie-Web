@@ -177,6 +177,23 @@
   padding: 16px 12px 10px;
   box-sizing: border-box;
   overflow: hidden;
+  font: inherit;
+  text-align: left;
+}
+
+.dashboardradar:not(.dashboardradarexpanded) {
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.dashboardradar:not(.dashboardradarexpanded):hover {
+  transform: translateY(-3px);
+  box-shadow: 0 5px 12px color-mix(in srgb, #000000 20%, transparent);
+}
+
+.dashboardradar:not(.dashboardradarexpanded):focus-visible {
+  outline: 3px solid #00BF63;
+  outline-offset: 3px;
 }
 
 .dashboardtilehead {
@@ -187,11 +204,14 @@
   gap: 8px;
 }
 
-.dashboardtilehead h2 {
+.dashboardtilehead .dashboardradartitle {
   margin: 0;
   color: #006B3C;
   font-size: clamp(1rem, 1.5vw, 1.35rem);
+  font-weight: 700;
   line-height: 1.15;
+  white-space: normal;
+  overflow-wrap: anywhere;
 }
 
 .dashboardtilehead span {
@@ -201,17 +221,17 @@
 }
 
 .dashboardradarchart {
+  display: block;
   width: min(100%, 240px);
+  aspect-ratio: 1;
   height: auto;
   margin: auto 0;
-  overflow: visible;
 }
 
-.dashboardradarlabel {
-  fill: #355445;
-  font-family: Arial, sans-serif;
-  font-size: 12px;
-  font-weight: 700;
+.dashboardradarchart canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
 }
 
 .dashboardradarnote {
@@ -514,6 +534,14 @@
 }
 
 @media (max-width: 480px) {
+  .dashboardradar {
+    min-height: 260px;
+  }
+
+  .dashboardradarchart {
+    max-width: 210px;
+  }
+
   .dashboardtotals {
     padding: 10px;
     gap: 8px;

@@ -60,6 +60,7 @@
 }
 
 .questionswitch {
+  position: relative;
   padding: 6px 8px;
   display: flex;
   align-items: center;
@@ -72,35 +73,32 @@
 
 .questionswitch input {
   position: absolute;
+  width: 1px;
+  height: 1px;
   opacity: 0;
   pointer-events: none;
 }
 
 .switchmark {
-  width: 50px;
-  height: 26px;
-  padding: 3px;
-  display: flex;
-  align-items: center;
-  background-color: #ff6565;
-  border-radius: 20px;
-}
-
-.switchmark::after {
-  width: 20px;
-  height: 20px;
-  content: "";
-  background-color: #eeeeee;
-  border-radius: 50%;
-  transition: transform 0.2s;
-}
-
-.questionswitch input:checked + .switchmark::after {
-  transform: translateX(24px);
+  width: 36px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  background-color: #F7F9F8;
+  border: 1px solid #DCE3DF;
+  border-radius: 8px;
+  color: #777777;
+  font-size: 1.3rem;
 }
 
 .questionswitch input:checked + .switchmark {
-  background-color: #00bf63;
+  color: #00BF63;
+}
+
+.questionswitch input:focus-visible + .switchmark {
+  outline: 2px solid #555555;
+  outline-offset: 2px;
 }
 
 .questionswitch:has(input:disabled) {
@@ -277,17 +275,9 @@
   }
 
   .switchmark {
-    width: 38px;
-    height: 20px;
-  }
-
-  .switchmark::after {
-    width: 14px;
-    height: 14px;
-  }
-
-  .questionswitch input:checked + .switchmark::after {
-    transform: translateX(18px);
+    width: 30px;
+    height: 30px;
+    font-size: 1.1rem;
   }
 
   .questiongrid {

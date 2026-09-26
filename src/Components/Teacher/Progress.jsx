@@ -2,7 +2,7 @@ import "../../css/Progress.css";
 import { useEffect, useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useOutletContext } from "react-router";
-import { FaCheck } from "react-icons/fa";
+import { FaCheck, FaLock, FaLockOpen } from "react-icons/fa";
 import { TbProgress } from "react-icons/tb";
 import { supabase } from "../../lib/supabase";
 import { GetLessonAccess, GetProgressOptions, GetSectionProgress, UpdateLessonAccess } from "../../lib/progressQueries";
@@ -557,7 +557,9 @@ function Progress() {
                             }`}
                           />
 
-                          <span className="progressslider"></span>
+                          <span className="progressslider" aria-hidden="true">
+                            {lessonAccess[lessons[index]?.levelID] ? <FaLockOpen /> : <FaLock />}
+                          </span>
                         </label>
                       </div>
                     </th>

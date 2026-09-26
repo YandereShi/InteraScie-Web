@@ -102,45 +102,36 @@
 
 .progressswitch {
   position: relative;
-  width: 42px;
-  height: 24px;
+  width: 36px;
+  height: 36px;
   display: inline-flex;
   flex-shrink: 0;
+  cursor: pointer;
 }
 
 .progressswitch input {
-  width: 0;
-  height: 0;
+  position: absolute;
+  width: 1px;
+  height: 1px;
   opacity: 0;
 }
 
 .progressslider {
   position: absolute;
   inset: 0;
-  background-color: #ff0000;
-  border-radius: 24px;
+  display: grid;
+  place-items: center;
+  background-color: #F7F9F8;
+  border: 1px solid #DCE3DF;
+  border-radius: 8px;
+  color: #777777;
+  font-size: 1.3rem;
   cursor: pointer;
-  transition: background-color 0.2s ease;
-}
-
-.progressslider::before {
-  position: absolute;
-  width: 18px;
-  height: 18px;
-  left: 3px;
-  top: 3px;
-  content: "";
-  background-color: #ffffff;
-  border-radius: 50%;
-  transition: transform 0.2s ease;
+  transition: color 0.2s ease;
 }
 
 .progressswitch input:checked + .progressslider {
-  background-color: #00bf63;
-}
-
-.progressswitch input:checked + .progressslider::before {
-  transform: translateX(18px);
+  color: #00BF63;
 }
 
 .progressswitch input:focus-visible + .progressslider {
@@ -344,21 +335,12 @@
   }
 
   .progressswitch {
-    width: 36px;
-    height: 20px;
+    width: 30px;
+    height: 30px;
   }
 
   .progressslider {
-    border-radius: 20px;
-  }
-
-  .progressslider::before {
-    width: 14px;
-    height: 14px;
-  }
-
-  .progressswitch input:checked + .progressslider::before {
-    transform: translateX(16px);
+    font-size: 1.1rem;
   }
 
   .progresstable thead {

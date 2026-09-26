@@ -1,0 +1,255 @@
+.radaroverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  box-sizing: border-box;
+  background-color: color-mix(in srgb, #000000 55%, transparent);
+}
+
+.radarpopup {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: min(760px, 100%);
+  max-height: calc(100dvh - 48px);
+  padding: 24px;
+  box-sizing: border-box;
+  overflow: hidden;
+  border-radius: 16px;
+  background-color: #FFFFFF;
+  box-shadow: 0 14px 40px color-mix(in srgb, #000000 30%, transparent);
+}
+
+.radarpopuphead {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  min-width: 0;
+}
+
+.radarpopuphead > div {
+  min-width: 0;
+}
+
+.radarpopuphead h2 {
+  margin: 0;
+  color: #006B3C;
+  font-size: clamp(1.4rem, 3vw, 1.9rem);
+}
+
+.radarpopuphead p {
+  margin: 5px 0 0;
+  color: #526A5C;
+  font-size: 0.95rem;
+}
+
+.radarpopuphead button {
+  flex-shrink: 0;
+  padding: 0 4px;
+  border: 0;
+  background-color: transparent;
+  color: #111111;
+  font-size: 2rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.radarpopupcontrols {
+  display: flex;
+  justify-content: flex-end;
+  gap: 4px;
+}
+
+.radarpopuptab {
+  min-width: 74px;
+  height: 42px;
+  padding: 0 12px;
+  border: 1px solid #555555;
+  border-radius: 6px;
+  background-color: #FFFFFF;
+  color: #111111;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.radarpopuptab.active {
+  border-color: #008A4A;
+  background-color: #00BF63;
+  color: #FFFFFF;
+}
+
+.radarpopuptab:focus-visible {
+  outline: 3px solid #006B3C;
+  outline-offset: 2px;
+}
+
+.radarpopupbody {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  min-height: 0;
+  padding: 10px 16px 14px;
+  box-sizing: border-box;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  border: 1px solid #DDE5DF;
+  border-radius: 12px;
+  background-color: #F8FBF9;
+}
+
+.radarpopupchart {
+  display: block;
+  width: min(100%, 490px);
+  aspect-ratio: 1;
+  height: auto;
+  flex-shrink: 0;
+}
+
+.radarpopupchart canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.radarpopupselection {
+  min-height: 18px;
+  max-width: 100%;
+  color: #153D2B;
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+
+.radarpopupnote {
+  margin: 0 0 8px;
+  color: #617269;
+  font-size: 0.85rem;
+  text-align: center;
+}
+
+.radarpoplegend {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px 16px;
+  width: 100%;
+  max-height: 110px;
+  padding: 8px 0 0;
+  overflow-y: auto;
+  border-top: 1px solid #DDE5DF;
+}
+
+.radarpoplegenditem {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  padding: 4px 7px;
+  border: 1px solid #DDE5DF;
+  border-radius: 6px;
+  background-color: #FFFFFF;
+  color: #25382C;
+  font: inherit;
+  font-size: 0.84rem;
+  overflow-wrap: anywhere;
+  cursor: pointer;
+}
+
+.radarpoplegenditem.hidden {
+  opacity: 0.5;
+}
+
+.radarpoplegenditem:focus-visible {
+  outline: 2px solid #006B3C;
+  outline-offset: 2px;
+}
+
+.radarpoplegenditem i {
+  width: 12px;
+  height: 12px;
+  flex: 0 0 12px;
+  border-radius: 50%;
+}
+
+.radarpoplegenditem span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.radarpopupstate {
+  margin: auto;
+  padding: 8px;
+  color: #617269;
+  text-align: center;
+}
+
+@media (max-width: 700px) {
+  .radaroverlay {
+    padding: 8px;
+  }
+
+  .radarpopup {
+    width: min(100%, 480px);
+    max-height: calc(100dvh - 16px);
+    gap: 10px;
+    padding: 14px;
+    border-radius: 12px;
+  }
+
+  .radarpopuphead {
+    gap: 8px;
+  }
+
+  .radarpopuphead h2 {
+    font-size: clamp(1.1rem, 5vw, 1.5rem);
+  }
+
+  .radarpopuphead p {
+    font-size: clamp(0.75rem, 3vw, 0.9rem);
+  }
+
+  .radarpopupcontrols {
+    width: 100%;
+  }
+
+  .radarpopuptab {
+    flex: 1;
+    min-width: 0;
+    height: 38px;
+  }
+
+  .radarpopupchart {
+    width: min(100%, 330px, max(200px, 42dvh));
+  }
+
+  .radarpopupbody {
+    padding: 6px 6px 10px;
+  }
+
+  .radarpoplegend {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    justify-content: stretch;
+    gap: 6px;
+    max-height: 104px;
+  }
+
+  .radarpoplegenditem {
+    justify-content: flex-start;
+    text-align: left;
+    font-size: clamp(0.7rem, 2.8vw, 0.84rem);
+  }
+
+  .radarpopupnote,
+  .radarpopupselection {
+    font-size: clamp(0.72rem, 2.8vw, 0.85rem);
+  }
+}
