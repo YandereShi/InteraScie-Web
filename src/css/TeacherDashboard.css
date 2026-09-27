@@ -46,11 +46,19 @@
 }
 
 .dashboardpanel .totalstudentcard {
-  background-color: #006B3C;
+  background: linear-gradient(
+    135deg,
+    #35b54a 0%,
+    #32ca99 100%
+  );
 }
 
 .dashboardpanel .totalsectioncard {
-  background-color: #118BF2;
+  background: linear-gradient(
+    135deg,
+    #087de0 0%,
+    #36a9ff 100%
+  );
 }
 
 .dashboardpanel .totalicon {
