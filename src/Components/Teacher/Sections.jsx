@@ -9,7 +9,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useOutletContext } from "react-router";
 import { limits } from "../../lib/inputLimits";
 import { InvokeStudentManagement } from "../../lib/supabase";
-import { DeleteSection, GetNoSectionStudents, GetSections, GetSectionStudents, GetSectionStudentsQueryKey, noSectionStudentsQueryKey, sectionsQueryKey } from "../../lib/sectionQueries";
+import { DeleteSection, GetNoSectionStudents, GetSections, GetSectionStudents, GetSectionStudentsQueryKey, IsReservedSectionName, noSectionStudentsQueryKey, sectionsQueryKey } from "../../lib/sectionQueries";
 import { superAdminDashboardQueryKey, teacherDashboardQueryKey } from "../../lib/dashboardQueries";
 import { PopupContext } from "../../lib/PopupContext";
 import { GetStudents, studentQueryKey } from "../../lib/studentQueries";
@@ -354,6 +354,10 @@ function Sections({ PageComponent = TeacherPage }) {
   }
 
   async function CreateSection(name) {
+    if (IsReservedSectionName(name)) {
+      throw new Error("No Section is reserved and cannot be created.");
+    }
+
     if (name.length > limits.section) {
       throw new Error(`Section name must be ${limits.section} characters or fewer.`);
     }

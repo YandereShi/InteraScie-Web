@@ -181,56 +181,6 @@ function TeacherDashboard() {
     return MakeData(scoreList);
   }
 
-  function GetCompareData(sectionID) {
-    const data = Array.from({ length: 16 }, (_, score) => ({
-      score,
-      students: 0,
-    }));
-
-    const level = levels[active];
-    const test = tests.find(
-      (item) => item.levelID === level?.levelID
-    );
-
-    if (!test) {
-      return data;
-    }
-
-    const studentIDs = new Set(
-      students
-        .filter((student) =>
-          String(student.sectionID) === String(sectionID)
-        )
-        .map((student) => student.studentID)
-    );
-
-    const counted = Array.from({ length: 16 }, () => new Set());
-
-    scores.forEach((item) => {
-      if (
-        item.assessmentID !== test.assessmentID ||
-        Number(item.totalQuestions) !== 15 ||
-        !studentIDs.has(item.studentID) ||
-        item.score === null ||
-        item.score === undefined ||
-        item.score === ""
-      ) {
-        return;
-      }
-
-      const score = Number(item.score);
-
-      if (Number.isInteger(score) && score >= 0 && score <= 15) {
-        counted[score].add(item.studentID);
-      }
-    });
-
-    return data.map((item) => ({
-      ...item,
-      students: counted[item.score].size,
-    }));
-  }
-
   function OpenGraph(index) {
     setSection("all");
     setActive(index);
@@ -342,7 +292,6 @@ function TeacherDashboard() {
             section={section}
             onPick={setSection}
             onClose={CloseGraph}
-            GetCompareData={GetCompareData}
           />
         )}
 

@@ -1,23 +1,20 @@
 import RadarChartJS from "./RadarChartJS";
 
-function DashboardRadar({ levels, loading, error, onOpen, expanded = false }) {
+function DashboardRadar({ levels, loading, error, onOpen }) {
   const scored = levels.filter((level) => level.accuracy !== null).length;
-  const Container = onOpen ? "button" : "div";
 
   return (
-    <Container
-      className={`dashboardradar dashboardtile${expanded ? " dashboardradarexpanded" : ""}`}
-      type={onOpen ? "button" : undefined}
+    <button
+      className="dashboardradar dashboardtile"
+      type="button"
       onClick={onOpen}
-      aria-label={onOpen ? "Open radar graph details" : undefined}
-      aria-haspopup={onOpen ? "dialog" : undefined}
+      aria-label="Open radar graph details"
+      aria-haspopup="dialog"
     >
-      {!expanded && (
-        <span className="dashboardtilehead">
-          <span className="dashboardradartitle">Radar Graph</span>
-          <span>All levels</span>
-        </span>
-      )}
+      <span className="dashboardtilehead">
+        <span className="dashboardradartitle">Radar Graph</span>
+        <span>All levels</span>
+      </span>
 
       {loading ? (
         <span className="dashboardtilemessage">Loading levels...</span>
@@ -31,7 +28,7 @@ function DashboardRadar({ levels, loading, error, onOpen, expanded = false }) {
           <span className="dashboardradarnote">{scored} of {levels.length} levels have scores</span>
         </>
       )}
-    </Container>
+    </button>
   );
 }
 

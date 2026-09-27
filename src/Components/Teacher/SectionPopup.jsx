@@ -1,6 +1,7 @@
 import "../../css/SectionPopup.css";
 import { useState } from "react";
 import { limits } from "../../lib/inputLimits";
+import { IsReservedSectionName } from "../../lib/sectionQueries";
 
 function SectionPopup({ onClose, onCreate }) {
   const [name, setName] = useState("");
@@ -14,6 +15,11 @@ function SectionPopup({ onClose, onCreate }) {
 
     if (!cleanName) {
       setError("Please enter a section name.");
+      return;
+    }
+
+    if (IsReservedSectionName(cleanName)) {
+      setError("No Section is reserved and cannot be created.");
       return;
     }
 
@@ -66,9 +72,10 @@ function SectionPopup({ onClose, onCreate }) {
             value={name}
             maxLength={limits.section}
             autoFocus
-            onChange={(event) =>
-              setName(event.target.value)
-            }
+            onChange={(event) => {
+              setName(event.target.value);
+              setError("");
+            }}
           />
 
           {error && (

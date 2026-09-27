@@ -181,17 +181,17 @@
   text-align: left;
 }
 
-.dashboardradar:not(.dashboardradarexpanded) {
+.dashboardradar {
   cursor: pointer;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.dashboardradar:not(.dashboardradarexpanded):hover {
+.dashboardradar:hover {
   transform: translateY(-3px);
   box-shadow: 0 5px 12px color-mix(in srgb, #000000 20%, transparent);
 }
 
-.dashboardradar:not(.dashboardradarexpanded):focus-visible {
+.dashboardradar:focus-visible {
   outline: 3px solid #00BF63;
   outline-offset: 3px;
 }
@@ -214,7 +214,7 @@
   overflow-wrap: anywhere;
 }
 
-.dashboardtilehead span {
+.dashboardtilehead > span:last-child {
   color: #617269;
   font-size: 0.72rem;
   white-space: nowrap;

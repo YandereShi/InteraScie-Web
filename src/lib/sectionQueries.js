@@ -3,6 +3,10 @@ import { InvokeStudentManagement } from "./supabase";
 export const sectionsQueryKey = ["Sections"];
 export const noSectionStudentsQueryKey = ["NoSectionStudents"];
 
+export function IsReservedSectionName(name) {
+  return typeof name === "string" && name.trim().replace(/\s+/g, " ").toLowerCase() === "no section";
+}
+
 export function GetSectionStudentsQueryKey(sectionID) {
   return ["SectionStudents", sectionID];
 }

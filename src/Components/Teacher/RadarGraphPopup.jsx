@@ -1,19 +1,7 @@
 import "../../css/RadarGraphPopup.css";
 import { useEffect, useRef, useState } from "react";
 import RadarChartJS from "./RadarChartJS";
-
-function SectionColor(index) {
-  const hue = (index * 137.508 + 20) % 360;
-  const saturation = 0.68;
-  const lightness = 0.42;
-  const spread = saturation * Math.min(lightness, 1 - lightness);
-  const channel = (offset) => {
-    const position = (offset + hue / 30) % 12;
-    const value = lightness - spread * Math.max(-1, Math.min(position - 3, 9 - position, 1));
-    return Math.round(value * 255).toString(16).padStart(2, "0");
-  };
-  return `#${channel(0)}${channel(8)}${channel(4)}`.toUpperCase();
-}
+import { allRadarColor, SectionRadarColor } from "./radarColors";
 
 function RadarGraphPopup({ levels, sections, loading, error, onClose }) {
   const closeButton = useRef(null);
@@ -22,13 +10,13 @@ function RadarGraphPopup({ levels, sections, loading, error, onClose }) {
   const sectionSeries = [...sections]
     .sort((first, second) => String(first.sectionName).localeCompare(String(second.sectionName)) || String(first.sectionID).localeCompare(String(second.sectionID)))
     .map((section, index) => ({
-    id: String(section.sectionID),
-    name: section.sectionName,
-    color: SectionColor(index),
-    values: levels.map((level) => level.sectionAccuracies?.[section.sectionID] ?? null),
+      id: String(section.sectionID),
+      name: section.sectionName,
+      color: SectionRadarColor(index),
+      values: levels.map((level) => level.sectionAccuracies?.[section.sectionID] ?? null),
     }));
   const series = mode === "all"
-    ? [{ id: "all", name: "All sections", color: "#00BF63", values: levels.map((level) => level.accuracy) }]
+    ? [{ id: "all", name: "All sections", color: allRadarColor, values: levels.map((level) => level.accuracy) }]
     : sectionSeries.filter((item) => !hiddenSections.has(item.id));
   const hasScores = series.some((item) => item.values.some((value) => value !== null && value !== undefined));
 

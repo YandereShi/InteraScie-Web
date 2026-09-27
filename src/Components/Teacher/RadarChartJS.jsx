@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Chart, Filler, LineElement, PointElement, RadarController, RadialLinearScale, Tooltip } from "chart.js";
+import { allRadarColor } from "./radarColors";
 
 Chart.register(RadarController, RadialLinearScale, LineElement, PointElement, Filler, Tooltip);
 
@@ -18,9 +19,8 @@ function RadarChartJS({ levels, series, compact = false }) {
     if (!canvasRef.current || levels.length === 0) return undefined;
 
     const chartSeries = series ?? [{
-      id: "all",
       name: "All sections",
-      color: "#00BF63",
+      color: allRadarColor,
       values: levels.map((level) => level.accuracy),
     }];
     const chart = new Chart(canvasRef.current, {
@@ -42,7 +42,6 @@ function RadarChartJS({ levels, series, compact = false }) {
           pointHitRadius: compact ? 5 : 14,
           borderWidth: compact ? 3 : 2.5,
           fill: true,
-          spanGaps: false,
         })),
       },
       options: {
@@ -80,7 +79,6 @@ function RadarChartJS({ levels, series, compact = false }) {
           r: {
             min: 0,
             max: 100,
-            beginAtZero: true,
             angleLines: { color: "#E4ECE6" },
             grid: { color: "#D6E4DB" },
             pointLabels: {
