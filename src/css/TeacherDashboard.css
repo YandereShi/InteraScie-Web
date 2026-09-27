@@ -1,4 +1,5 @@
 .dashboardpanel {
+  background-color: #fcfafa;
   display: grid;
   grid-template-columns: minmax(175px, 1.1fr) minmax(0, 2.5fr) minmax(200px, 1.2fr);
   grid-template-areas:
