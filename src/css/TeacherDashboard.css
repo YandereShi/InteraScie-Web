@@ -18,10 +18,10 @@
 .dashboardtile,
 .dashboardpanel .performance,
 .dashboardpanel .accuracycard {
-  border: 1px solid #DDE5DF;
+  border: 3px solid #e1e8e4;
   border-radius: 18px;
   background-color: #FFFFFF;
-  box-shadow: 0 5px 18px #E1E8E3;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.10);
 }
 
 .dashboardtotals {
