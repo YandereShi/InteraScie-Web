@@ -391,17 +391,17 @@
 
 .dashboardprogressfinished,
 .legendfinished {
-  background-color: #00BF63;
+  background-color: #006B3C;
 }
 
 .dashboardprogressongoing,
 .legendongoing {
-  background-color: #9AA3A9;
+  background-color: #00BF63;
 }
 
 .dashboardprogressnotstarted,
 .legendnotstarted {
-  background-color: #1F1F1F;
+  background-color: #E6E6E6;
 }
 
 .dashboardprogressfooter {
