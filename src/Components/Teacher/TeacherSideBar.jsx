@@ -23,7 +23,7 @@ function TeacherSidebar({ teacher }) {
             <h2>
                 {teacher.firstName} {teacher.lastName}
             </h2>
-            <h4>{teacher.role}</h4>
+            <h4>{teacher.role.toUpperCase()}</h4>
 
         <ul className="sidebarlist">
             <li>

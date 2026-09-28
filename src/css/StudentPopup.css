@@ -90,8 +90,25 @@
   grid-column: 1 / -1;
 
   display: flex;
+  align-items: flex-end;
   justify-content: flex-end;
   gap: 10px;
+}
+
+.studentpopupactionsleft {
+  min-width: 0;
+  margin-right: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.studentpasswordhint {
+  margin: 0;
+  color: #444444;
+  font-size: clamp(.75rem, 1vw, .875rem);
+  line-height: 1.3;
 }
 
 .studentpopupactions button {
@@ -106,7 +123,6 @@
 }
 
 .resetstudent {
-  margin-right: auto;
   background-color: #dddddd;
 }
 
@@ -242,8 +258,12 @@
     padding: 9px;
   }
 
-  .resetstudent {
+  .studentpopupactionsleft {
     grid-column: 1 / -1;
     margin-right: 0;
+  }
+
+  .resetstudent {
+    align-self: stretch;
   }
 }

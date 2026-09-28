@@ -209,18 +209,23 @@ function StudentPopup({
           )}
 
           <div className="studentpopupactions">
-            {isEditing && (
-              <button
-                type="button"
-                className="resetstudent"
-                onClick={resetPassword}
-                disabled={saving || resetting || photoSaving}
-              >
-                {resetting
-                  ? "Resetting..."
-                  : "Reset Password"}
-              </button>
-            )}
+            <div className="studentpopupactionsleft">
+              <p className="studentpasswordhint">
+                Default Password is <strong>firstname_lastname</strong>
+              </p>
+              {isEditing && (
+                <button
+                  type="button"
+                  className="resetstudent"
+                  onClick={resetPassword}
+                  disabled={saving || resetting || photoSaving}
+                >
+                  {resetting
+                    ? "Resetting..."
+                    : "Reset Password"}
+                </button>
+              )}
+            </div>
 
             <button
               type="button"
