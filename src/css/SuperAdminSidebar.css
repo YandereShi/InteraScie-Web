@@ -20,6 +20,8 @@
   width: 90%;
   margin-top: 28px;
   margin-bottom: 20px;
+
+  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.20));
 }
 
 .superadminpfp {
