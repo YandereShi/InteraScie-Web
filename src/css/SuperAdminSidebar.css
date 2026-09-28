@@ -55,18 +55,19 @@
 
 .superadminnavlink {
   width: 100%;
+  box-sizing: border-box;
   min-height: 45px;
   padding: 10px 22px;
   display: flex;
   align-items: center;
   justify-content: flex-start;
   gap: 14px;
-  background-color: #00bf63;
+  background-color: transparent;
   color: #ffffff;
   border-radius: 30px 0 0 30px;
   font-size: 1.25rem;
   font-weight: 700;
-  text-transform: uppercase;
+  text-transform: uppercase;  
   text-decoration: none;
   transition: background-color 0.2s;
 }
@@ -76,7 +77,13 @@
 }
 
 .superadminnavlink.active {
-  background-color: #005f36;
+  background-color: #f7fffb;
+  color: #006b3c;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+.superadminnavlink.active .superadminnavicon{
+  color: #006b3c;
 }
 
 .superadminnavicon {
