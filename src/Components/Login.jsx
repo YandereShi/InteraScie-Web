@@ -144,7 +144,7 @@ function Login() {
                           type="email"
                           id="email"
                           name="email"
-                          placeholder="example@gmail.com"
+                          placeholder="Example@gmail.com"
                           autoComplete="email"
                           maxLength={limits.email}
                           required
