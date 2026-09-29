@@ -1,7 +1,7 @@
 import "../../css/Students.css";
 import { useContext, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { CreateTeacher, DeleteTeachers, GetTeachers, UpdateTeacherSections, teachersQueryKey } from "../../lib/teacherQueries";
+import { CreateTeacher, DeleteTeachers, GetTeachers, UpdateTeacher, teachersQueryKey } from "../../lib/teacherQueries";
 import { superAdminDashboardQueryKey } from "../../lib/dashboardQueries";
 import SuperAdminPage from "./SuperAdminPage";
 import TeacherCard from "./TeacherCard";
@@ -116,13 +116,15 @@ function SuperAdminTeachers() {
         await ShowConfirmation("Teacher invitation sent successfully. The teacher must check their email to create a password.");
     }
 
-    async function HandleUpdateTeacherSections(sectionIDs) {
+    async function HandleUpdateTeacher({ firstName, lastName, sectionIDs }) {
         if (!selectedTeacher) {
             return;
         }
 
-        await UpdateTeacherSections(
+        await UpdateTeacher(
             selectedTeacher.staffID,
+            firstName,
+            lastName,
             sectionIDs
         );
 
@@ -130,7 +132,7 @@ function SuperAdminTeachers() {
         setSelectedTeacherIDs([]);
         CloseSectionPopup();
 
-        await ShowConfirmation("Teacher sections updated successfully.");
+        await ShowConfirmation("Teacher updated successfully.");
     }
 
     function HandleTeacherSelection(staffID, isChecked) {
@@ -316,7 +318,7 @@ function SuperAdminTeachers() {
                     teacher={selectedTeacher}
                     sections={availableSections}
                     onClose={CloseSectionPopup}
-                    onSave={HandleUpdateTeacherSections}
+                    onSave={HandleUpdateTeacher}
                 />
             )}
         </SuperAdminPage>

@@ -3,8 +3,12 @@ import { useState } from "react";
 import teacherImage from "../../assets/pfp.png";
 import ProfilePhoto from "../ProfilePhoto";
 import { GetStaffPhotoPath } from "../../lib/profilePhotos";
+import { GetNameError } from "../../lib/nameValidation";
+import { limits } from "../../lib/inputLimits";
 
 function TeacherSectionPopup({ teacher, sections, onClose, onSave }) {
+    const [firstName, setFirstName] = useState(teacher.firstName ?? "");
+    const [lastName, setLastName] = useState(teacher.lastName ?? "");
     const [sectionIDs, setSectionIDs] = useState(
         (teacher.sections ?? []).map((section) => section.sectionID)
     );
@@ -39,13 +43,24 @@ function TeacherSectionPopup({ teacher, sections, onClose, onSave }) {
 
     async function HandleSubmit(event) {
         event.preventDefault();
+        const nameError = GetNameError(firstName, lastName);
+
+        if (nameError) {
+            setSaveError(nameError);
+            return;
+        }
+
         setSaving(true);
         setSaveError("");
 
         try {
-            await onSave(sectionIDs);
+            await onSave({
+                firstName: firstName.normalize("NFC").trim(),
+                lastName: lastName.normalize("NFC").trim(),
+                sectionIDs,
+            });
         } catch (error) {
-            setSaveError(error.message || "Unable to update teacher sections.");
+            setSaveError(error.message || "Unable to update teacher.");
             setSaving(false);
         }
     }
@@ -60,7 +75,7 @@ function TeacherSectionPopup({ teacher, sections, onClose, onSave }) {
                 onMouseDown={(event) => event.stopPropagation()}
             >
                 <div className="studentpopupheader">
-                    <h2>Edit Teacher Sections</h2>
+                    <h2>Edit Teacher</h2>
 
                     <button
                         type="button"
@@ -84,16 +99,30 @@ function TeacherSectionPopup({ teacher, sections, onClose, onSave }) {
                     />
 
                     <div className="studentpopupform">
-                        <label htmlFor="selectedteachername">
-                            Teacher
+                        <label htmlFor="selectedteacherfirstname">
+                            First name
                         </label>
 
                         <input
                             type="text"
-                            id="selectedteachername"
-                            className="teachersectionidentity"
-                            value={`${teacher.firstName} ${teacher.lastName}`}
-                            readOnly
+                            id="selectedteacherfirstname"
+                            value={firstName}
+                            maxLength={limits.firstname}
+                            onChange={(event) => setFirstName(event.target.value)}
+                            required
+                        />
+
+                        <label htmlFor="selectedteacherlastname">
+                            Last name
+                        </label>
+
+                        <input
+                            type="text"
+                            id="selectedteacherlastname"
+                            value={lastName}
+                            maxLength={limits.lastname}
+                            onChange={(event) => setLastName(event.target.value)}
+                            required
                         />
 
                         <label htmlFor="selectedteacheremail">
