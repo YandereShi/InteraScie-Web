@@ -3,7 +3,11 @@
 }
 
 .totalteachercard {
-  background-color: #ff3338;
+  background: linear-gradient(
+    135deg,
+    #b63138 0%,
+    #c56a6f 100%
+  );
 }
 
 .superadmindashboardmessage {

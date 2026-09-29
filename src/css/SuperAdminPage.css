@@ -13,12 +13,12 @@
   align-items: center;
   justify-content: space-between;
   background-color: #ffffff;
-  border-bottom: 1px solid #000000;
+  border-bottom: 3px solid #00a957;
 }
 
 .superadminheader h1 {
   margin: 0;
-  color: #00bf63;
+  color: #006B3C;
   font-size: 2.15rem;
 }
 
@@ -27,7 +27,7 @@
   padding: 10px 22px;
   border: 0;
   border-radius: 28px;
-  background-color: #00bf63;
+  background-color: #006B3C;
   color: #ffffff;
   cursor: pointer;
   font-size: 1.25rem;
@@ -35,13 +35,13 @@
 }
 
 .superadminheader button:hover {
-  background-color: #006b3c;
+  background-color: #00bf63;
 }
 
 .superadminmainpanel {
   flex: 1;
   padding: 30px 0 30px 30px;
-  background-color: #ffffff;
+  background-color: #fcfafa;
 }
 
 .superadmincontentpanel {
