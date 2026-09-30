@@ -6,6 +6,17 @@ import { GetStudentPhotoPath } from "../../lib/profilePhotos";
 import { GetNameError } from "../../lib/nameValidation";
 import { limits } from "../../lib/inputLimits";
 
+function MakeDefaultPassword(firstName, lastName) {
+  const cleanFirstName = firstName.normalize("NFC").replace(/\s+/g, "").toLowerCase();
+  const cleanLastName = lastName.normalize("NFC").replace(/\s+/g, "").toLowerCase();
+
+  if (!cleanFirstName || !cleanLastName) {
+    return "firstname_lastname";
+  }
+
+  return `${cleanFirstName}_${cleanLastName}`;
+}
+
 function StudentPopup({
   student,
   sections,
@@ -37,6 +48,7 @@ function StudentPopup({
   const [saveError, setSaveError] = useState("");
   const [resetting, setResetting] = useState(false);
   const [photoSaving, SetPhotoSaving] = useState(false);
+  const defaultPassword = MakeDefaultPassword(firstName, lastName);
 
   async function resetPassword() {
     setResetting(true);
@@ -211,7 +223,7 @@ function StudentPopup({
           <div className="studentpopupactions">
             <div className="studentpopupactionsleft">
               <p className="studentpasswordhint">
-                Default Password is <strong>firstname_lastname</strong>
+                Default Password is <strong>{defaultPassword}</strong>
               </p>
               {isEditing && (
                 <button
