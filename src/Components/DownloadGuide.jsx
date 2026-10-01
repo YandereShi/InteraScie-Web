@@ -11,6 +11,8 @@ import Pc4 from "../assets/tutorial/pc4.png";
 import Pc5 from "../assets/tutorial/pc5.png";
 import Pc6 from "../assets/tutorial/pc6.png";
 import Pc7 from "../assets/tutorial/pc7.png";
+import Pc9 from "../assets/tutorial/pc9.png";
+import Pc10 from "../assets/tutorial/pc10.png";
 
 const guides = {
     android: {
@@ -43,6 +45,10 @@ const guides = {
             { content: <>Inside the folder, <strong>right-click</strong> the <strong>InteraScie</strong> application, choose <strong>Send to</strong>, then <strong>click</strong> <strong>Desktop (create shortcut)</strong>.</> },
             { image: Pc7, alt: "InteraScie application menu showing Send to Desktop create shortcut" },
             { content: <>You can now find and play InteraScie from your desktop shortcut.</> },
+            { content: <><strong>NOTE:</strong> If a “Windows protected your PC” message appears, click <strong>More info</strong>.</> },
+            { image: Pc9, alt: "Windows protected your PC message with More info highlighted" },
+            { content: <>Then click <strong>Run Anyway</strong> if you trust the downloaded InteraScie file. Windows can show this warning for an unrecognized application; it does not confirm that the file is safe or unsafe.</> },
+            { image: Pc10, alt: "Windows protection message showing the Run Anyway button" },
         ],
     },
 };
