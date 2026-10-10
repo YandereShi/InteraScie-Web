@@ -6,14 +6,14 @@ function PopupProvider({ children }) {
   const [popup, setPopup] = useState(null);
   const resolver = useRef(null);
 
-  function ShowConfirmation(text, danger = false) {
+  function ShowConfirmation(text, danger = false, items = []) {
     return new Promise((resolve) => {
       if (resolver.current) {
         resolver.current(false);
       }
 
       resolver.current = resolve;
-      setPopup({ text: String(text), danger });
+      setPopup({ text: String(text), danger, items });
     });
   }
 
@@ -36,6 +36,7 @@ function PopupProvider({ children }) {
         <ReusablePopup
           text={popup.text}
           danger={popup.danger}
+          items={popup.items}
           onCancel={() => FinishPopup(false)}
           onOK={() => FinishPopup(true)}
         />

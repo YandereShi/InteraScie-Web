@@ -186,9 +186,15 @@ function Students({ PageComponent = TeacherPage }) {
       return;
     }
 
+    const studentIDs = [...selectedStudentIDs];
+    const selectedNames = students
+      .filter((student) => studentIDs.includes(student.studentID))
+      .map((student) => `${student.lastName}, ${student.firstName}`);
+
     const confirmed = await ShowConfirmation(
       "Are you sure you want to delete the selected students?",
-      true
+      true,
+      selectedNames
     );
 
     if (!confirmed) {
@@ -197,7 +203,7 @@ function Students({ PageComponent = TeacherPage }) {
 
     try {
       const data = await InvokeStudentManagement("delete", {
-        studentIDs: selectedStudentIDs,
+        studentIDs,
       });
       const deleted = data.deleted?.length ?? 0;
       const failed = data.failed?.length ?? 0;

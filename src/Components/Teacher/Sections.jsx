@@ -183,8 +183,15 @@ function Sections({ PageComponent = TeacherPage }) {
       return;
     }
 
+    const studentIDs = [...selected];
+    const selectedNames = students
+      .filter((student) => studentIDs.includes(student.studentID))
+      .map((student) => `${student.lastName}, ${student.firstName}`);
+
     const confirmed = await ShowConfirmation(
-      "Move the selected students to No Section?"
+      "Move the selected students to No Section?",
+      false,
+      selectedNames
     );
 
     if (!confirmed) {
@@ -193,7 +200,7 @@ function Sections({ PageComponent = TeacherPage }) {
 
     try {
       const data = await InvokeStudentManagement("movetonosection", {
-        studentIDs: selected,
+        studentIDs,
       });
       setSelected([]);
       await Promise.all([

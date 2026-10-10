@@ -1,7 +1,7 @@
 import "../css/ReusablePopup.css";
 import { useEffect } from "react";
 
-function ReusablePopup({ text, danger, onCancel, onOK }) {
+function ReusablePopup({ text, danger, items = [], onCancel, onOK }) {
   useEffect(() => {
     function HandleKeyDown(event) {
       if (event.key === "Escape") {
@@ -29,6 +29,14 @@ function ReusablePopup({ text, danger, onCancel, onOK }) {
         <p id="reusablepopuptext">
           {text}
         </p>
+
+        {items.length > 0 && (
+          <ul className="reusablepopupitems" tabIndex={0}>
+            {items.map((item, index) => (
+              <li key={index}>{item}</li>
+            ))}
+          </ul>
+        )}
 
         <div className="reusablepopupactions">
           <button

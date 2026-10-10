@@ -11,10 +11,27 @@
 
 .reusablepopup {
   width: min(100%, 420px);
+  max-height: calc(100dvh - 40px);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
   padding: 25px;
   background-color: #ffffff;
   border-radius: 6px;
   box-shadow: 0 5px 20px color-mix(in srgb, #000000 35%, transparent);
+}
+
+.reusablepopupitems {
+  max-height: min(220px, 30dvh);
+  min-height: 0;
+  margin: 16px 0 0;
+  padding: 0 8px 0 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  list-style: none;
+  font-size: clamp(14px, 2.5vw, 16px);
+  line-height: 1.6;
+  overflow-wrap: anywhere;
 }
 
 .reusablepopup p {
@@ -25,6 +42,7 @@
 }
 
 .reusablepopupactions {
+  flex-shrink: 0;
   display: flex;
   justify-content: flex-end;
   gap: 10px;
