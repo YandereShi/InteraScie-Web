@@ -2,7 +2,7 @@ import "../../css/GraphPopup.css";
 import { useEffect } from "react";
 import ScoreGraph from "./ScoreGraph";
 
-function GraphPopup({ title, data, sections, section, onPick: OnPick, onClose: OnClose }) {
+function GraphPopup({ title, data, averageScore = null, sections, section, onPick: OnPick, onClose: OnClose }) {
   useEffect(() => {
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
@@ -28,17 +28,23 @@ function GraphPopup({ title, data, sections, section, onPick: OnPick, onClose: O
           </button>
         </div>
 
-        <label className="graphfilter">
-          <span>Section</span>
-          <select value={section} onChange={(event) => OnPick(event.target.value)}>
-            <option value="all">All Sections</option>
-            {sections.map((item) => (
-              <option value={item.sectionID} key={item.sectionID}>
-                {item.sectionName}
-              </option>
-            ))}
-          </select>
-        </label>
+        <div className="graphcontrols">
+          <label className="graphfilter">
+            <span>Section</span>
+            <select value={section} onChange={(event) => OnPick(event.target.value)}>
+              <option value="all">All Sections</option>
+              {sections.map((item) => (
+                <option value={item.sectionID} key={item.sectionID}>
+                  {item.sectionName}
+                </option>
+              ))}
+            </select>
+          </label>
+          <p className="graphaverage" role="status">
+            <span>Average:</span>
+            <strong>{averageScore === null ? "--" : averageScore.toFixed(2)}</strong>
+          </p>
+        </div>
 
         <ScoreGraph title={title} data={data} height={200} showTip />
       </div>

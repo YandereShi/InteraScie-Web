@@ -50,11 +50,20 @@
   cursor: pointer;
 }
 
+.graphcontrols {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px 24px;
+  margin: 20px 0;
+}
+
 .graphfilter {
   display: flex;
   align-items: center;
   gap: 12px;
-  margin: 20px 0;
+  min-width: 0;
+  margin: 0;
   font-size: 1.15rem;
   font-weight: bold;
 }
@@ -67,6 +76,21 @@
   border-radius: 6px;
   background-color: #ffffff;
   cursor: pointer;
+}
+
+.graphaverage {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px 8px;
+  margin: 0;
+  color: #111111;
+  font-size: clamp(0.82rem, 1.2vw, 1.05rem);
+}
+
+.graphaverage strong {
+  color: #005f36;
+  white-space: nowrap;
 }
 
 .graphpopup .scoregraph {
@@ -101,11 +125,16 @@
     font-size: 1.7rem;
   }
 
+  .graphcontrols {
+    gap: 8px 12px;
+    margin: 8px 0;
+  }
+
   .graphfilter {
     align-items: center;
     flex-direction: row;
     gap: 8px;
-    margin: 8px 0;
+    flex: 1 1 180px;
     font-size: 0.9rem;
   }
 

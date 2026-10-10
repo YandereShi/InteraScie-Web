@@ -135,6 +135,7 @@ function Progress() {
   }, [lessonAccessQuery.data]);
 
   const lessonMutation = useMutation({
+    mutationKey: ["AccessToggle", "lesson"],
     mutationFn: ({
       sectionID: selectedSectionID,
       levelID,

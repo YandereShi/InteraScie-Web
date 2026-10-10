@@ -5,12 +5,14 @@ import "./index.css";
 import App from "./App.jsx";
 import { queryClient } from "./lib/queryClient";
 import PopupProvider from "./Components/PopupProvider";
+import AccessInteractionGuard from "./Components/AccessInteractionGuard";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <QueryClientProvider client={queryClient}>
       <PopupProvider>
         <App />
+        <AccessInteractionGuard />
       </PopupProvider>
     </QueryClientProvider>
   </StrictMode>

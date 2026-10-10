@@ -100,6 +100,7 @@ function Questions({ sectionID, sectionName, onBack }) {
   const isAssessmentEnabled = activeAccess?.isAssessmentEnabled === true;
 
   const accessMutation = useMutation({
+    mutationKey: ["AccessToggle", "assessment"],
     mutationFn: (isEnabled) =>
       UpdateAssessmentAccess(sectionID, levelID, isEnabled),
     onMutate: async (isEnabled) => {

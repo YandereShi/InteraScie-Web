@@ -23,17 +23,24 @@ const emptyDashboard = {
   scores: [],
 };
 
+function IsValidScore(score) {
+  const value = Number(score);
+
+  return score !== null && score !== undefined && score !== "" &&
+    Number.isInteger(value) && value >= 0 && value <= 15;
+}
+
 function MakeData(scores) {
-  const data = Array.from({ length: 15 }, (_, index) => ({
-    score: index + 1,
+  const data = Array.from({ length: 16 }, (_, index) => ({
+    score: index,
     students: 0,
   }));
 
   scores.forEach((item) => {
     const value = Number(item.score);
 
-    if (Number.isInteger(value) && value >= 1 && value <= 15) {
-      data[value - 1].students += 1;
+    if (IsValidScore(item.score)) {
+      data[value].students += 1;
     }
   });
 
@@ -147,11 +154,11 @@ function TeacherDashboard() {
     };
   }, [queryClient]);
 
-  function GetData(index) {
+  function GetScores(index) {
     const level = levels[index];
 
     if (!level) {
-      return MakeData([]);
+      return [];
     }
 
     const test = tests.find(
@@ -159,13 +166,14 @@ function TeacherDashboard() {
     );
 
     if (!test) {
-      return MakeData([]);
+      return [];
     }
 
     let scoreList = scores.filter(
       (item) =>
         item.assessmentID === test.assessmentID &&
-        Number(item.totalQuestions) === 15
+        Number(item.totalQuestions) === 15 &&
+        IsValidScore(item.score)
     );
 
     if (section !== "all") {
@@ -178,7 +186,7 @@ function TeacherDashboard() {
       );
     }
 
-    return MakeData(scoreList);
+    return scoreList;
   }
 
   function OpenGraph(index) {
@@ -189,6 +197,11 @@ function TeacherDashboard() {
   function CloseGraph() {
     setActive(null);
   }
+
+  const activeScores = active === null ? [] : GetScores(active);
+  const averageScore = activeScores.length > 0
+    ? activeScores.reduce((total, item) => total + Number(item.score), 0) / activeScores.length
+    : null;
 
   return (
     <TeacherPage title="Teacher Dashboard">
@@ -287,7 +300,8 @@ function TeacherDashboard() {
         {active !== null && (
           <GraphPopup
             title={`${branch} - Lesson ${active + 1}`}
-            data={GetData(active)}
+            data={MakeData(activeScores)}
+            averageScore={averageScore}
             sections={sections}
             section={section}
             onPick={setSection}
