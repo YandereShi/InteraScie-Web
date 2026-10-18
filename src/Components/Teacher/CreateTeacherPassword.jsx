@@ -2,7 +2,9 @@ import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router";
 import { createClient } from "@supabase/supabase-js";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
+import TeacherPolicyPopup from "./TeacherPolicyPopup";
 import "../../css/PasswordRecovery.css";
+import "../../css/TeacherPasswordAgreement.css";
 
 const client = createClient(
   import.meta.env.VITE_SUPABASE_URL,
@@ -20,6 +22,8 @@ function CreateTeacherPassword() {
   const [message, SetMessage] = useState(token ? "" : "This invitation link is invalid or expired.");
   const [visible, SetVisible] = useState(false);
   const [confirmvisible, SetConfirmVisible] = useState(false);
+  const [accepted, SetAccepted] = useState(false);
+  const [policy, SetPolicy] = useState(null);
   const verified = useRef(false);
 
   useEffect(() => {
@@ -68,6 +72,11 @@ function CreateTeacherPassword() {
     event.preventDefault();
 
     if (loading || stage !== "password") {
+      return;
+    }
+
+    if (!accepted) {
+      SetMessage("Please agree to the Terms and Conditions and acknowledge the Privacy Policy.");
       return;
     }
 
@@ -127,14 +136,34 @@ function CreateTeacherPassword() {
                 {confirmvisible ? <FaEye /> : <FaEyeSlash />}
               </button>
             </div>
+            <div className="teacherpasswordagreement">
+              <input
+                id="teacherpolicyagreement"
+                className="teacherpolicycheckbox"
+                type="checkbox"
+                name="agreement"
+                required
+                checked={accepted}
+                disabled={loading}
+                aria-labelledby="teacherpolicyagreementtext"
+                onChange={(event) => SetAccepted(event.target.checked)}
+              />
+              <span id="teacherpolicyagreementtext">
+                <label htmlFor="teacherpolicyagreement">I agree to the </label>
+                <button type="button" className="teacherpolicylink" disabled={loading} aria-haspopup="dialog" onClick={() => SetPolicy("terms")}>Terms and Conditions</button>
+                {" and have read the "}
+                <button type="button" className="teacherpolicylink" disabled={loading} aria-haspopup="dialog" onClick={() => SetPolicy("privacy")}>Privacy Policy</button>.
+              </span>
+            </div>
             {message && <p className="recoveryerror" role="alert">{message}</p>}
-            <button className="recoveryprimary" type="submit" disabled={loading}>{loading ? "Saving..." : "Create password"}</button>
+            <button className="recoveryprimary" type="submit" disabled={loading || !accepted}>{loading ? "Saving..." : "Create password"}</button>
           </form>
         )}
         {stage === "invalid" && <p className="recoveryerror" role="alert">{message}</p>}
         {stage === "success" && <p role="status">Your teacher password has been created. You can now log in.</p>}
         {!loading && <Link className="recoveryback" to="/">Back to login</Link>}
       </section>
+      {policy && <TeacherPolicyPopup policy={policy} onClose={() => SetPolicy(null)} />}
     </main>
   );
 }

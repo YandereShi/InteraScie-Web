@@ -16,6 +16,41 @@ const maxRows = 10;
 const maxLessons = 3;
 const maxTasks = 3;
 const emptyList = [];
+const taskHeadings = {
+  Chemistry: [
+    "Scientific Skills",
+    "Scientific Method",
+    "Scientific Model",
+    "State of Matter",
+    "Particles Motion",
+    "Phase Change",
+    "Solution",
+    "Concentration",
+    "Solubility",
+  ],
+  Biology: [
+    "Microscope",
+    "Cellular",
+    "Cell Structure",
+    "Mitosis",
+    "Meiosis",
+    "Asexual & Sexual",
+    "Biological Organization",
+    "Energy Flow",
+    "Review",
+  ],
+  Physics: [
+    "Balance Forces",
+    "Unbalanced Forces",
+    "Distance & Displacement",
+    "Speed",
+    "Velocity",
+    "Distance Time Graphs",
+    "Heat & Temperature",
+    "Conduction",
+    "Convection & Radiation",
+  ],
+};
 
 function Progress() {
   const { teacher } = useOutletContext();
@@ -571,109 +606,17 @@ function Progress() {
               <tr className="progresstasks">
                 <th>Student Name</th>
 
-                {branch === "Chemistry" && (
-                  <>
-                    <th>
-                      <p>Scientific Skills</p>
-                    </th>
-                    <th>
-                      <p>Scientific Method</p>
-                    </th>
-                    <th>
-                      <p>Scientific Model</p>
-                    </th>
-
-                    <th>
-                      <p>State of Matter</p>
-                    </th>
-                    <th>
-                      <p>Particles Motion</p>
-                    </th>
-                    <th>
-                      <p>Phase Change</p>
-                    </th>
-
-                    <th>
-                      <p>Solution</p>
-                    </th>
-                    <th>
-                      <p>Concentration</p>
-                    </th>
-                    <th>
-                      <p>Solubility</p>
-                    </th>
-                  </>
-                )}
-
-                {branch === "Biology" && (
-                  <>
-                    <th>
-                      <p>Microscope</p>
-                    </th>
-                    <th>
-                      <p>Cellular</p>
-                    </th>
-                    <th>
-                      <p>Cell Structure</p>
-                    </th>
-
-                    <th>
-                      <p>Mitosis</p>
-                    </th>
-                    <th>
-                      <p>Meiosis</p>
-                    </th>
-                    <th>
-                      <p>Asexual and Sexual</p>
-                    </th>
-
-                    <th>
-                      <p>
-                        Biological Organization
-                      </p>
-                    </th>
-                    <th>
-                      <p>Energy Flow</p>
-                    </th>
-                    <th>
-                      <p>Review</p>
-                    </th>
-                  </>
-                )}
-
-                {branch === "Physics" && (
-                  <>
-                    <th>
-                      <p>Task 1</p>
-                    </th>
-                    <th>
-                      <p>Task 2</p>
-                    </th>
-                    <th>
-                      <p>Task 3</p>
-                    </th>
-
-                    <th>
-                      <p>Task 1</p>
-                    </th>
-                    <th>
-                      <p>Task 2</p>
-                    </th>
-                    <th>
-                      <p>Task 3</p>
-                    </th>
-
-                    <th>
-                      <p>Task 1</p>
-                    </th>
-                    <th>
-                      <p>Task 2</p>
-                    </th>
-                    <th>
-                      <p>Task 3</p>
-                    </th>
-                  </>
-                )}
+                {(taskHeadings[branch] ?? []).map((title) => (
+                  <th key={title}>
+                    <p
+                      style={{
+                        "--heading-scale": Math.max(0.75, Math.min(1, 14 / title.length)),
+                      }}
+                    >
+                      {title}
+                    </p>
+                  </th>
+                ))}
               </tr>
             </thead>
 

@@ -165,7 +165,7 @@
 
 .progresstasks p {
   margin: 0;
-  font-size: 0.9rem;
+  font-size: max(0.7rem, calc(0.9rem * var(--heading-scale, 1)));
   line-height: 1.15;
   overflow-wrap: anywhere;
 }
@@ -395,7 +395,7 @@
   }
 
   .progresstasks p {
-    font-size: clamp(0.62rem, 2vw, 0.78rem);
+    font-size: max(0.62rem, calc(clamp(0.62rem, 2vw, 0.78rem) * var(--heading-scale, 1)));
     line-height: 1.1;
   }
 
