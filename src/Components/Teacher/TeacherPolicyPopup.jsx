@@ -1,7 +1,5 @@
 import { useEffect, useRef } from "react";
 
-import { useEffect, useRef } from "react";
-
 const policies = {
   terms: {
     title: "Terms and Conditions",
@@ -10,16 +8,16 @@ const policies = {
     
     sections: [
       {
-        heading: "1. Authorized Use",
-        body: "InteraScie is intended for authorized educational personnel to manage student information and academic records for legitimate school-related purposes. Access is subject to the permissions granted by the school or system administrator."
+        title: "1. Authorized Use",
+        text: "InteraScie is intended for authorized educational personnel to manage student information and academic records for legitimate school-related purposes. Access is subject to the permissions granted by the school or system administrator."
       },
       {
-        heading: "2. Account Responsibilities",
-        body: "Teachers must provide an appropriate and accurate name during account creation and are responsible for activities performed through their accounts. Teachers must protect their account credentials and must not share access with unauthorized individuals."
+        title: "2. Account Responsibilities",
+        text: "Teachers must provide an appropriate and accurate name during account creation and are responsible for activities performed through their accounts. Teachers must protect their account credentials and must not share access with unauthorized individuals."
       },
       {
-        heading: "3. Proper Handling of Student Information",
-        body: "Teachers must:",
+        title: "3. Proper Handling of Student Information",
+        text: "Teachers must:",
         bullets: [
           "Use student information only for authorized educational purposes.",
           "Ensure that information entered into the system is accurate and updated when necessary.",
@@ -29,8 +27,8 @@ const policies = {
         ]
       },
       {
-        heading: "4. Prohibited Activities",
-        body: "Users must not:",
+        title: "4. Prohibited Activities",
+        text: "Users must not:",
         bullets: [
           "Access records beyond their authorized permissions.",
           "Modify, delete, or misuse student information without authorization.",
@@ -40,24 +38,24 @@ const policies = {
         ]
       },
       {
-        heading: "5. Data Privacy and Confidentiality",
-        body: "Users must comply with applicable school privacy policies and data protection requirements, including the Philippine Data Privacy Act of 2012 (Republic Act No. 10173), where applicable. Student information must be handled responsibly and disclosed only when authorized or legally permitted."
+        title: "5. Data Privacy and Confidentiality",
+        text: "Users must comply with applicable school privacy policies and data protection requirements, including the Philippine Data Privacy Act of 2012 (Republic Act No. 10173), where applicable. Student information must be handled responsibly and disclosed only when authorized or legally permitted."
       },
       {
-        heading: "6. System Availability and Maintenance",
-        body: "Temporary interruptions may occur due to maintenance, technical issues, or updates. Users should report technical problems to the designated administrator."
+        title: "6. System Availability and Maintenance",
+        text: "Temporary interruptions may occur due to maintenance, technical issues, or updates. Users should report technical problems to the designated administrator."
       },
       {
-        heading: "7. Account Suspension or Termination",
-        body: "The school or authorized system administrator may restrict, suspend, or terminate access when necessary, including when a user violates these terms, loses authorization, or no longer requires access to the system."
+        title: "7. Account Suspension or Termination",
+        text: "The school or authorized system administrator may restrict, suspend, or terminate access when necessary, including when a user violates these terms, loses authorization, or no longer requires access to the system."
       },
       {
-        heading: "8. Changes to These Terms",
-        body: "These Terms and Conditions may be revised when necessary. Users shall be informed of material changes through an appropriate school or system communication process."
+        title: "8. Changes to These Terms",
+        text: "These Terms and Conditions may be revised when necessary. Users shall be informed of material changes through an appropriate school or system communication process."
       },
       {
-        heading: "9. Acknowledgment",
-        body: "By checking the acknowledgment box and proceeding with account creation or system access, the teacher confirms that they have read and understood these Terms and Conditions and agrees to comply with the stated rules, subject to applicable law and school policies."
+        title: "9. Acknowledgment",
+        text: "By checking the acknowledgment box and proceeding with account creation or system access, the teacher confirms that they have read and understood these Terms and Conditions and agrees to comply with the stated rules, subject to applicable law and school policies."
       }
     ]
   },
@@ -105,7 +103,8 @@ privacy: {
       text: "This Privacy Notice may be updated when necessary to reflect changes in the system, school policies, or applicable legal requirements."
     }
   ]
-},
+}
+};  
 
 
 function TeacherPolicyPopup({ policy, onClose }) {
@@ -142,12 +141,22 @@ function TeacherPolicyPopup({ policy, onClose }) {
       <div className="teacherpolicycontent" tabIndex={0} role="region" aria-label={content.title}>
         <p className="teacherpolicydraft">Draft — review before publication.</p>
         <p>{content.introduction}</p>
-        {content.sections.map((section) => (
-          <section key={section.title}>
-            <h3>{section.title}</h3>
-            <p>{section.text}</p>
-          </section>
+        
+{content.sections.map((section) => (
+  <section key={section.title}>
+    <h3>{section.title}</h3>
+    <p>{section.text}</p>
+
+    {section.bullets && (
+      <ul>
+        {section.bullets.map((bullet, index) => (
+          <li key={index}>{bullet}</li>
         ))}
+      </ul>
+    )}
+  </section>
+))}
+
       </div>
       <footer className="teacherpolicyfooter">
         <button type="button" className="recoveryprimary" onClick={onClose}>Close</button>
