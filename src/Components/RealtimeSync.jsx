@@ -1,6 +1,8 @@
 import { useEffect } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { supabase } from "../lib/supabase";
+import { InvalidateProgressQueries } from "../lib/progressCache";
+import { InvalidateAssessmentScoresQueries } from "../lib/assessmentCache";
 
 const studentQueryNames = new Set([
   "Students",
@@ -81,7 +83,30 @@ function RealtimeSync() {
           await InvalidateQueries(queryClient, schoolStaffQueryNames);
         }
       )
-      .subscribe();
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "Progress",
+        },
+        (payload) => InvalidateProgressQueries(queryClient, payload)
+      )
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "StudentAssessment",
+        },
+        (payload) => InvalidateAssessmentScoresQueries(queryClient, payload)
+      )
+      .subscribe((status) => {
+        if (status === "SUBSCRIBED") {
+          void InvalidateProgressQueries(queryClient, {});
+          void InvalidateAssessmentScoresQueries(queryClient, {});
+        }
+      });
 
     return () => {
       supabase.removeChannel(channel);

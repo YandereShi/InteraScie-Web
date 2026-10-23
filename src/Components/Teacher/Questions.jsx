@@ -307,7 +307,6 @@ function Questions({ sectionID, sectionName, onBack }) {
 
     await RefreshQuestions();
     setSelected([]);
-    setPage(1);
     ClosePopup();
   }
 

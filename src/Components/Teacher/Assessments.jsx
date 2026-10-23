@@ -2,8 +2,8 @@ import "../../css/Assessments.css";
 import { useEffect, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useOutletContext } from "react-router";
-import { supabase } from "../../lib/supabase";
-import { GetAssessmentOptions, GetAssessmentScores, GetAssessmentScoresQueryKey, assessmentOptionsQueryKey } from "../../lib/assessmentQueries";
+import { GetAssessmentOptions, assessmentOptionsQueryKey } from "../../lib/assessmentQueries";
+import { GetAssessmentScoresOptions, PrefetchAssessments, assessmentLessonCount } from "../../lib/assessmentCache";
 import { GetStudentPhotoPath } from "../../lib/profilePhotos";
 import studentImage from "../../assets/pfp.png";
 import ProfilePhoto from "../ProfilePhoto";
@@ -12,8 +12,9 @@ import TeacherPage from "./TeacherPage";
 import { GetPageSelection, SavePageSelection } from "../../lib/pageSelection";
 
 const maxRows = 10;
-const maxLessons = 3;
+const maxLessons = assessmentLessonCount;
 const maxScore = 15;
+const emptyList = [];
 const emptyScores = {
   students: [],
   tests: [],
@@ -56,8 +57,8 @@ function Assessments() {
     staleTime: 5 * 60 * 1000,
   });
 
-  const sections = optionsQuery.data?.sections ?? [];
-  const levels = optionsQuery.data?.levels ?? [];
+  const sections = optionsQuery.data?.sections ?? emptyList;
+  const levels = optionsQuery.data?.levels ?? emptyList;
   const staffID = optionsQuery.data?.staffID ?? 0;
   const branches = GetBranches(levels);
   const section = sections.some(
@@ -76,21 +77,28 @@ function Assessments() {
     .filter((item) => item.branchName === branch)
     .slice(0, maxLessons);
   const lessonIDs = lessons.map((item) => item.levelID);
-  const scoreQueryKey = GetAssessmentScoresQueryKey(
-    sectionID,
-    staffID,
-    branch
-  );
-
   const scoresQuery = useQuery({
-    queryKey: scoreQueryKey,
-    queryFn: () => GetAssessmentScores(sectionID, staffID, lessonIDs),
+    ...GetAssessmentScoresOptions(sectionID, staffID, branch, lessonIDs),
     enabled:
       sectionID > 0 &&
       Boolean(staffID) &&
       lessonIDs.length > 0,
-    staleTime: 2 * 60 * 1000,
   });
+
+  const canPrefetch = optionsQuery.isSuccess && scoresQuery.isSuccess;
+
+  useEffect(() => {
+    if (!canPrefetch || view !== "scores") {
+      return;
+    }
+
+    let cancelled = false;
+    void PrefetchAssessments(queryClient, staffID, sections, levels, () => cancelled);
+
+    return () => {
+      cancelled = true;
+    };
+  }, [canPrefetch, levels, queryClient, sections, staffID, view]);
 
   const scoreData = scoresQuery.data ?? emptyScores;
   const students = scoreData.students;
@@ -109,34 +117,6 @@ function Assessments() {
       : requestError
         ? "Unable to load assessment scores."
         : "";
-
-  useEffect(() => {
-    if (!sectionID || !staffID || !branch) {
-      return;
-    }
-
-    const channel = supabase
-      .channel("scoreChanges")
-      .on(
-        "postgres_changes",
-        {
-          event: "*",
-          schema: "public",
-          table: "StudentAssessment",
-        },
-        () => {
-          queryClient.invalidateQueries({
-            queryKey: scoreQueryKey,
-            exact: true,
-          });
-        }
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, [branch, queryClient, scoreQueryKey, sectionID, staffID]);
 
   function PickSection(event) {
     const value = event.target.value;

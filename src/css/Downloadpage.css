@@ -63,6 +63,17 @@
 
 .downloadright {
     min-width: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.downloadillustration {
+    display: block;
+    width: 100%;
+    height: auto;
+    max-height: 70dvh;
+    object-fit: contain;
 }
 
 .downloadheading {
@@ -330,7 +341,7 @@
         padding: 2rem 1.5rem;
     }
 
-    .downloadright:empty {
+    .downloadright {
         display: none;
     }
 }

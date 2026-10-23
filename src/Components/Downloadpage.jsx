@@ -1,5 +1,6 @@
 import "../css/Downloadpage.css";
 import InteraScieLogo from "../assets/InteraScie.png";
+import DownloadImage from "../assets/download.png";
 import { FaAndroid, FaWindows } from "react-icons/fa";
 import { useRef, useState } from "react";
 import { useNavigate } from "react-router";
@@ -106,7 +107,9 @@ function Downloadpage() {
                         </div>
                     </div>
                 </div>
-                <div className="downloadright"></div>
+                <div className="downloadright">
+                    <img className="downloadillustration" src={DownloadImage} alt="InteraScie robot mascot" />
+                </div>
             </section>
             {guidePlatform && <DownloadGuide platform={guidePlatform} onClose={CloseGuide} />}
         </main>

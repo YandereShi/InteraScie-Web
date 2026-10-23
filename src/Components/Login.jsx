@@ -1,10 +1,12 @@
 import "../css/Login.css";
 import loginImage from "../assets/Login.png";
 import { useEffect, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import ForgotPasswordPopup from "./ForgotPasswordPopup";
 import { limits } from "../lib/inputLimits";
 import { supabase } from "../lib/supabase";
+import { GetRememberMe, SaveRememberMe } from "../lib/authStorage";
 import { useNavigate } from "react-router";
 import interascie from "../assets/InteraScie.png";
 import interalogo from "../assets/interalogo.png";
@@ -12,12 +14,51 @@ import PlayImage from "../assets/play.png";
 
 function Login() {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const [ShowPassword, SetShowPassword] = useState(false);
   const [IsLoading, SetIsLoading] = useState(false);
   const [LoginMessage, SetLoginMessage] = useState("");
   const [LockedSeconds, SetLockedSeconds] = useState(0);
   const [ShowGame, SetShowGame] = useState(false);
   const [forgotpassword, SetForgotPassword] = useState(false);
+  const [RememberMe, SetRememberMe] = useState(GetRememberMe);
+  const [CheckingSession, SetCheckingSession] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function RestoreSession() {
+      try {
+        const { data, error } = await supabase.auth.getSession();
+
+        if (error || !data.session || cancelled) {
+          return;
+        }
+
+        const { data: staff, error: staffError } = await supabase
+          .from("SchoolStaff")
+          .select("role")
+          .eq("authUserID", data.session.user.id)
+          .maybeSingle();
+
+        if (!cancelled && !staffError && ["teacher", "superadmin"].includes(staff?.role)) {
+          navigate(staff.role === "superadmin" ? "/superadmin" : "/teacher", { replace: true });
+        }
+      } catch {
+        return;
+      } finally {
+        if (!cancelled) {
+          SetCheckingSession(false);
+        }
+      }
+    }
+
+    void RestoreSession();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [navigate]);
 
   useEffect(() => {
     if (LockedSeconds <= 0) {
@@ -34,7 +75,7 @@ function Login() {
   async function HandleLogin(event) {
     event.preventDefault();
 
-    if (IsLoading || LockedSeconds > 0) {
+    if (IsLoading || CheckingSession || LockedSeconds > 0) {
       return;
     }
 
@@ -81,15 +122,24 @@ function Login() {
         throw new Error();
       }
 
-      const { error: SessionError } = await supabase.auth.setSession({
-        access_token: LoginData.accessToken,
-        refresh_token: LoginData.refreshToken,
-      });
+      const previousRememberMe = GetRememberMe();
+      SaveRememberMe(RememberMe);
 
-      if (SessionError) {
-        throw SessionError;
+      try {
+        const { error: SessionError } = await supabase.auth.setSession({
+          access_token: LoginData.accessToken,
+          refresh_token: LoginData.refreshToken,
+        });
+
+        if (SessionError) {
+          throw SessionError;
+        }
+      } catch (sessionError) {
+        SaveRememberMe(previousRememberMe);
+        throw sessionError;
       }
 
+      queryClient.clear();
       navigate(LoginData.role === "superadmin" ? "/superadmin" : "/teacher", { replace: true });
     } catch {
       SetLoginMessage("An error has occurred. Please try again.");
@@ -157,6 +207,7 @@ function Login() {
                             id="password"
                             name="password"
                             placeholder="Password"
+                            autoComplete="current-password"
                             maxLength={limits.loginpassword}
                             required
                           />
@@ -171,9 +222,22 @@ function Login() {
                           </button>
                         </div>
 
-                        <button type="button" className="forgotpasswordlink" onClick={() => SetForgotPassword(true)}>
-                          Forgot Password
-                        </button>
+                        <div className="loginoptions">
+                          <label className="loginremember">
+                            <input
+                              className="loginremembercheckbox"
+                              type="checkbox"
+                              name="rememberMe"
+                              checked={RememberMe}
+                              disabled={IsLoading || CheckingSession}
+                              onChange={(event) => SetRememberMe(event.target.checked)}
+                            />
+                            <span>Remember me</span>
+                          </label>
+                          <button type="button" className="forgotpasswordlink" onClick={() => SetForgotPassword(true)}>
+                            Forgot Password
+                          </button>
+                        </div>
 
                         {DisplayMessage && (
                           <p className="loginmessage" role="alert">{DisplayMessage}</p>
@@ -182,9 +246,9 @@ function Login() {
                         <button
                           type="submit"
                           className="loginbutton"
-                          disabled={IsLoading || LockedSeconds > 0}
+                          disabled={IsLoading || CheckingSession || LockedSeconds > 0}
                         >
-                          {IsLoading ? "Logging in..." : LockedSeconds > 0 ? "Login locked" : "Log in"}
+                          {IsLoading ? "Logging in..." : CheckingSession ? "Checking session..." : LockedSeconds > 0 ? "Login locked" : "Log in"}
                         </button>
                       </form>
                     </div>

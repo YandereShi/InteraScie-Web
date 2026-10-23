@@ -4,8 +4,8 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useOutletContext } from "react-router";
 import { FaCheck, FaLock, FaLockOpen } from "react-icons/fa";
 import { TbProgress } from "react-icons/tb";
-import { supabase } from "../../lib/supabase";
-import { GetLessonAccess, GetProgressOptions, GetSectionProgress, UpdateLessonAccess } from "../../lib/progressQueries";
+import { GetProgressOptions, UpdateLessonAccess } from "../../lib/progressQueries";
+import { GetLessonAccessOptions, GetSectionProgressOptions, PrefetchProgress, progressLessonCount } from "../../lib/progressCache";
 import { GetPageSelection, SavePageSelection } from "../../lib/pageSelection";
 import { GetStudentPhotoPath } from "../../lib/profilePhotos";
 import studentImage from "../../assets/pfp.png";
@@ -13,7 +13,7 @@ import ProfilePhoto from "../ProfilePhoto";
 import TeacherPage from "./TeacherPage";
 
 const maxRows = 10;
-const maxLessons = 3;
+const maxLessons = progressLessonCount;
 const maxTasks = 3;
 const emptyList = [];
 const taskHeadings = {
@@ -128,32 +128,32 @@ function Progress() {
   const sectionID = Number(section) || 0;
 
   const lessonAccessQuery = useQuery({
-    queryKey: [
-      "LessonAccess",
-      sectionID,
-    ],
-    queryFn: () =>
-      GetLessonAccess(sectionID),
+    ...GetLessonAccessOptions(sectionID),
     enabled: sectionID > 0,
-    staleTime: 5 * 60 * 1000,
   });
 
   const progressQuery = useQuery({
-    queryKey: [
-      "SectionProgress",
-      sectionID,
-      branch,
-    ],
-    queryFn: () =>
-      GetSectionProgress(
-        sectionID,
-        lessonIDs
-      ),
+    ...GetSectionProgressOptions(sectionID, branch, lessonIDs),
     enabled:
       sectionID > 0 &&
       lessonIDs.length > 0,
-    staleTime: 30 * 1000,
   });
+
+  const canPrefetch = optionsQuery.isSuccess &&
+    lessonAccessQuery.isSuccess && progressQuery.isSuccess;
+
+  useEffect(() => {
+    if (!canPrefetch) {
+      return;
+    }
+
+    let cancelled = false;
+    void PrefetchProgress(queryClient, sections, levels, () => cancelled);
+
+    return () => {
+      cancelled = true;
+    };
+  }, [canPrefetch, levels, queryClient, sections]);
 
   const lessonAccess = useMemo(() => {
     const accessMap = {};
@@ -276,70 +276,6 @@ function Progress() {
       );
     },
   });
-
-  useEffect(() => {
-    if (
-      sectionID <= 0 ||
-      !branch
-    ) {
-      return;
-    }
-
-    const queryKey = [
-      "SectionProgress",
-      sectionID,
-      branch,
-    ];
-
-    const channel = supabase
-      .channel(
-        `progresschanges${sectionID}${branch}`
-      )
-      .on(
-        "postgres_changes",
-        {
-          event: "*",
-          schema: "public",
-          table: "Progress",
-        },
-        (payload) => {
-          const progressData =
-            queryClient.getQueryData(
-              queryKey
-            );
-
-          const changedStudentID =
-            payload.new?.studentID ??
-            payload.old?.studentID;
-
-          const isCurrentStudent =
-            progressData?.students?.some(
-              (student) =>
-                student.studentID ===
-                changedStudentID
-            );
-
-          if (
-            !changedStudentID ||
-            isCurrentStudent
-          ) {
-            queryClient.invalidateQueries({
-              queryKey,
-              exact: true,
-            });
-          }
-        }
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, [
-    branch,
-    queryClient,
-    sectionID,
-  ]);
 
   function PickSection(event) {
     const value = event.target.value;
