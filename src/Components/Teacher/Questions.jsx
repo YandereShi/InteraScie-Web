@@ -7,6 +7,8 @@ import { GetAssessmentAccess, GetAssessmentAccessQueryKey, GetAssessmentOptions,
 import { teacherDashboardQueryKey } from "../../lib/dashboardQueries";
 import QuestionCard from "./QuestionCard";
 import QuestionPopup from "./QuestionPopup";
+import BatchQuestionPopup from "./BatchQuestionPopup";
+import { QuestionPayload, ValidateQuestionBatch } from "../../lib/questionImport";
 import { limits } from "../../lib/inputLimits";
 import { PopupContext } from "../../lib/PopupContext";
 
@@ -47,6 +49,7 @@ function Questions({ sectionID, sectionName, onBack }) {
   const [number, setNumber] = useState(0);
   const [page, setPage] = useState(1);
   const [open, setOpen] = useState(false);
+  const [batchOpen, setBatchOpen] = useState(false);
   const [actionError, setActionError] = useState("");
 
   const optionsQuery = useQuery({
@@ -281,18 +284,7 @@ function Questions({ sectionID, sectionName, onBack }) {
       activeTest = data;
     }
 
-    const correct = form.choices[form.answer];
-    const otherChoices = form.choices.filter(
-      (_, index) => index !== form.answer
-    );
-    const payload = {
-      assessmentID: activeTest.assessmentID,
-      text: form.text,
-      answer: correct,
-      choice1: otherChoices[0],
-      choice2: otherChoices[1],
-      choice3: otherChoices[2],
-    };
+    const payload = QuestionPayload(form, activeTest.assessmentID);
 
     const result = current
       ? await supabase
@@ -308,6 +300,43 @@ function Questions({ sectionID, sectionName, onBack }) {
     await RefreshQuestions();
     setSelected([]);
     ClosePopup();
+  }
+
+  async function SaveBatchQuestions(rows) {
+    const fresh = await queryClient.fetchQuery({
+      queryKey: questionQueryKey,
+      queryFn: () => GetAssessmentQuestions(staffID, levelID),
+      staleTime: 0,
+    });
+    const message = ValidateQuestionBatch(rows, fresh.questions, maxQuestions);
+    if (message) throw new Error(message);
+
+    let activeTest = fresh.test;
+    if (!activeTest) {
+      const result = await supabase.from("Assessment")
+        .insert({ staffID, levelID })
+        .select("assessmentID, levelID")
+        .single();
+      if (result.error) throw new Error("Unable to create the lesson assessment.");
+      activeTest = result.data;
+      queryClient.setQueryData(questionQueryKey, { ...fresh, test: activeTest });
+    }
+
+    const result = await supabase.from("Question")
+      .insert(rows.map((row) => QuestionPayload(row, activeTest.assessmentID)))
+      .select("questionID, assessmentID, text, answer, choice1, choice2, choice3");
+    if (result.error) throw new Error("Unable to confirm the upload. Check your connection and try again. Existing questions will be checked before saving.");
+
+    queryClient.setQueryData(questionQueryKey, {
+      test: activeTest,
+      questions: [...fresh.questions, ...result.data],
+    });
+    setSelected([]);
+    setBatchOpen(false);
+    await Promise.all([
+      RefreshQuestions(),
+      queryClient.invalidateQueries({ queryKey: ["AssessmentScores"] }),
+    ]);
   }
 
   function SelectOne(questionID, isChecked) {
@@ -450,6 +479,14 @@ function Questions({ sectionID, sectionName, onBack }) {
             <button
               type="button"
               className="questionadd"
+              disabled={loading || Boolean(queryError) || !lesson || !staffID || questions.length >= maxQuestions}
+              onClick={() => setBatchOpen(true)}
+            >
+              Batch Upload
+            </button>
+            <button
+              type="button"
+              className="questionadd"
               disabled={
                 !lesson ||
                 !staffID ||
@@ -548,6 +585,14 @@ function Questions({ sectionID, sectionName, onBack }) {
           number={number}
           onClose={ClosePopup}
           onSave={SaveQuestion}
+        />
+      )}
+      {batchOpen && (
+        <BatchQuestionPopup
+          questions={questions}
+          maximum={maxQuestions}
+          onClose={() => setBatchOpen(false)}
+          onSave={SaveBatchQuestions}
         />
       )}
     </section>

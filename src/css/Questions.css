@@ -43,7 +43,7 @@
   min-height: 62px;
   padding: 10px 12px;
   display: grid;
-  grid-template-columns: minmax(145px, 1fr) minmax(175px, 1fr) auto minmax(0, 1fr);
+  grid-template-columns: minmax(130px, 1fr) minmax(165px, 1fr) auto minmax(290px, 1.4fr);
   align-items: center;
   gap: 16px;
 }
@@ -114,8 +114,10 @@
 }
 
 .questionbuttons button {
-  padding: 8px 12px;
+  min-width: 0;
+  padding: 8px;
   border: none;
+  font-size: clamp(0.72rem, 0.9vw, 1rem);
   font-weight: 600;
   cursor: pointer;
 }
@@ -217,7 +219,7 @@
   cursor: pointer;
 }
 
-@media (max-width: 1100px) {
+@media (max-width: 1400px) {
   .questionspanel {
     width: 100%;
     padding-right: 20px;
@@ -231,7 +233,8 @@
   .questionbuttons {
     width: 100%;
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-column: 1 / -1;
   }
 
   .questionbuttons button {
