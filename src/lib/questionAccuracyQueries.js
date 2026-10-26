@@ -2,15 +2,15 @@ import { supabase } from "./supabase";
 
 export const accuracyBranches = ["Chemistry", "Biology", "Physics", "Earth Science"];
 
-export function GetQuestionAccuracyQueryKey(staffID, levelID) {
-  return ["QuestionAccuracy", staffID, levelID];
+export function GetQuestionAccuracyQueryKey(staffID, levelID, sectionID = "all") {
+  return ["QuestionAccuracy", staffID, levelID, sectionID];
 }
 
 export function GetBranchAccuracyQueryKey(staffID) {
   return ["BranchAccuracy", staffID];
 }
 
-async function GetAnswerCounts(questionIDs) {
+async function GetAnswerCounts(questionIDs, sectionID = "all") {
   const counts = new Map(
     questionIDs.map((questionID) => [questionID, { correct: 0, total: 0 }])
   );
@@ -18,12 +18,19 @@ async function GetAnswerCounts(questionIDs) {
   const pageSize = 500;
 
   for (let offset = 0; ; offset += pageSize) {
-    const { data: answers, error: answerError } = await supabase
+    let query = supabase
       .from("StudentAnswer")
-      .select("studentAssessmentID, questionID, isCorrect")
+      .select(sectionID === "all"
+        ? "studentAssessmentID, questionID, isCorrect"
+        : "studentAssessmentID, questionID, isCorrect, studentAssessment:StudentAssessment!inner(student:Student!inner(sectionID))")
       .in("questionID", questionIDs)
-      .order("studentAnswerID", { ascending: false })
-      .range(offset, offset + pageSize - 1);
+      .order("studentAnswerID", { ascending: false });
+
+    if (sectionID !== "all") {
+      query = query.eq("studentAssessment.student.sectionID", sectionID);
+    }
+
+    const { data: answers, error: answerError } = await query.range(offset, offset + pageSize - 1);
 
     if (answerError) {
       throw new Error("Unable to load student answer accuracy.");
@@ -121,7 +128,7 @@ export async function GetBranchAccuracy(staffID) {
   return summary;
 }
 
-export async function GetQuestionAccuracy(staffID, levelID) {
+export async function GetQuestionAccuracy(staffID, levelID, sectionID = "all") {
   if (!staffID || !levelID) {
     return [];
   }
@@ -159,7 +166,7 @@ export async function GetQuestionAccuracy(staffID, levelID) {
     return [];
   }
 
-  const counts = await GetAnswerCounts(questionList.map((question) => question.questionID));
+  const counts = await GetAnswerCounts(questionList.map((question) => question.questionID), sectionID);
 
   return questionList.map((question, index) => ({
     questionID: question.questionID,

@@ -80,6 +80,39 @@
   cursor: pointer;
 }
 
+.accuracyfilters {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  flex: 1;
+  min-width: 0;
+  gap: 12px;
+}
+
+.accuracyfilters .accuracybranch {
+  min-width: 0;
+  font-size: clamp(0.85rem, 1.5vw, 1rem);
+}
+
+.accuracyfilters select {
+  min-width: 0;
+  text-overflow: ellipsis;
+}
+
+@media (max-width: 600px) {
+  .questionaccuracycontrols {
+    flex-wrap: wrap;
+  }
+
+  .accuracyfilters {
+    flex-basis: 100%;
+    gap: 10px;
+  }
+
+  .questionaccuracycontrols .accuracylessons {
+    margin-left: auto;
+  }
+}
+
 .accuracylessons {
   display: flex;
   gap: 4px;

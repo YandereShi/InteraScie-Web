@@ -1,8 +1,10 @@
 import { useState } from "react";
+import TimeTakenPopup from "./TimeTakenPopup";
 
 function DashboardLevelProgress({ sections, students, levels, records, loading, error }) {
   const [section, setSection] = useState("all");
   const [page, setPage] = useState(0);
+  const [timeOpen, setTimeOpen] = useState(false);
   const selectedSection = section === "all" || sections.some((item) => String(item.sectionID) === section)
     ? section
     : "all";
@@ -68,10 +70,13 @@ function DashboardLevelProgress({ sections, students, levels, records, loading, 
           <h2 id="dashboardprogresstitle">Level Progress</h2>
           <p>All subjects · {studentCount} {studentCount === 1 ? "student" : "students"}</p>
         </div>
-        <select value={selectedSection} onChange={(event) => setSection(event.target.value)} aria-label="Progress section">
-          <option value="all">All sections</option>
-          {sections.map((item) => <option key={item.sectionID} value={String(item.sectionID)}>{item.sectionName}</option>)}
-        </select>
+        <div className="dashboardprogressactions">
+          <select value={selectedSection} onChange={(event) => setSection(event.target.value)} aria-label="Progress section">
+            <option value="all">All sections</option>
+            {sections.map((item) => <option key={item.sectionID} value={String(item.sectionID)}>{item.sectionName}</option>)}
+          </select>
+          <button type="button" className="dashboardtimebutton" onClick={() => setTimeOpen(true)} disabled={loading || Boolean(error) || !currentBranch}>Time Taken</button>
+        </div>
       </div>
 
       {loading ? (
@@ -117,6 +122,20 @@ function DashboardLevelProgress({ sections, students, levels, records, loading, 
           </nav>
         )}
       </div>
+      {timeOpen && (
+        <TimeTakenPopup
+          branch={currentBranch}
+          levels={levels}
+          sections={sections}
+          section={selectedSection}
+          students={students}
+          records={records}
+          loading={loading}
+          error={error}
+          onSectionChange={setSection}
+          onClose={() => setTimeOpen(false)}
+        />
+      )}
     </section>
   );
 }

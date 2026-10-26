@@ -6,6 +6,7 @@ import { GetQuestionAccuracy, GetQuestionAccuracyQueryKey } from "../../lib/ques
 
 function QuestionAccuracyPopup({ initialBranch, onClose: OnClose }) {
   const [branch, setBranch] = useState(initialBranch);
+  const [section, setSection] = useState("all");
   const [lesson, setLesson] = useState(0);
   const optionsQuery = useQuery({
     queryKey: assessmentOptionsQueryKey,
@@ -14,6 +15,10 @@ function QuestionAccuracyPopup({ initialBranch, onClose: OnClose }) {
   });
 
   const levels = optionsQuery.data?.levels ?? [];
+  const sections = optionsQuery.data?.sections ?? [];
+  const selectedSection = section === "all" || sections.some((item) => String(item.sectionID) === section)
+    ? section
+    : "all";
   const branches = [...new Set(levels.map((level) => level.branchName).filter(Boolean))];
   const selectedBranch = branches.includes(branch) ? branch : branches[0] ?? "";
   const branchLevels = levels
@@ -24,8 +29,8 @@ function QuestionAccuracyPopup({ initialBranch, onClose: OnClose }) {
   const levelID = branchLevels[activeLesson]?.levelID;
   const staffID = optionsQuery.data?.staffID;
   const accuracyQuery = useQuery({
-    queryKey: GetQuestionAccuracyQueryKey(staffID, levelID),
-    queryFn: () => GetQuestionAccuracy(staffID, levelID),
+    queryKey: GetQuestionAccuracyQueryKey(staffID, levelID, selectedSection),
+    queryFn: () => GetQuestionAccuracy(staffID, levelID, selectedSection),
     enabled: Boolean(staffID && levelID),
   });
 
@@ -75,15 +80,26 @@ function QuestionAccuracyPopup({ initialBranch, onClose: OnClose }) {
           </button>
         </div>
 
-        <div className="accuracycontrols">
-          <label className="accuracybranch">
-            <span>Branch</span>
-            <select value={selectedBranch} onChange={HandleBranchChange} disabled={branches.length === 0}>
-              {branches.map((item) => (
-                <option key={item} value={item}>{item}</option>
-              ))}
-            </select>
-          </label>
+        <div className="accuracycontrols questionaccuracycontrols">
+          <div className="accuracyfilters">
+            <label className="accuracybranch">
+              <span>Branch</span>
+              <select value={selectedBranch} onChange={HandleBranchChange} disabled={branches.length === 0}>
+                {branches.map((item) => (
+                  <option key={item} value={item}>{item}</option>
+                ))}
+              </select>
+            </label>
+            <label className="accuracybranch">
+              <span>Section</span>
+              <select value={selectedSection} onChange={(event) => setSection(event.target.value)} disabled={sections.length === 0}>
+                <option value="all">All sections</option>
+                {sections.map((item) => (
+                  <option key={item.sectionID} value={String(item.sectionID)}>{item.sectionName}</option>
+                ))}
+              </select>
+            </label>
+          </div>
 
           <div className="accuracylessons" aria-label="Select lesson">
             {[0, 1, 2].map((index) => (

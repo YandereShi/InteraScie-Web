@@ -51,7 +51,7 @@ export async function GetTeacherDashboard(branch) {
   const { data: studentData, error: studentError } =
     await supabase
       .from("Student")
-      .select("studentID, sectionID")
+      .select("studentID, sectionID, firstName, lastName")
       .in("sectionID", sectionIDs);
 
   if (studentError) {
@@ -235,7 +235,7 @@ export async function GetTeacherLevelProgress(studentIDs) {
 
   const { data, error } = await supabase
     .from("Progress")
-    .select("studentID, levelID, status")
+    .select("studentID, levelID, status, timeTakenSeconds")
     .in("studentID", studentIDs)
     .in("levelID", levelList.map((item) => item.levelID));
 

@@ -318,6 +318,7 @@
 
 .dashboardprogresshead {
   display: flex;
+  flex-wrap: wrap;
   align-items: flex-start;
   justify-content: space-between;
   gap: 10px;
@@ -336,14 +337,49 @@
 }
 
 .dashboardprogresshead select {
-  min-width: 125px;
-  max-width: 45%;
+  min-width: 0;
+  width: 150px;
+  max-width: 100%;
   padding: 6px 8px;
   border: 1px solid #89988E;
   border-radius: 7px;
   background-color: #FFFFFF;
   color: #153D2B;
   font-size: 0.85rem;
+}
+
+.dashboardprogressactions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.dashboardtimebutton {
+  flex-shrink: 0;
+  padding: 7px 10px;
+  border: none;
+  border-radius: 7px;
+  background-color: #00bf63;
+  color: #ffffff;
+  font-size: clamp(0.75rem, 1.1vw, 0.85rem);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.dashboardtimebutton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+@media (max-width: 1200px) {
+  .dashboardprogressactions {
+    flex: 1 1 100%;
+  }
+
+  .dashboardprogressactions select {
+    flex: 1;
+  }
 }
 
 .dashboardprogressrows {

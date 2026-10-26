@@ -1,0 +1,134 @@
+.timetakenpopup {
+  margin: auto;
+  width: min(840px, calc(100% - 48px));
+  border: none;
+  color: #111111;
+}
+
+.timetakenpopup::backdrop {
+  background: color-mix(in srgb, #000000 55%, transparent);
+}
+
+.timetakenpopup .accuracyheader,
+.timetakenpopup .accuracycontrols {
+  flex-shrink: 0;
+}
+
+.timetakenpopup .accuracyheader p {
+  display: block;
+}
+
+.timetakenpopup .accuracyheader > div {
+  min-width: 0;
+}
+
+.timetakenlevels {
+  display: flex;
+  flex-shrink: 0;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.timetakenaverage {
+  color: #111111;
+  font-size: clamp(0.85rem, 1.8vw, 1.1rem);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.timetakenpopup .accuracybranch {
+  flex: 1;
+  min-width: 0;
+  max-width: 420px;
+}
+
+.timetakenpopup select {
+  min-width: 0;
+  text-overflow: ellipsis;
+}
+
+.timetakencolumns {
+  display: flex;
+  flex-shrink: 0;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 0 12px 10px;
+  color: #555555;
+  font-size: clamp(0.75rem, 1.3vw, 0.9rem);
+}
+
+.timetakenlist {
+  min-height: 0;
+  max-height: min(440px, 55dvh);
+}
+
+.timetakensort {
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+.timetakensort:hover {
+  text-decoration: underline;
+}
+
+.timetakensort:focus-visible {
+  outline: 2px solid #555555;
+  outline-offset: 3px;
+}
+
+.timetakenrow {
+  min-height: 72px;
+}
+
+.timetakenstudent {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.timetakenstudent strong {
+  font-size: clamp(0.85rem, 1.7vw, 1.1rem);
+}
+
+.timetakenstudent span {
+  color: #555555;
+  font-size: clamp(0.75rem, 1.3vw, 0.85rem);
+}
+
+.timetakenvalue {
+  flex-shrink: 0;
+  color: #006b3c;
+  font-size: clamp(1rem, 2vw, 1.35rem);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.timetakenrow.finished {
+  border-color: #00bf63;
+  background: #00bf63;
+  color: #ffffff;
+}
+
+.timetakenrow.finished .timetakenstudent span,
+.timetakenrow.finished .timetakenvalue {
+  color: #ffffff;
+}
+
+.timetakenstatus {
+  font-weight: 700;
+}
+
+@media (max-width: 768px) {
+  .timetakenpopup {
+    width: calc(100% - 16px);
+  }
+}

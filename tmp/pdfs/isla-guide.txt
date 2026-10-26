@@ -1,0 +1,3041 @@
+
+--- PDF PAGE 1 ---
+STI College Caloocan i 
+ 
+Instructional Sipnayan Learning Adventure (I.S.L.A.): A  2D Game-
+based Mobile Learning System  with Progress Analytics for Grade 3 
+Mathematics  at Master Hand School  Inc.                                                                                                                                                                                                                                                                                                                                                                                                                                                                
+A Capstone Project Proposal 
+Presented to the Faculty of the 
+Information and Communications Technology Program 
+STI College Caloocan 
+ 
+In Partial Fulfilment 
+of the Requirements for the Degree 
+Bachelor of Science in Information Technology 
+John Matthew S. Cruz 
+Mac Edward D. Lorilla 
+Deniel L. Hamor 
+Steven Louis A. Estrullo 
+ 
+ 
+24-October-26 
+  
+
+--- PDF PAGE 2 ---
+STI College Caloocan   
+   
+ 
+ 
+ENDORSEMENT FORM FOR ORAL DEFENSE 
+ 
+ 
+TITLE OF RESEARCH:   Instructional Sipnayan Learning Adventure  
+(I.S.L.A.):  A 2D Game-based Mobile Learning 
+System with Progress Analytics for Grade 3 
+Mathematics at Master Hand School Inc. 
+ 
+NAME OF PROPONENTS: John Matthew S. Cruz 
+Mac Edward Lorilla 
+Deniel Hamor 
+Steven Louis Estrullo 
+    
+ 
+In Partial Fulfilment of the Requirements  
+for the degree Bachelor of Science in Information Technology 
+has been examined and is recommended for Oral Defense. 
+ 
+ 
+ 
+ENDORSED BY: 
+ 
+ 
+Carl James Alden S. Dolorito 
+Capstone Project Adviser 
+ 
+ 
+APPROVED FOR ORAL DEFENSE: 
+ 
+ 
+ 
+Ferdinand Navarro Jr. 
+Capstone Project Coordinator 
+ 
+ 
+ 
+NOTED BY: 
+ 
+ 
+ 
+Engr. Francisco Gubangco 
+Program Head 
+ 
+ 
+24-October-26 
+
+--- PDF PAGE 3 ---
+STI College Caloocan   
+   
+ 
+ 
+APPROVAL SHEET 
+This capstone project titled Instructional Sipnayan Learning Adventure (I.S.L.A.): 
+A 2D Game-based Mobile Learning System  with progress analytics for Grade 3 
+Mathematics at Master Hand School Inc. ., prepared and submitted by John Matthew 
+S. Cruz, Mac Edward Lorilla , Deniel Hamor, and Steven Louis Estrullo , in partial 
+fulfillment of the requirements for the degree of Bachelor of Science in Information 
+Technology, has been examined and is recommended for acceptance and approval. 
+ 
+Carl James Alden S. Dolorito 
+Capstone Project Adviser 
+Accepted and approved by the Capstone Project Review Panel 
+in partial fulfillment of the requirements for the degree of  
+Bachelor of Science in Information Technology 
+ 
+  
+Panel Member Panel Member 
+   
+ 
+Lead Panelist 
+Noted: 
+Ferdinand Navarro Jr. Engr. Francisco Gubangco 
+Capstone Project Coordinator Program Head 
+ 
+24-October-26  
+
+--- PDF PAGE 4 ---
+STI College Caloocan   
+   
+ 
+ 
+ACKNOWLEDGEMENTS 
+We express our sincere gratitude to the individuals who provided their guidance, support, 
+and encouragement throughout the completion of this capstone project. 
+We extend our sincere appreciation to Mr. Ferdinand Navarro Jr. and Mr. JB Campued, 
+our Capstone Project Coordinators, for their guidance  and to Mr. Carl James Alden 
+Dolorito, our Capstone Project Adviser, for his patience, and insights that helped improve 
+our research. Special thanks to the Capstone Project Review Panel for their constructive 
+feedback and recommendations. 
+We also sincerely thank Master Hand School Inc. for allowing us to conduct our study and 
+for providing the cooperation and feedback needed to evaluate our developed system. 
+To our parents and guardians, we are deeply thankful for their unconditional love, financial 
+assistance, understanding, and continuous support. We also appreciate our friends and 
+loved ones for their encouragement and motivation throughout this journey. 
+Above all, we offer our deepest gratitude to Almighty God for granting us the wisdom, 
+strength, patience, and perseverance to overcome challenges and successfully complete this 
+project. 
+Finally, to everyone who contributed to this achievement, we extend our heartfelt thanks. 
+Your support and encouragement have been invaluable to our success. 
+ 
+  
+
+--- PDF PAGE 5 ---
+STI College Caloocan   
+   
+ 
+ 
+ABSTRACT 
+Title of research: Instructional Sipnayan Learning Adventure  
+(I.S.L.A.):  A 2D Game-based Mobile Learning System with 
+Progress Analytics for Grade 3 Mathematics at Master Hand 
+School Inc. 
+ 
+ 
+Researchers:  John Matthew S. Cruz 
+Mac Edward D. Lorilla 
+Deniel L. Hamor 
+Steven Louis A. Estrullo 
+ 
+Degree:  Bachelor of Science in Information Technology 
+ 
+Date of Completion: October 2026 
+ 
+Keywords:  I.S.L.A., Mathematics, Mobile 2D Adventure game, Game- 
+based learning, Learning system,  
+ 
+ 
+This capstone project, “Instructional Sipnayan Learning Adventure (I.S.L.A.): A 2D 
+Game-based Mobile Learning System with Progress Analytics for Grade 3 Mathematics at 
+Master Hand School Inc.,” intends to be a supplemental learning tool that motivates Grade 
+3 students and practice their mathematics performance through adventure gameplay  with 
+time-limited combat mechanics . The introduction outlines the students’ difficulty with 
+math, the manual recording of their progress, and the objectives, scope, and limitations of 
+the study, including pre - and post -assessment results. The review of related literature 
+supports game -based learning as a way to strengthen numeracy, motivation, and 
+engagement. The methodology covers the technical background, requirements, and system 
+design, and describes the Agile approach used to build the Android game with Godot 
+Engine and the web dashboar d with analytics. In the game, students explore six math 
+islands, defeat enemies through time -limited multiple -choice quiz combat, and earn 
+badges, while teachers and administrators monitor progress and manage accounts and 
+questions through the web platform. The results a nd discussion present the testing, 
+prototype, and implementation results. The conclusion summarizes the key findings and 
+suggests future improvements.  
+
+--- PDF PAGE 6 ---
+STI College Caloocan   
+   
+ 
+ 
+Table of Contents 
+ Page 
+Title Page i 
+Endorsement form for Oral Defense ii 
+Abstract iii 
+Approval Sheet iv 
+Acknowledgements v 
+Table of Contents vi  
+List of Figures vii  
+ Figure 1: Agile Methodology 35 
+ Figure 2.1: Gameplay (Exploration) 44 
+ Figure 2.2: Gameplay (Enemy AI) 44 
+ Figure 2.3: Gameplay (Battle Interface) 46 
+ Figure 2.4: Gameplay (Badges) 45 
+ Figure 2.5: Gameplay (Prologue) 45 
+ Figure 3.1: Website Flowchart 46 
+ Figure 3.2.1: Data Flow Diagram I.S.L.A. Level 0 47 
+ Figure 3.2.2: Data Flow Diagram I.S.L.A. Game Level 1 47 
+ Figure 3.2.3: Data Flow Diagram I.S.L.A. Website Level 1 48 
+ Figure 3.3: Entity-Relationship Diagram 49 
+ Figure 3.4: Use-Case Diagram 50 
+ Figure 3.5: HIPO Chart 51 
+ Figure 3.6.1: RRL Diagram Local Studies 52 
+ Figure 3.6.2: RRL Diagram Foreign Studies 52 
+ Figure 4.1: User Login 53 
+ Figure 4.2.1: Main Menu (Terms and Condition) 53 
+ Figure 4.2.2: Main Menu (Play) 53 
+ Figure 4.2.3: Main Menu (Options) 53 
+ Figure 4.3.1: Dialogue 53 
+
+--- PDF PAGE 7 ---
+STI College Caloocan   
+   
+ 
+ 
+ Figure 4.3.2: Dialogue (Retry) 53 
+ Figure 4.4.1: Guide (Enemies) 54 
+ Figure 4.4.2: Guide (Badges) 54 
+ Figure 4.4.3: Guide (Movement Controls) 54 
+ Figure 4.4.4: Guide (Characters) 54 
+ Figure 4.4.5: Guide (Quiz Combat) 54 
+ Figure 4.4.6: Guide (Quiz Combat Buttons) 54 
+ Figure 4.5.1: In-Game menu 54 
+ Figure 4.5.2: In-Game menu (Options) 54 
+ Figure 4.5.3: Player UI 55 
+ Figure 4.5.4: Player UI (Badges Panel) 55 
+ Figure 4.6.1: Battle UI (Idle Mode) 55 
+ Figure 4.6.2: Battle UI (Hint Pressed) 55 
+ Figure 4.6.3: Battle UI (Enemy Attack) 55 
+ Figure 4.6.4: Battle UI (Enemy Defeated) 55 
+ Figure 4.7.1: Island Selection 1 55 
+ Figure 4.7.2: Island Selection 2 55 
+ Figure 4.7.3: Island Selection 3  56 
+ Figure 4.7.1: Quest (Starting Screen) 56 
+ Figure 4.7.2: Quest (Map Exploration) 56 
+ Figure 4.8.1: Result (Results Screen) 56 
+ Figure 4.8.2: Result (Badges Unlock) 56 
+ Figure 4.9.1: Maps (Numerina Village) 56 
+ Figure 4.9.2: Maps (Addition Island) 57 
+ Figure 4.9.3: Maps (Subtraction Island) 57 
+ Figure 4.9.4: Maps (Multiplication Island) 57 
+ Figure 4.9.5: Maps (Division Island) 58 
+ Figure 4.9.6: Maps (Geometry Island) 59 
+
+--- PDF PAGE 8 ---
+STI College Caloocan   
+   
+ 
+ 
+ Figure 4.9.7: Maps (Fraction Island) 59 
+ Figure 5.1: Landing page 60 
+ Figure 5.2: About the Game 60 
+ Figure 5.3: About School 61 
+ Figure 5.4: Download 61 
+ Figure 5.5: Login page 62 
+ Figure 5.6: Dashboard 63 
+ Figure 5.7: Analytics 63 
+ Figure 5.8: Student Accounts 64 
+ Figure 5.9: Teacher Accounts 65 
+ Figure 5.10.1: Question Manager 65 
+ Figure 5.10.2: Question Manager (Add Questions) 66 
+ Figure 5.10.3: Question Manager (Delete Question) 66 
+ Figure 5.11.1: Teacher Dashboard 67 
+ Figure 6.1: Question 1 79 
+ Figure 6.2: Question 2 80 
+ Figure 6.3: Question 3 81 
+ Figure 6.4: Question 4 82 
+ Figure 6.5: Question 5 83 
+ Figure 6.6: Question 6 84 
+ Figure 6.7: Question 7 85 
+ Figure 6.8: Question 8 86 
+ Figure 6.9: Question 9 87 
+ Figure 6.10: Question 10 88 
+List of Tables viii 
+ Table 1: 5-point Likert scale 70 
+ Table 2: Sample Survey Questionnaire  73 
+ Table 3: Sample pre-test 74 
+
+--- PDF PAGE 9 ---
+STI College Caloocan   
+   
+ 
+ 
+ Table 4: Sample post-test 75 
+ Table 5: Pre-and post-assessment results 76 
+ Table 6: Independent Samples T-Test results 77 
+ Table 7: Relative Improvement 77 
+ Table 8: Survey Questionnaire results 78 
+List of Notations  
+ x̄ Arithmetic mean / average score 70 
+ Σ Summation (addition of a series of values) 70 
+ x Individual score 70 
+ n Number of observations / participants 70 
+ W Weighted mean 71 
+ wᵢ Weight assigned to response category i 71 
+ Xᵢ Frequency of response category i, as defined in manuscript 71 
+ i Index for a response category 71 
+ x̄₁, x̄₂ Means of experimental and control groups 71 
+ s₁², s₂² Variances of experimental and control groups 71 
+ n₁, n₂ Numbers of students in the two groups 71 
+ t Computed t-statistic 71 
+ α Significance level (0.05) 71 
+ C Relative Change 71 
+ x1 Final Value 71 
+ x2 Initial Value 71 
+ df Degrees of freedom 77 
+ p p-value / probability value 77 
+ SD Standard deviation 77 
+ Mean Arithmetic mean / average assessment score 77 
+ WM Weighted mean 78 
+ VI Verbal interpretation 78 
+Introduction  
+ Project Context 1 
+ Purpose and Description 2 
+
+--- PDF PAGE 10 ---
+STI College Caloocan   
+   
+ 
+ 
+ Objectives 3 
+ Scope and Limitations 7 
+ Review of Related Literature/Studies/Systems 11 
+Methodology  
+ Technical Background 23 
+ Requirements Analysis 29 
+ Requirements Documentation 35 
+ Design of Software, System, Product, and/or Processes 37 
+ Development  
+Results and Discussion  
+ Testing 67 
+ Description of Prototype 68 
+ Implementation Plan 69 
+ Implementation Results 69 
+Conclusion  
+References  
+Appendices  
+ Resource Persons  
+ Relevant Source Code  
+ Evaluation Tool/Test Documents  
+ Sample Input/Output/Reports  
+ User’s Guide  
+ Personal Technical Vitae  
+ 
+
+--- PDF PAGE 11 ---
+STI College Caloocan 1 
+ 
+INTRODUCTION 
+Project Context 
+The study involves Grade 3 students from Master Hand School Inc., focusing on the 
+challenges they encounter in learning fundamental mathematics and the need for a 
+supplementary learning tool that supports the Department of Education's (DepEd) 
+MATATAG Curri culum. According to the Second Congressional Commission on 
+Education (EDCOM II), as reported by GMA News (2024), Filipino elementary learners 
+continue to experience difficulties in foundational numeracy, highlighting the need for 
+approaches that strengthen  mathematical understanding and problem -solving skills.The 
+Researchers conducted an interview with Ms. Angela Babe Gungon, a Grade 3 teacher at 
+Master Hand School Inc., regarding the students' mathematics learning experiences and the 
+teaching methods used at the institution. The interview covered the common difficulties 
+students encounter when solving mathematical problems, their interest and participation 
+during classroom discussions, the effectiveness of interactive learning activities, and the 
+mathematical skills that should be reinforced through the proposed game. Additionally, the 
+Researchers conducted a preliminary survey among Grade 3 students regarding their 
+mathematics learning habits, frequency of practicing mathematics outside school hours, 
+and interest in educational adventure games.  Based on the interview, Ms. Gungon  
+explained that mathematics lessons are primarily delivered through traditional lectures and 
+that students tend to lose interest when discussions consist mainly of numbers and text. She 
+also noted that students frequently experience difficulties interpreti ng mathematical 
+questions and performing calculations correctly. However, students demonstrated greater 
+enthusiasm and were able to recall lessons more easily when interactive activities were 
+incorporated into classroom discussions. The preliminary survey also indicated that 
+students did not consistently practice mathematics at home but expressed interest in 
+adventure-based educational games. To address these concerns, Instructional Sipnayan 
+Learning Adventure (I.S.L.A.): A 2D Game -based Mobile Learning System with 
+Progress Analytics for Grade 3 Mathematics at Master Hand School Inc.  developed 
+by the researchers to motivate Grade 3 students and improve their performance in learning 
+mathematics through engaging narrative-driven adventure gameplay. The title reflects the 
+
+--- PDF PAGE 12 ---
+STI College Caloocan 2 
+ 
+system's design — Instructional emphasizes alignment with learning objectives; 
+Sipnayan refers to Mathematics in Filipino; Learning highlights mechanics and 
+challenges; and Adventure represents the island exploration gameplay, and together it 
+forms ISLA, the thematic setting of the game, Islands. I.S.L.A. is set in the Sipnayan 
+Archipelago, where a student character guided by Professor Cal travels across islands . 
+Student progress and performance are automatically recorded and made accessible through 
+a web-based analytics dashboard, allowing teachers to monitor individual mastery across 
+topics in real time. Studies confirmed that game -based learning, when properly d esigned 
+and integrated into mobile platforms, can be a way to engage young students in learning 
+Mathematics. 
+Purpose and Description 
+The purpose of “Instructional Sipnayan Learning Adventure (I.S.L.A.): A 2D Game-
+based mobile learning system with progress analytics for Grade 3 Mathematics at Master 
+Hand School Inc.”, is to support Grade 3 students to actively engage in mathematics as a 
+supplementary tool to support existing  teaching methods. The Game is 2D Adventure 
+game, focusing on the theme of Mathematics. The Game will provide knowledge about 
+Foundational mathematics through exploration, and interactive quizzes as the combat 
+mechanic. The Game will allow the student to play as the student of “Professor Cal”, The 
+one who will guide them throughout the “Sipnayan archipelago”, the setting of the game.  
+I.S.L.A. is a 2D adventure game set in an archipelago of "math islands," each 
+representing a specific Grade 3 mathematics topic. Students control a character to explore 
+these islands and encounter enemies, which trigger mathematical challenges. Each 
+encounter presents a multiple -choice question that the player must answer correctly to 
+defeat the enemy, and players must complete multiple quests to progress through the story 
+of the game. 
+With I.S.L.A., students learn math through an engaging game‑based environment. 
+Answering challenges correctly encourages them to pay closer attention in class to advance 
+further—creating a bridge between home and school. Through progressive practice and 
+repeated challenges, students build skills and confidence, driven by intrinsic motivation 
+rather than instruction alone. I.S.L.A. transforms math from a passive subject into an 
+adventure they genuinely want to pursue. 
+
+--- PDF PAGE 13 ---
+STI College Caloocan 3 
+ 
+General Problem 
+The Grade 3 students’ difficulty in solving math problems(e.g., multiplication and 
+division), and no dedicated system to assess their math skill and performance. 
+Based on conducted surveys and teacher interviews at Master Hand School Inc., 
+Grade 3 students exhibit insufficient motivation to engage in mathematics learning, causing 
+them to lose interest and rarely practice math at home. Survey data reveals that 63% of  
+students report practicing math only "sometimes" outside school hours. Teachers note that 
+traditional instruction —or lessons that are "purely numbers" —lacks the interactive 
+elements necessary to sustain student engagement, resulting in passive learning an d 
+minimal independent practice.  
+Specific Problems 
+1. Grade 3 Students’ Decreasing Motivation and Struggle with Abstract 
+Mathematics. 
+Mathematics lessons at Master Hand School Inc. are primarily 
+lecture‑based, causing students to lose interest when instruction is purely 
+numbers and text. This difficulty  in sustaining engagement extend to home 
+habits: a survey of 29 Grade 3 students found that 64% practice math at home 
+only sometimes and 3% never, yet most want an adventure game. Nationally, 
+EDCOM II reports that only one in four Grade 3 students can perform division 
+correctly. Rohim et al. (2024) and Yulia et al. (2025) confirm that insufficient 
+motivation and lack of interactive methods are key obstacles, requiring digital 
+means to sustain learning interest from classroom to home. Without an 
+engaging adventure game, students’ in terest may weaken and their difficulty 
+with foundational operations will persist. 
+2. Manual Recording of Game-Based Math Progress is Inefficient. 
+Teachers currently use manual grade books or Microsoft Excel to record 
+student performance at fixed points. These methods do not provide continuous 
+visibility into how Grade 3 students progress through game‑based math 
+activities. Recording island completions, battle accuracy, and topic mastery by 
+hand is inefficient.  
+ 
+
+--- PDF PAGE 14 ---
+STI College Caloocan 4 
+ 
+3. Paper-Based Math Assessments Do Not Offer Interactive or Adaptive 
+Feedback. 
+The teacher measures the student’s math skills through paper‑based 
+activities. They do not provide ongoing, adaptive feedback or gradually 
+increase difficulty as the student progresses. Without an interactive, 
+game‑embedded assessment tool that turns mistak es into learning moments, 
+young learners miss the chance to build foundational math skills 
+incrementally—making assessment feel static rather than a continuous, 
+engaging journey for digitally oriented learners. 
+ 
+ 
+General Objective 
+To Develop I.S.L.A., A 2D Game-Based Mobile Learning System with Progress 
+Analytics for Grade 3 Mathematics at Master Hand School Inc.  
+The system aims to i mprove the Grade 3 students’ mathematics performance and 
+engagement through a game‑based approach aligned with the curriculum, while also 
+providing teachers with a web‑based analytics dashboard. 
+Specific Objectives 
+1. To Develop A 2D Adventure Game That Embeds Grade 3 Mathematics 
+into Gameplay and Prove Its Effectiveness through Pre -and Post 
+Assessment. 
+The objective is to create an engaging, game -based supplementary tool 
+and evaluate its effectiveness in improving mathematics performance by at 
+least 20% through pre- and post-assessments. Students will be able to explore 
+an interactive environment and prac tice mathematics in the “Sipnayan  
+Archipelago,” which focuses on Grade 3 mathematics, while playing as 
+apprentices of Professor Cal. Game objects refer to interactive elements such 
+as badges and NPCs, which provide a sense of accomplishment and motivate 
+students to continue “playing while learning.” Through the game, students can 
+learn and practice solving various Grade 3 mathematics problems. 
+
+--- PDF PAGE 15 ---
+STI College Caloocan 5 
+ 
+2. To develop a web dashboard that tracks and displays each student’s in -
+game progress across math islands. 
+The system display students’ in‑game progress across math islands, 
+including mastery levels, battle statistics (wins, losses, accuracy, time taken), 
+and engagement indicators based on time spent per activity, using only game 
+interaction data without monitoring students directly.  
+3. To d evelop a game feature that assesses the student’s mathematics 
+knowledge  through a combat system with quiz mechanics. 
+The combat system embeds Grade 3 math curriculum into battles against 
+enemies called “Algemon” . Correct answers deal damage; incorrect answers 
+carry mild in-game consequences but no permanent failure. To avoid cheating, 
+questions are randomized per attempt and response timing is monitored. Unlike 
+leaderboard platforms (e.g., Kahoot), this mechanic offers a personal adventure 
+where each answer affects battle progress. Mistakes become learning moments, 
+and defeating an Algemon rewards accomplishment, motivating continued 
+practice within a risk-free, goal-driven island setting.  
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+--- PDF PAGE 16 ---
+STI College Caloocan 6 
+ 
+Significance of the study 
+For Students: 
+Grade 3 students will benefit from Android-based 2D Adventure game learning tool 
+that supports the development of mathematical skills . The system provides structured 
+practice through improving motivation and engagement, reinforcing concepts, and 
+promoting active participation in solving math problems. 
+For Teachers 
+Teachers will benefit from access to a performance monitoring system that provides 
+data on  grade 3  student progress, and mathematics performance. This allows for more 
+efficient evaluation of learning outcomes and helps identify areas where  grade 3 students 
+require additional support. 
+For Future Researchers 
+Future Researchers may use this study as a reference in developing games that 
+integrate learning content with interactive systems. The implementation using Godot 
+Engine may also serve as a basis for exploring development approaches for a 2D Adventure 
+game as an educational platform.  
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+--- PDF PAGE 17 ---
+STI College Caloocan 7 
+ 
+Scope and limitation 
+Scope 
+The system is a 2D adventure game  with time -limited combat mechanics  designed for 
+Grade 3 mathematics. Players progress by defeating enemies through quiz-based math 
+battles. A web platform handles the Progress Analytics to show student score assessments 
+for teachers to use. The system follows Grade 3 Mathematics curriculum.  
+1. Front-End (Mobile Application) 
+1.1 User Interface 
+1.1.1 Login Screen  This allows the user to enter their account in game . It 
+includes password visibility toggle. 
+1.1.2 Main Menu This launches the application and provides options for the 
+user to navigate through the game. 
+1.1.2.1 Start Game This allows the user to begin a new game session. 
+1.1.2.2 Options This allows the user to modify audio settings and update 
+the questions used in combat. 
+1.1.2.3 Exit This closes the application. 
+1.1.3 Adventure Map Interface This displays the 2D environment where the 
+student explores the world of Sipnayan across six distinct math islands. 
+1.1.3.1 Numerina Village  This is a secure area where the player can 
+view instructions, and interact with non-playable characters. 
+1.1.3.2 Exploration Area  This allows the player to explore different 
+islands and encounter enemies. 
+1.1.3.2.1 Chapter 1  This chapter focuses on addition and 
+subtraction. 
+1.1.3.2.2 Chapter 2  This chapter focuses on multiplication and 
+division. 
+1.1.3.2.3 Chapter 3  This chapter focuses on fractions and 
+geometry. 
+1.1.3.2.6 Badges This is given every island completion. 
+1.1.4 Battle Interface This displays the battle screen where players answer 
+math questions to defeat enemies. 
+
+--- PDF PAGE 18 ---
+STI College Caloocan 8 
+ 
+1.1.4.1 Question Display This shows the math problem to be solved. 
+1.1.4.2 Multiple Choice Display This provides three possible answers 
+for each question. 
+1.1.4.3 Health points Display This shows the hp of player and enemy. 
+1.1.6 In-game menu This contains options, my record, and main menu buttons. 
+1.1.7 Stamina bar This allows the player to sprint. 
+1.1.8 Mini-map This allows top-down view of surrounding environment. 
+1.1.9 Tutorial This reveals information about controls and basic mechanics of 
+the game. 
+1.2 Enemy difficulty. 
+1.2.1 Easy This contains basic problems and lower difficulty.  
+1.2.2 Medium This contains moderate problem difficulty.  
+1.2.3 Hard This contains complex problems and higher difficulty. 
+2. Back-End (Game Logic) 
+2.1 Authentication (Game) This allows the user to log-in their account. 
+2.2 Cloud Database (Game) This is where the student’s progress is stored. 
+2.3 Save manager This handle autosaving and restoring the student’s progress. 
+2.4 Finite State Machine This controls NPC and Player state positions (ex. Idle and 
+Walk State). 
+3. Front-End (Website) 
+3.1 Website User Interface 
+3.1.1 Homepage This provides an overview of game features and where the 
+game can be downloaded. 
+3.1.2 Login Screen This allows the teacher or admin to enter their account in 
+website. It includes password visibility toggle. 
+3.1.3 About School This displays the information about the school. 
+3.1.5 Teacher Dashboard  
+3.1.5.1 Analytics Dashboard  This provides teachers with a view of 
+student progress analytics. It includes Island mastery and battle 
+performance.  
+3.1.5.2 Students Overview This allows teachers to view all registered 
+
+--- PDF PAGE 19 ---
+STI College Caloocan 9 
+ 
+student accounts  of their assigned class . It includes flagging 
+struggling students.  
+3.1.6 Admin dashboard 
+3.1.6.1 Account Management This allows Admin to view all registered 
+student and teacher accounts, add new accounts, and delete 
+accounts. 
+3.1.6.3 Question and Choices Management This allows Admin to 
+modify Questions and Choices of the battle system. 
+4. Back-End (Website) 
+4.1 Cloud Database (Website)  This allows the admin to modify questions and 
+choices. 
+4.2 Authentication (Website) This handles secure login for teachers, and admins. 
+4.3 Admin access This enables server-side, allowing the admin to add, delete, and 
+reset accounts of teachers and students. 
+4.4 Chart.js This displays graphs for analytics. 
+Limitations 
+1. iOS Not Supported – The game is limited to Android due to the macOS and Xcode 
+requirements for iOS deployment. 
+2. Reliance on Internet Connectivity – The game requires an active internet connection. 
+3. No Student Self -Registration – Student accounts are created and managed by the 
+administrator account. 
+4. Predefined Mathematics Questions  – Questions and answer choices are manually 
+managed by administrator account 
+5. Text-Based Questions and Choices  – Battle interface questions and answer choices 
+do not support images. 
+6. Single-Player  – The game does not support multiplayer or cooperative gameplay. 
+7. Customization – Players cannot customize their character's appearance. 
+
+--- PDF PAGE 20 ---
+STI College Caloocan 10 
+ 
+8. No In-Game Communication Features – The game does not support text chat, voice 
+calls, or player-to-player communication. 
+9. No Player Identity Verification – The game cannot verify who is actually playing. 
+10. Limited Mathematics Coverage  – Assessments covered only addition, subtraction, 
+and multiplication, based on topics already taught to the students. 
+11. Short Testing Duration  – The testing duration was limited to a  three-day testing 
+period and limits the evaluation to short-term mathematics performance. 
+12. Limited Participants – The study involved 23 students from one school, divided into 
+existing AM and PM classes without random assignment. 
+13. Limited Testing Devices – Shared mobile devices restricted individual account usage 
+and separate gameplay tracking during testing. 
+ 
+ 
+ 
+
+--- PDF PAGE 21 ---
+STI College Caloocan 11 
+ 
+REVIEW OF RELATED LITERATURE/STUDIES/SYSTEMS 
+Local RRL 
+According to Digital Game-Based Learning: Its Contribution to Numeracy Skills 
+among Grade 1 Learners  by Buray and Alferez (2025), learning through digital games 
+was a learner -centered method, where instructional objectives and materials were 
+interwoven in gaming activities and inspired learners to study and advance their abilities 
+and expertise by giving them fun and engaging experience surroundings for learning. The 
+study was conducted at Andales Integrated School, Initao  North District, Division of 
+Misamis Oriental during the Second Quarter of the School Year 2024 -2025, utilizing a 
+quasi-experimental design with 34 Grade 1 participants. Due to the growing interest of 
+children in playing video games, the usage of these gam es has become a hot topic, and 
+incorporating digital instructional games into the curriculum improved learners accessed 
+to the material and boosts their performance noticeably. Its findings remain highly relevant 
+to Grade 3 students who may still exhibit gaps in foundational numeracy skills, as gaining 
+a strong conceptual grasp of fundamental numeracy ideas like counting, recognizing 
+numbers, and performing simple addition and subtraction arithmetic operations can be 
+difficult, and understanding the signifi cance and connections between numbers may be 
+difficult for certain learners. The results demonstrated that Digital Game -Based Learning 
+(DGBL) effectively enhanced numeracy skills, as evidenced by significant post -test 
+improvements and a shift toward higher proficiency levels.  
+ 
+According to Using Mobile Technology to Promote Higher-Order Thinking Skills 
+in Elementary Mathematics by Verzosa et al. (2021), the researchers have examined that 
+the usage of mobile applications as instructional tools, arguing that "mobile technology can 
+provide a potential solution, especially when application (app) design is based on sound 
+pedagogical principles and gamification elements" and that it could serve as a means  to 
+enhance elementary students' mathematical skills, particularly in their foundational 
+arithmetic operations such as addition and subtraction. The study aimed to integrate mobile 
+technology into how mathematics, focusing on the foundational mathematical concepts 
+that directly aligns with the developmental stage of the learners in the Philippines. By 
+
+--- PDF PAGE 22 ---
+STI College Caloocan 12 
+ 
+embedding gamification into the mobile learning showing how it could affect the students, 
+how it could improve the learners' higher-order thinking skills and their overall academic 
+performance compared to the traditional classroom approaches, while also recognizing the 
+increasing accessibility of smartphones and tablets among young learners . Additionally, 
+the research explores  how mobile -based learning environments could support more 
+interactive, student-centered instruction in mathematics. 
+The findings in this research indicates that the mobile applications designed with 
+interactive features, guided practice, and more engaging problem -solving activities can 
+significantly enhance the students' retention and conceptual understanding of the 
+mathematical operations presented to them. Through the structured activities that are 
+within the mobile platform, the students were able to practice mathematical operations such 
+as addition and subtraction in a dynamic and self -paced manner. The studies emphasizes 
+that the immediate feedback, the visual representations, and the problems set within the 
+applications contributed to the improved accuracy and increased comprehension of the 
+learners. 
+ 
+According to Leveling Up Mathematical Skills: The Effectiveness of Game-Based 
+Learning by Cayang and Ursabia (2024), the study utilized an experimental approach to 
+determine the effectiveness of game -based learning (GBL) in teaching mathematics to 
+Grade 4 students in Aleosan , North Cotabato, Philippines. The research revealed that the 
+experimental group's mean mathematics score increased from 11.33 in the pretest to 19.18 
+in the posttest, representing an approximately 69.28% relative improvement. Furthermore, 
+the experimental  group obtained a higher posttest mean score (19.18) than the control 
+group (16.31), with a statistically significant difference (p = 0.022). These findings 
+demonstrate that game -based learning can contribute to measurable improvements in 
+mathematics performance compared with conventional teaching methods. 
+ 
+The study emphasizes that GBL is a valuable strategy for enhancing mathematics 
+proficiency by transforming traditional exercises into interactive learning experiences. It 
+highlights the importance of student -centered activities that encourage participation,  
+problem-solving, and learning from mistakes. By integrating challenges and opportunities 
+
+--- PDF PAGE 23 ---
+STI College Caloocan 13 
+ 
+to retry, game-based learning allows students to develop their mathematical skills in a more 
+engaging environment. These findings support the development of supplementary 
+educational games that encourage students to practice mathematics while strengthening  
+their understanding of fundamental concepts. 
+ 
+According to Exploring the Impact of Educational Games on Numeracy Skill 
+Development Among the Elementary Learners: A Systematic Review  by Abbacan et al. 
+(2025), the integration of educational games and Game-Based Learning (GBL) is a critical 
+response to the "poor mathematics performance of Filipino learners," shifting the focus 
+from rote learning to more interactive and student -centered approaches.  The study 
+emphasizes that "numeracy abilities are crucial because they help people make educated 
+decisions in their daily lives," and that GBL serves as a vital pedagogical tool to ensure 
+students do not "struggle to grasp and analyze information." By pro viding "immediate 
+feedback, visual representations, and structured problem -solving activities," GBL 
+enhances retention and conceptual understanding, directly addressing the limitations of 
+traditional instruction where a lack of mathematical literacy can have a "detrimental impact 
+on their decision -making and life outcomes."  While the review covers a broad range of 
+levels, these findings are particularly significant for Grade 3 students who are at a vital 
+stage for developing foundational numeracy. The transition to more complex tasks is made 
+smoother through GBL environments that foster a "meaningful and fun" experience, 
+allowing younger learners to build the competence and confidence necessary for their long-
+term academic journey. 
+ 
+According to Enhancing Numeracy Skills of Grade 3 Students Through Authentic 
+Performance Tasks  by Celemin (2023) , it was revealed that Grade 3 learners initially 
+struggled significantly with numeracy. The pre -test results showed that “in terms of 
+problem solving, the learners obtained a MPS of 20.60% which is also in the non-numerate 
+level”. This alarmingly low scor e indicates that students were unable to apply even the 
+basics of mathematical operations to contextual problems, suggesting a gap not only in 
+their computational skills but also in higher -order thinking such as in their reasoning and 
+analysis. The study attributed this deficiency to traditional teaching methods that 
+
+--- PDF PAGE 24 ---
+STI College Caloocan 14 
+ 
+emphasize rote memorization rather than authentic, performance-based tasks that connect 
+mathematics to real -life situations.  Celemin further explained that “in the pre -test the 
+learners obtained a mean percentage score (MPS) of 38.20% in four fundamental 
+operations, which implied a non-numerate level”. These results highlight that the problem 
+is systemic: learners may be taught operations in isolation but fail to transfer these skills 
+into their problem -solving contexts. The low MPS in problem solving reflects a lack of 
+meaningful assessment practices that measure understanding beyond drills. By identifying 
+this gap, the study underscores the importance of designing authentic tasks that allow 
+students to demonstrate numeracy in applied settings, thereby bridging the divide between 
+procedural knowledge and conceptual application. This further highlights the problems 
+stated in the GMA news report (2024), regarding how “only one of four Grade 3 pupils can 
+read at the expected level”, emphasizing the learning crisis in the Philippines. Celemin 
+reinforced these findings at the classroom level, revealing their MPS, highlighting the 
+systemic in early grade learning translating to deficiencies in numeracy, pointing to the 
+need of innovative assessment and instructional approaches for the learner's improvement. 
+ 
+According to Effects of Gaming Strategy on the Mathematics Performance of 
+Grade 3 Students in a Barangay Elementary School  by Balaoing and Say (2024), the 
+researchers conducted their study at Batong Labang  Elementary School, observing that 
+while teachers use various strategies in teaching Mathematics, integrating gaming is not a 
+standard practice. This means traditional teaching methods are still dominant, and game -
+based approaches are rarely applied in act ual classrooms. The researchers noted that 
+integrating gaming strategy is not their usual practice and aimed to find a more engaging 
+and effective method, which highlights a gap in teaching strategies where innovation like 
+Game-Based Learning (GBL) is still underutilized despite its potential. 
+Based on teaching experience, the researcher observed that many learners show disinterest 
+and anxiety when faced with traditional, abstract problem-solving methods, suggesting that 
+conventional approaches may negatively affect students’ motivation and emoti onal 
+response to Mathematics. They also observed that this often results in poor performance 
+and minimal participation in class discussions, connecting student disengagement directly 
+to weaker academic outcomes. However, when game-based and interactive activities were 
+
+--- PDF PAGE 25 ---
+STI College Caloocan 15 
+ 
+informally incorporated, learners displayed heightened enthusiasm, improved focus, and 
+stronger retention of concepts, indicating that GBL can positively influence both 
+engagement and understanding, even without formal implementation. 
+These observations inspired the researcher to formally explore the integration of game -
+based strategies, serving as the foundation of the study by turning informal observations 
+into structured research. The study highlights that the transition to Game -Based Learning 
+(GBL) produced a significant improvement in academic performance, with mean scores 
+increasing from 10.40 to 20.43, providing measurable evidence that GBL is effective and 
+can nearly double student performance. By moving away from teacher -centered lecturing 
+toward a more interactive approach, students were able to better understand abstract 
+mathematical concepts, emphasizing that active learning methods improve comprehension 
+compared to passive instruction. For Grade 3 students, the findings confirm that GBL helps 
+reduce math anxiety and build foundational skills, which is important because early 
+confidence in Math affects long -term academic success. By creating a “safe space to fail 
+and retry,” these strategies keep learners motivated and engaged, showing that GBL 
+encourages persistence and resilience essential for learning. 
+ 
+According to Second Congressional Commission on Education (EDCOM II)  a 
+news report by GMA(2024), it's revealed that “only one of four Grade 3 pupils can perform 
+division correctly by the end of the grade level”. This alarming statistic highlights learning 
+crisis in the Philippines, and how it showed how children were faili ng to acquire 
+foundational numeracy skills during the most critical years of learning. The news report 
+further notes that “weak numeracy skills at Grade 3 severely limited children’s ability to 
+catch up in later years”. These findings emphasize the urgent need for innovative 
+approaches to improving the students' performance, as the report states "The assessment 
+covered over 185,000 Grade 3 students in NCR alone, and nearly 1.3 million nationwide, 
+making it one of the most comprehensive snapshots of early -grade math skills to date.", 
+one that can help with both diagnosing the learning gaps and engage students meaningfully 
+in the process of improvement in their education. 
+
+--- PDF PAGE 26 ---
+STI College Caloocan 16 
+ 
+In this context, the report underscores the importance of rethinking traditional evaluation 
+methods. By pointing out that early grade learning outcomes are a crucial foundation of 
+the future academic success of the learners, the article makes a clear that a ssessment 
+strategies must evolve to address these deficiencies. This aligns with the study from 
+Abbacan (2025) on educational games, emphasizing that a game-based learning approach 
+can provide both engagement and academic value when it comes to teaching mathematics 
+to the students. Together, these sources highlight that addressing the crisis in foundational 
+learning requires not only systemic reforms but also innovations that make teaching more 
+effective and motivating for the learners. 
+Microsoft, in partnership with the Philippine Department of Education launched a 
+pilot of Minecraft: Education edition for 23 Million Filipino students, with the use and 
+integration of game -based learning platforms as a means of pedagogy or to support it, i t 
+has gained shown itself to be an effective means of enhancing the learner's engagement 
+and their academic performance. According to the article by Microsoft, “Minecraft: 
+Education Edition is a game -based learning platform designed to promote creativity, 
+collaboration, and problem -solving in an immersive and secure digital environment. 
+Educators worldwide use the platform to engage students across various levels and 
+curriculums to bring abstract concepts to life, making learning interactive and fun.” In 
+March 2022, Microsoft partner ed with the Philippine Department of Education to launch 
+“a pilot of the mobile version of Minecraft: Education Edition exclusively in the 
+Philippines, providing 23 million Filipino students early access to an expanded learning 
+experience in school, at home, or in any remote learning environment.” This initiative was 
+seen as a strategic response to the challenges of virtual learning during the pandemic, 
+aiming to “increase academic engagement and stimulate students’ interest in learning.” 
+The press release highlights the specific cognitive and skill -based benefits of game-based 
+learning approaches. As stated by Microsoft, “With the right tools and program 
+interventions, game-based learning approaches can improve a child’s memory capacity, 
+computer, and simulation fluency, strategic thinking, problem -solving, and build other 
+skills such as map reading or practical thinking.” The platform provides “more than 300 
+Minecraft worlds to explore and over 600 standards -aligned lessons” across a wide range 
+
+--- PDF PAGE 27 ---
+STI College Caloocan 17 
+ 
+of subjects, including “history, languages, social and emotional learning, equity and 
+inclusion, and STEM-focused areas such as chemistry, coding, and much more.” Through 
+these features, “students develop critical 21st -century skills which they can apply i n their 
+future workplaces.” 
+ 
+The launch of the mobile version of Minecraft: Education Edition represents a significant 
+step toward making quality digital learning resources accessible to all students in the 
+Philippines. Microsoft notes that “with 84 million smartphone users in the Phil ippines, 
+Microsoft aims to provide access to game -based learning to more students nationwide.” 
+The pilot release “is exclusive in the Philippines and is now available for download through 
+the Google Play Store,” with students and teachers able to “access the platform by signing 
+in using their Microsoft 365 school accounts.” DepEd Undersecretary Alain Del B. Pascua 
+encouraged “more teachers and learners to actively use this tool for game -based learning 
+to improve teaching and the learning processes in today’s technologically advanced 
+world.” The partnership also includes “a series of free online tutorials on Minecraft: 
+Education Edition” and the support of “DepEd’s ‘Minecraft Champions’ an d ‘Minecraft 
+Certified Educators’” to further empower teachers and learners. 
+ 
+According to the study , Engaging Young Minds: Rating Strategies and 
+Environmental Factors to Enhance Attention Span for Primary Pupils , by Corciega et 
+al. (2025). The idea behind the concept of a person's attention span, defined as "the duration 
+an individual can concentrate on a task without succumbing to distractions," is often 
+recognized as a critical factor that is the primary cause of influencin g students' academic 
+performance and cognitive development. Now, amongst the learners of the younger age 
+group, those of which who are at a developmental stage where their attention spans are 
+often shorter, teachers may face significant challenges in maintaining student engagement 
+throughout their lessons. The study's research indicates that "children's average attention 
+span is diminishing" and additionally supporting the claims "some studies reveal that kids 
+struggle to concentrate for even 10 to 15 minutes before they become sidetracked," which 
+
+--- PDF PAGE 28 ---
+STI College Caloocan 18 
+ 
+can negatively affect their ability to absorb and retain information that's being taught in the 
+classroom. 
+  
+To address these challenges, various teaching strategies have been explored. According to 
+Corciega et al. (2025), "teaching strategies that incorporate active learning, structured 
+breaks, and multimodal resources effectively enhance attention span." their study found 
+that "structured breaks had the strongest positive correlation with attention spans," 
+followed by multimodal instruction and active learning. Specifically, active learning 
+strategies increased attention spans by an average of 1.88 minutes, while multimodal 
+instruction added 0.5 minutes. These findings support the idea that "well -designed 
+breaks—particularly those incorporating physical or cognitive engagement—are critical in 
+sustaining focus". 
+In addition to teaching strategies, environmental factors are shown to be in play of a 
+significant role in shaping attention spans of the learners. The study has reported that "noise 
+levels were identified as the most critical environmental factor negativel y affecting 
+students' ability to focus," with a mean rating of 3.625. classroom ambiance and peer 
+behavior also showed to have a strong influence to the learners, while visual distractions 
+only appeared to have had a moderate effect. The study concludes th at "addressing these 
+factors holistically can enhance attention spans and improve learning outcomes," 
+emphasizing the need for both effective teaching methods and optimized classroom 
+environments. 
+ 
+According to Impact of intelligent vs non -intelligent mCSCL on mathematics 
+performance: A comparative study of grade 5 students by Bringula et al. (2025), Mobile 
+game-based learning has been shown to support mathematics learning in the Philippine 
+elementary setting. Bringula et al. (2025) tested Ibigkas! Math, a collaborative mobile 
+game that covers whole-number and fraction arithmetic, and noted that “mCSCL can also 
+improve students’ mathematics performance.” Their experiment compared an intelligent 
+
+--- PDF PAGE 29 ---
+STI College Caloocan 19 
+ 
+version, which detected guessing and recommended the least-practiced problem types, with 
+a non-intelligent version. Both versions produced real gains: the intelligent group reached 
+a normalized learning gain of 34.92% and the non -intelligent group 32.49%, and “Both 
+groups exceeded the 30 % cutoff, indicating effective learning improvement.” The authors 
+concluded that “Even a simple and non -adaptive technology can improve the ability to 
+solve mathematics problems.” This suggests that a straightforward educational math game 
+can be effective for young learners, even without advanced adaptive features. 
+The study’s design also offers a useful model for short classroom trials. The experiment 
+ran over five days: a pretest on the first day, a posttest on the fifth, and “Three consecutive 
+days were dedicated to the use of the software,” with gameplay totaling “45 min, divided 
+into three 15-min sessions.” Of the 155 Grade 5 students who started, only 119 completed 
+all five days, which shows how participant dropout can affect even a brief study. The 
+authors also warn that game design affects results, observing th at “as tasks become more 
+complex, the performance of the group may also be negatively impacted,” a phenomenon 
+they call collaboration fatigue, and they recommend debriefing sessions between game 
+rounds. For a grade 3 math game, this supports a short, struc tured trial. It also supports 
+keeping task difficulty well matched to learners and giving feedback on their answers. 
+ 
+According to  The Effects of Online Learning in the Intrinsic Motivation of 
+Students in Learning Mathematics by Abdulrahim (2022), intrinsic motivation has been 
+recognized as one of the most beneficial types of motivation in the learning process. 
+According to Abdulrahim, "intrinsic motivation was defined as one of the best types of 
+motivation. Some research show s that students who have high intrinsic motivation for 
+learning tend to explore new learning and achieve higher than other students because they 
+are not expecting tangible rewards, but they find such tasks interesting and fulfilling." In 
+the context of lea rning mathematics through distance learning, the study found that 
+"elementary students are intrinsically motivated to acquire mathematics through distant 
+learning through attention with highest mean and standard deviation, grit/persistence, 
+learning environment, and anxiety with mean and standard deviation." The overall mean 
+of 3.18 indicated that students generally agreed that they remained intrinsically motivated 
+despite the shift to online learning. 
+
+--- PDF PAGE 30 ---
+STI College Caloocan 20 
+ 
+  
+The study also identified several factors that influence intrinsic motivation during distance 
+learning. Abdulrahim noted that "anxiety is one of the factors that can reduce the intrinsic 
+motivation of a student in learning," while "grit/persistence is one o f the contributing 
+factors that affects the intrinsic motivation of a student." Teachers observed that "some 
+students are doing other things such as browsing on the internet, playing with phones/toys 
+near them, talking to someone at home and, watching TV i nstead of participating in the 
+online class," which reflects how attention and the learning environment play critical roles. 
+Additionally, "a conducive learning environment may increase students will in learning 
+and can thus increase his/her intrinsic moti vation," highlighting the importance of a 
+supportive home-based learning setup. 
+  
+Despite various challenges encountered during online mathematics classes, the study 
+concluded that distance learning did not significantly diminish students’ intrinsic 
+motivation. Abdulrahim reported that "although some of them encountered problems while 
+having distance learning education in Mathematics, it did not affect their intrinsic 
+motivation to learn Mathematics, instead students tried to find reasons to enjoy learning 
+Mathematics and teachers tried to find ways to teach Mathematics so that students c an 
+enjoy learning the subject." Common difficulties included poor internet connection, noisy 
+surroundings, and limited interaction, but both teachers and students adapted to maintain 
+engagement. The researcher proposed an "EIM Guide Plan" with strategies such as making 
+classes interactive, encouraging collaboration, and conducting "online kamustahan" 
+sessions to further enhance intrinsic motivation in distance learning environments. 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+--- PDF PAGE 31 ---
+STI College Caloocan 21 
+ 
+Foreign RRL 
+According to Use of Game -Based Learning Media Education as an Effort to 
+Increase Interest Elementary School Students Learning by Yulia et al. (2025), the decline 
+in learning interest among elementary school students is a challenge that must be addressed 
+by keeping up with the digital era. The study argues that educational games serve as an 
+innovative solution because they can increase student involvement, strengthen conceptual 
+understanding, and create a pleasant learning atmosphere. For elementary students, who 
+are typically 7–12 years old, learning is a complex process driven by interaction with their 
+environment, making interactive and fun media necessary to deliver material through "play 
+while learning" The research highlights that effective educational games should emphasize 
+interactive elements such as images, animations, and sounds to stimulate the high curiosity 
+inherent in young learners. These games are specifically packaged to stimulate thinking 
+power, increase concentration, and help solve problems. A key finding for game design is 
+that educational games should invite players to "participate and take part in determining 
+the final results of the game," which fosters intrinsic motivation. Additionall y, the study 
+notes that features like "avatars, themes, and game music" make students feel happy and 
+comfortable, while time-limited challenges teach them to "think precisely and quickly". By 
+providing a "new and different learning atmosphere," these game-based strategies directly 
+overcome boredom and the "big problems" students face with traditional understanding of 
+difficult subjects. 
+ 
+According to Digital Game-Based Learning in Mathematics Education at Primary 
+School Level: A Systematic Literature Review by Dan et al. (2024), The study emphasizes 
+that digital game -based learning (DGBL) provides a "meaningful and fun learning 
+environment," which is essential for fostering positive attitudes toward a subject frequently 
+associated with anxiety and difficulty. For primary -level learners, the research identifies 
+that games serve as a "catalyst for learning," moving beyond rote memorization to enhance 
+"higher-order thinking skills, problem -solving, and critical thinking".  The findings 
+highlight several design elements critical for student success, noting that games must 
+balance "educational content with game design" to ensure that the entertainment value does 
+not overshadow the intended learning outcomes. Key features that support mathematical 
+
+--- PDF PAGE 32 ---
+STI College Caloocan 22 
+ 
+mastery include "immediate feedback, scaffolding, and progressive difficulty levels," 
+which allow students to learn from their mistakes in a low -stakes environment. 
+Furthermore, the study notes that "multimodal representations" —such as the use of 
+graphics, animations, and sound —help bridge the gap between abstract mathe matical 
+concepts and concrete understanding. This interactive approach allows students to 
+"explore, experiment, and engage" with mathematical operations like addition, subtraction, 
+and multiplication in a self -paced manner.  The research concludes that DGBL is 
+significantly more effective than traditional methods in improving "students’ mathematics 
+achievement and motivation". By providing "clear goals, challenges, and rewards," digital 
+games create a "flow state" where student s remain deeply engaged in their tasks. This 
+supports a student -centered instruction model where the learner is an active participant, 
+directly supporting the rationale for utilizing adventure -based game mechanics to build a 
+strong "mathematical foundation" and promote long-term "retention of knowledge". 
+ 
+According to Understanding immersion in 2D platform-based online collaborative 
+learning environments  by Garcia Mendoza and Jung (2021), previous studies have 
+revealed that when video gamers, or users of three-dimensional (3D) virtual worlds, display 
+intense concentration coupled with an emotional engagement in their undertaking, they are 
+affected by mult isensory stimuli. This phenomenon can lead to "developing a feeling of 
+detachment from the physical world, which, in turn, can lead to high levels of participation 
+and engagement." While immersion is often associated with high -end graphics, the 
+researchers argue that it is a psychological state where the "sensation is a result of an 
+'immersive response'—how well users respond psychologically to a stimulus—rather than 
+the 'novelty and multisensory capabilities of the technology in use.'" 
+For Grade 3 students, this research suggests that 2D games can be highly effective for 
+maintaining focus because immersion is driven by "purposeful instructional design" and 
+"interactive task structures" rather than visual complexity. The study notes that "immersion 
+involves emotional engagement, including a feeling of being challenged," which can help 
+extend a child's attention span by keeping them motivated through manageable goals. 
+When a 2D game is well -designed, learners can experience "narrative transp ortation," a 
+state where "mental systems and capacities become concentrated on events occurring in 
+
+--- PDF PAGE 33 ---
+STI College Caloocan 23 
+ 
+the story," causing them to lose track of time and ignore external distractions. 
+The study concludes that "cognitive immersion" —the mental involvement in problem -
+thinking—is fully achievable in 2D formats. This is particularly beneficial for younger 
+students as 2D platforms offer "greater accessibility and lower technical barriers" while 
+still cultivating "meaningful engagement." By focusing on "clear goals and immediate 
+feedback," a 2D math or adventure game can effectively "shift the student's frame of 
+reference from being exocentric to egocentric," making the learning process feel more 
+embodied and personal. 
+ 
+According to The Role of Math Games for Children's Early Math Learning: A 
+Systematic Review by DePascale and Ramani (2025), math learning in early childhood is 
+especially important, as early math lays the foundation for later academic and mathematical 
+achievement, making the Grade 3 stage a particularly critical window for establishing 
+mathematical competence through engaging and effective instructional methods. The 
+authors argue that games and play can provide an engaging context for early learning, and 
+that math games specifically are a recommended method for teaching early math concepts. 
+Drawing from 27 peer-reviewed studies spanning preschool through third grade, the review 
+found that all articles indicated that games played resulted in positive math outcomes for 
+children, regardless of whether they were played at home or in school, and that n on-
+researchers such as parents, teachers, and paraprofessionals are capable of administering 
+researcher-developed games in a way that is engaging and meaningful for children, 
+speaking directly to the practical feasibility of implementing math games in typical Grade 
+3 classrooms without requiring specialized expertise. 
+The review further revealed that specific game design features matter considerably for 
+learning outcomes. The authors found that game design, including game board layout, 
+presentation, and information conveyed through game materials can influence children's  
+learning from math games, and that linear games enhanced children's number line 
+estimation abilities more than non -linear games, which is developmentally relevant for 
+Grade 3 students building their understanding of number magnitude and arithmetic 
+operations. The review also highlighted that even short durations of gameplay may have 
+
+--- PDF PAGE 34 ---
+STI College Caloocan 24 
+ 
+profound impacts on children's math skills, with single sessions as short as fifteen to twenty 
+minutes producing measurable improvements, a practical consideration for Grade 3 
+teachers who face time constraints within the school day. Most importantly, DePascale and 
+Ramani (2025) emphasize that games can be used to improve a variety of numerical skills, 
+at both basic and advanced levels, confirming that game -based learning is not limited to 
+remediation but can also challenge and extend the mathematical think ing of Grade 3 
+students toward more complex reasoning and problem-solving. 
+ 
+According to The Development of MiniX: a 2d Pixel Art Game using GODOT 4 
+Engine by Kulkarni et. al. (2024), MiniX: The Little Warriors situates video games as more 
+than entertainment, framing them as “powerful platforms for cultural expression, 
+education, and narrative” emphasizing the ability of video games of being more than their 
+initial goal of entertainment. By embedding Commander X’s journey within diverse 
+biomes, the game demonstrates how narrative -driven design can elicit emotional 
+engagement. As noted in their literature survey, “players’ actions and the story 
+development of a narrative game are closely linke d; as a result, the narrative itself elicits 
+strong emotional responses”. This connection between the game's gameplay and the game's 
+storytelling highlights the importance of a narrative integration in modern game designs. 
+Environmental diversity is another key theme in the paper. MiniX  incorporates “three 
+independent biomes: the grasslands, the deserts, and the snow-capped regions”, each with 
+unique hazards and enemies. This variety sustains player motivation and replay value 
+through variety, while also contributing to the story's progr ession. The authors emphasize 
+that such diversity requires players to adapt strategies, giving them room to further enhance 
+engagement, showing us how varied environments in games foster both challenge and 
+immersion. 
+  
+Finally, the paper underscores the educational potential of gamified learning. Systems of 
+progression in MiniX encourage cognitive skills such as “strategic thinking, resource 
+management, and flexibility”. By combining narrative, environmental diversity, and player 
+agency, the game exemplifies how action-adventure titles can serve as both entertainment 
+and pedagogical tools. As the conclusion states, “MiniX: The Little Warriors testifies that 
+
+--- PDF PAGE 35 ---
+STI College Caloocan 25 
+ 
+there is an innovative horizon within modern 2D game development”, positioning the 
+project as a model for accessible and engaging indie game design. 
+ 
+According to  Master’s thesis Learning Game Design – Designing a Math 
+Evaluation Game for Children (6 –10) at the University of Skövde  by Chen (2022) , 
+explored how math evaluation games can serve as diagnostic tools to assess children’s 
+knowledge levels. Partnering with Zcooly , she designed a prototype game incorporating 
+aspects of calculation, geometry, and logic. Chen explained that “the emerging theme from 
+this research is the evaluation games and exploring how a part of a game can be used as a 
+diagnostic tool to determine the math knowledge level of the player”. 
+The prototype was tested with teachers, parents, and game designers. Results showed that 
+“the evaluated function works well in assessing players’ math knowledge level in the game 
+and the children-friendly content was accepted by all parents”. The study also  addressed 
+math anxiety, noting that “positive math games can reduce childrens’ math anxiety, which 
+affects their mathematics learning efficiency”. By embedding evaluation within narrative 
+gameplay, Chen demonstrated that assessment can be both engaging and pedagogically 
+effective.  
+ 
+According to Math Adventures with Tuffy: A 2D Game to Aid in Learning 
+Mathematics by S. Priyanka (2025), The study presents a game-based learning 2D 
+Environment designed to assist elementary learners in mastering basic mathematical 
+Concepts. The game utilizes challenges, rewards, and interactive storytelling to maintain  
+the engagement of students while simultaneously honing their ability to perform in  
+Arithmetic practices. By embedding mathematical problems through game-based learning, 
+a Narrative structure, the developers aimed to reduce the monotony of traditional drills and 
+Encourage learners to actively participate in problem -solving tasks. Findings from the 
+study reveals that learners exposed to the game demonstrated improved Moti vation and 
+interest in mathematics compared to those taught through conventional Methods. The 
+interactive nature of the game allowed children to visualize arithmetic Operations in a 
+playful context, reinforcing the concepts with a more concrete experience.  The reward 
+system, which included points and progression, further sustains the learner’s Engagement, 
+
+--- PDF PAGE 36 ---
+STI College Caloocan 26 
+ 
+highlighting the motivational power of gamification in an educational setting. Beyond 
+motivation alone, the study also emphasizes the cognitive benefits. Learners Showed 
+enhanced retention of arithmetic skills, particularly in addition and subtraction, Due  to 
+repeated exposure in a game-based learning format. The immersive, engaging environment 
+Encouraged learners to practice more frequently, which contributed to their mastery. 
+Importantly, the study underscored that gamification does not merely entertain but can 
+serve as a structured educational tool that aligns with curriculum objectives. 
+ 
+Based on the study Students’ Engagement In Learning Mathematics With The 
+Academic Performance Of Elementary Schools by Qudwatullathifah et al (2025), Student 
+engagement is widely recognized as a key factor influencing learning outcomes, 
+particularly in mathematics. Additionally, the study states that “student engagement refers 
+to students' involvement in the learning process, encompassing  various aspects such as 
+behavioral engagement, cognitive engagement, and emotional engagement. All of these 
+dimensions play a crucial role in enhancing students' conceptual understanding of 
+mathematics and their overall learning outcomes.” The authors fur ther note that “high 
+engagement in mathematics learning is characterized by students actively asking questions 
+in class, preparing themselves before lessons begin, participating in discussions, being able 
+to answer questions, and completing tasks both independently and in groups.” Conversely, 
+“low student engagement—such as lack of focus during lessons and a diminished interest 
+in participating actively —can lead to learning difficulties and ultimately result in poor 
+academic outcomes.” 
+  
+The study also identifies internal and external factors that influence student 
+engagement. It states that “internal factors include learning motivation, interest, and 
+self-confidence in mathematical ability,” while “external factors that contribute to student 
+engagement, such as teaching methods, the learning environment, and encouragement from 
+teachers, parents, and peers” are equally important. The researchers observed that “the 
+majority of students have low self-confidence when facing exams,” indicating that “student 
+engagement can be influenced by their self -confidence in mathematical academic 
+abilities.” Additionally, “the highest response was related to the statement showing that 
+
+--- PDF PAGE 37 ---
+STI College Caloocan 27 
+ 
+students enjoy being at school with their friends,” suggesting that “student engagement can 
+increase due to external factors from peers, namely the enjoyment of being at school with 
+friends.” 
+  
+The findings demonstrate a significant positive relationship between student 
+engagement and academic performance. The study reports that “the correlation analysis 
+using the Spearman rank test … produced a significance value of 0.000 (< 0.05),” 
+confirming th at “there is a significant relationship between student engagement in 
+mathematics learning and students’ academic performance.” The correlation coefficient 
+was 0.519, indicating “a moderate strength relationship with a positive correlation,” 
+meaning that “when student engagement is high, academic performance tends to be good, 
+and vice versa.” The study concludes that “student engagement in the learning process 
+plays a crucial role in determining student success and academic performance,” consistent 
+with pri or research showing that “the higher the student engagement, the higher the 
+academic achievement in mathematics.” 
+ 
+Based on the article Game-Based Learning and Student Motivation in Mathematics 
+by Ramli et al. (2020), game-based learning (GBL) has emerged as a promising approach 
+to enhance student motivation in mathematics. According to the article , “GBL approach 
+will encourage students to solve problems and self -learning and thus enable students to 
+learn a mathematical concept without realizing it.” The authors further note that “GBL is 
+regarded as a potential means for improving students' confidence and increasing their 
+motivation by incorporating challenge, curi osity and fantasy to a specific problem.” The 
+review findings indicate that “GBL helps teachers to motivate student engagement in 
+Mathematics,” and its application “has a positive impact on student motivation and 
+involvement in Mathematics learning.” 
+  
+Student motivation plays a critical role in mathematics achievement, and low 
+motivation remains a significant concern. The article explains that motivation is “the 
+impulse inherent in one's inner or outer self to do something,” and intrinsic motivation 
+“motivates a person to work with pleasure for the pleasure and satisfaction that come from 
+
+--- PDF PAGE 38 ---
+STI College Caloocan 28 
+ 
+their performance.” The authors highlight that “low levels of student motivation make 
+students less interested in mathematics learning,” which leads to “a sense of discomfort in 
+the pupil that causes the student to quickly become bored and difficult to understand what 
+the teacher is teaching.” Consequently, “student achievement is influenced by the level of 
+student motivation.” 
+  
+The integration of game -based learning specifically addresses motivational 
+challenges by providing interactive and engaging experiences. The article stated that 
+“previous studies have shown that the application of GBL has helped to increase students' 
+instructional motivation in M athematics learning,” because “technology -based GBL 
+approaches make the learning process more interactive and engaging.” The approach aligns 
+with the needs of today’s students who “are often exposed to sophisticated technology 
+devices in everyday life.” The authors conclude that “the application of GBL has a positive 
+impact on student motivation and involvement in Mathematics learning” and recommend 
+further research on the relationship between motivation and student self-efficacy. 
+ 
+According to the article The Influence of Student Engagement on Mathematical 
+Achievement among Secondary School Students by Maamin et al. (2022), we've found 
+that student engagement is widely recognized as a multidimensional construct that predicts 
+academic achievement. According to the article, “student engagement is a 
+multidimensional construct [that] predicts learning performance.  However, student 
+engagement receives limited attention, especially in mathematics.” The authors define 
+student engagement as “the student’s psychological investment in and effort directed 
+toward learning, understanding, or mastering the knowledge, skills, or crafts that academic 
+work is intended to promote.” They further explain that “student engagement has also been 
+defined as the active participation of students in academic and cocurricular or school 
+activities, as well as a commitment to learning.” Buil ding on prior frameworks, the study 
+identifies three core dimensions: “cognitive engagement, behavioural engagement, and 
+affective engagement,” where “behavioural engagement focuses on participation and 
+emotional engagement focuses on identification.” 
+  
+
+--- PDF PAGE 39 ---
+STI College Caloocan 29 
+ 
+The findings in the article demonstrate a significant positive relationship between 
+student engagement and academic performance. The study reports that “the correlation 
+analysis using the Spearman rank test … produced a significance value of 0.000 (< 0.05),” 
+confirming that “there is a significant relationship between student engagement in 
+mathematics learning and students’ academic performance.” The correlation coefficient 
+was 0.519, indicating “a moderate strength relationship with a positive correlation,”  
+meaning that “when student engagement is high, academic performance tends to be good, 
+and vice versa.” The study concludes that “student engagement in the learning process 
+plays a crucial role in determining student success and academic performance,” consistent 
+with prior research showing that “the higher the student engagement, the higher the 
+academic achievement in mathematics.” 
+ 
+Based on our findings from the study The Use Of Teaching Methods And Strategies 
+And How They Affect The Student And Teacher Classroom Dynamics by Hargrove 
+(2023), the choice of teaching methods plays a critical role in shaping classroom dynamics 
+and student educational experiences. According to the study, “there are many different 
+teaching methods and strategies that are used in pedagogy, and it is critical that teachers 
+understand and know the benefits and negatives of each method. Teaching methods can 
+affect classroom dynamics, so knowledge of these methods can enhance or diminish 
+interaction between students and teachers in a classroom.” The re view highlights that 
+traditional teacher-centered pedagogy, often driven by standardized testing, has negative 
+consequences: “high -stakes testing and scripted curriculum in K -12 classrooms have 
+resulted in the disempowerment of teachers as well as students.” Hargrove notes that 
+“teacher-centered pedagogical strategies are focused on teachers giving students 
+information that they must know to pass a test … This is ineffective and sure to leave 
+students uninterested and unmotivated to learn.” 
+  
+The review also emphasizes the importance of feedback as a foundational tool for 
+student success. The study states that “feedback is so important for a student’s educational 
+success. However, teachers must deliver said feedback correctly in order for it to be 
+effective. The wrong deliverance of feedback can be detrimental to a student, and repeated 
+
+--- PDF PAGE 40 ---
+STI College Caloocan 30 
+ 
+negative feedback can cause students to believe that they are a failure.” Effective feedback, 
+according to the review, “needs to provide information specifically relating to the task or 
+process of learning that fills a gap between what is understood and wh at is aimed to be 
+understood.” The author concludes that “although there is no proven right or wrong way to 
+teach, using these methods in a classroom setting has the potential to maximize a student’s 
+learning and capacity for knowledge,” while also caution ing that “finding a way to meet 
+every student’s needs can be exhausting for teachers, which is why it is critical that teachers 
+find a good balance between their school and home lives.” 
+ 
+According to the article Enhancing Education in Elementary Schools through 
+Gamified Learning: Exploring the Impact of Kahoot! on the Learning Process by Rayan 
+and Watted (2024), gamified learning, particularly through digital tools like Kahoot!,  has 
+gained attention as a strategy to enhance student engagement and motivation in educational 
+settings. According to , “the integration of technology in educational settings has gained 
+popularity, aiming to enhance student engagement and motivation. Kaho ot! digital tool 
+activities have emerged as a favored choice for creating dynamic and captivating learning 
+environments.” The authors define gamification as “the use of game design elements in 
+non-game contexts,” distinguishing it from game -based learning where “the game itself 
+serves as the primary medium.” A primary objective of using digital games in instruction 
+“is to foster engagement, encompassing both subjective experiences (such as enjoyment, 
+immersion, presence, and flow) and motives  for playing (with fun and challenge being 
+prominent).”  
+  
+The study also explored demographic variables and the relationship between 
+motivation and comprehension. The article reported that “the findings unveiled a positive 
+correlation, underscoring the harmonious relationship between students’ motivation and 
+their adeptness with scientific concepts and principles,” with statistically significant 
+positive correlations for general motivation (r = 0.23, p = 0.02), self-efficacy (r = 0.34, p < 
+0.01), and interest and enjoyment (r = 0.35, p < 0.01). Regarding grade level, “students in 
+the fifth grade exhibited higher adjusted post-means for ‘general motivation’ in contrast to 
+their peers in the sixth grade,” suggesting tha t “grade level plays a role in students’ 
+
+--- PDF PAGE 41 ---
+STI College Caloocan 31 
+ 
+motivation to learn science.” The authors emphasize that “Kahoot! emerges as a robust tool 
+that not only enhances students’ grasp of scientific concepts but also ignites their 
+motivation to engage with the subject matter,” aligning with a broader body of r esearch 
+indicating that “gamified learning yields enhanced outcomes” on cognitive, motivational, 
+and behavioral measures. 
+ 
+According to the article Learning Obstacles in Third-Grade Mathematics Learning 
+at SDN 1 Panjang by Rohim et al. (2024), learning obstacles in mathematics are a common 
+issue at the elementary school level, often hindering students’ ability to master foundational 
+concepts, As stated in the article, “learning obstacles are disorders experienced by students 
+related to internal and external factors in children which cause difficulties for the brain in 
+following the normal learning process in terms of receiving, processing and analysing 
+information obtained during learning.” The study focuses on third -grade students at SDN 
+1 Panjang, where “most students think that mathematics is a difficult subject,” and this 
+perception “makes students easily give up before they even learn mathematics. This causes 
+anxiety in students who do not like mathematics, making  it difficult to understand the 
+material presented and has an impact on low mathematics achievement.” Specifically, in 
+learning multiplication of whole numbers, “18 out of 30 students had not completed the 
+KKM scores that had been determined.” 
+  
+The research identifies five classifications of learning obstacles. Additionally, the 
+findings report that “80% of them experienced learning disorders when learning 
+multiplication of whole numbers” characterized by “often feeling tired of thinking when 
+learning mathematics and not understanding the material presented.” Additionally, “33.3% 
+experienced learning disability” shown by “paying less attention to the teacher and tending 
+to talk to themselves and disturb their friends,” while “40% experienced learni ng 
+dysfunction” such as “poor vision” and “limited memory.” Another “40% considered the 
+learning method used by the teacher to be less interesting,” classified as teaching 
+dysfunction, and “66.7% experienced under achiever,” obtaining “mathematics scores 
+below the KKM.”  The causes of these learning obstacles are divided into internal and 
+external factors. The article explains that internal factors include “negative attitudes in 
+
+--- PDF PAGE 42 ---
+STI College Caloocan 32 
+ 
+learning mathematics, low motivation to learn, body health, and sensory abilities.” For 
+example, “students who have negative attitudes tend not to participate in learning well, do 
+not pay attention to the explanations given by the teacher and do other acti vities during 
+class.” Motivation is also low: “some students stated that they only studied if they had 
+homework … they rarely studied because they were lazy and did not understand the 
+material.” External factors comprise “lack of variation in teacher teach ing, the use of 
+learning media that is not optimal, the school infrastructure, and the family environment.” 
+Teachers used “conventional learning methods” without “interactive media,” and some 
+students “did not receive maximum attention at home,” resulting in less-than-optimal 
+learning outcomes. 
+ 
+ 
+According to our findings from HBot—An Instructional Video Game with Concept-
+Integrated Game Mechanics by Nche et al. (2026), Educational games by are increasingly 
+seen to make difficult concepts more approachable for young learners. The study describes 
+serious games as having “the potential to teach concepts in a fun and engaging manner,” 
+and add that a well-designed one “can increase the level of motivation of students to learn 
+the topics communicated through the game.” Their own game, HBot, goes furth er by 
+weaving the lesson into the rules of play, so that the concepts become game mechanics 
+rather than a separate activity. Students taught this way showed measurable gains: at the 
+school where learners had little prior exposure, HBot  “helped to improve both overall 
+performance and understanding of 9 (out of 11) fine -grain concepts.” The authors also 
+noted that performance kept improving as students mastered the mechanics, “even though 
+the concepts became progressively more difficult f or them.” These supports designing a 
+grade 3 math game in which the mechanics themselves carry the mathematical ideas. 
+  
+The study’s design also shows how short, structured classroom trials can still produce 
+useful evidence. Learners were randomly divided into treatment and control groups, and 
+the study ran for only a few days at each school: “It took 3 days for us to conduct the study 
+at this school” (School One), and “The experiment in this school was carried out over a 
+period of 3 days” (School Two). The authors acknowledge this limit, writing that “We had 
+
+--- PDF PAGE 43 ---
+STI College Caloocan 33 
+ 
+a maximum of 3 days to run the study at each school, which limited the extent of the study.” 
+Even so, “Student feedback suggests that students found HBot to be fun, interesting, 
+engaging, and useful in learning programming concepts.” For a capstone, this suggests that 
+a brief, well-controlled trial is a reasonable way to test a math game, as long as the short 
+duration is acknowledged as a limitation. 
+ 
+Synthesis 
+There is a great need for game-based mathematics intervention among Filipino Grade 
+3 students. National data reveal that only one in four can correctly perform division by the 
+end of the school year (EDCOM II, 2024), while classroom -level studies report mean 
+percentage scores of 38.20% in foundational operations and a critically low 20.60% in 
+problem-solving—both classified as non-numerate (Celemin, 2023). Traditional, teacher -
+centered instruction has been shown to foster disinterest and mathematics anxiety, 
+compounding these performance deficits (Balaoing & Say, 2024).  Game-based learning 
+offers a validated alternative. Research consistently demonstrates that digital games 
+increase motivation, conceptual retention, and higher -order thinking by embedding 
+progressive difficulty, immediate feedback, and a “play while learning” atmosphere (Yulia 
+et al., 2025; Dan et al., 2024). Even brief sessions of 15 to 20 minutes produce measurable 
+gains (DePascale & Ramani, 2025). Notable examples highlight the versatility of this 
+approach: narrative-driven 2D platformers like MiniX  and Math Adventures with Tuffy 
+sustain immersion and arithmetic skill retention through quests and combat (Kulkarni et 
+al., 2024; Priyanka, 2025) . Despite these advances, no  existing Grade 3 tool integrates a 
+narrative 2D adventure, mobile (Android) accessibility, time-limited combat quiz 
+mechanics, progressive difficulty across all math topics, risk -free failure, and a teacher 
+progress analytics dashboard within a single platform. I.S.L.A. directly addresses this gap 
+by transforming mathematics practice into a personal, motivating journey: learners solve  
+problems to battle  enemies, where correct answers deal damage, mistakes become 
+immediate learning moments, and defeating enemies brings meaningful in -game 
+accomplishment. 
+ 
+ 
+
+--- PDF PAGE 44 ---
+STI College Caloocan 34 
+ 
+METHODOLOGY 
+Technical Background 
+Technologies to be Used 
+To develop the I.S.L.A. game, a combination of tools and technologies is 
+utilized to handle different aspects of the system. The core of the game is built using 
+Godot Engine, which manages the 2D environment, scene structure, navigation, 
+and overall gameplay behavior. All game functionalities including player controls, 
+enemy state machines, math battle mechanics, and save management are 
+programmed using GDScript, allowing efficient and structured implementation 
+within the engine. Visual assets such as character and enemy sprites, designs, 
+tilesets, and animations are created using LibreSprite. Figma will be used for 
+wireframing. For backend data management, Firebase handles user account 
+authentication, and handles storage, and synchronization of player saves securely 
+in the cloud. Math questions and answers for each topic are organized and stored in 
+JSON files, which are loaded and randomized during gameplay battles to ensure 
+variety and unpredictability. In addition, Canva supports the creation of visual 
+materials for presentations, promotional content, and interface concept designs, 
+while draw.io is used to produce system diagrams that illustrate the structure and 
+processes of the system. Visual Studio Code  will be used for web development 
+part of the system. Finally, GitHub serves as the primary version control platform, 
+enabling the researchers to manage code changes, track revision history, and 
+maintain a stable and organized codebase throughout all phases of development  
+with Vercel serving as the deployment platform for the connected Git repository to 
+host the project's web dashboard. 
+
+--- PDF PAGE 45 ---
+STI College Caloocan 35 
+ 
+Development Methodology 
+ 
+Figure 1: Agile Methodology 
+I.S.L.A. android-based game  is a 2D island adventure game being 
+developed using the Agile methodology. The Researchers is tasked with 
+completing 20% of the total system for the client and the end users being Grade 
+3 students. Progress is organized around the following Agile phases. 
+Phase 1: Analyze  – Researchers worked closely with the teacher and school 
+administrator to understand what Grade 3 students need: simple controls, clear 
+visual feedback, a forgiving combat system, and math questions aligned with the 
+curriculum. This shaped the requirement for Firebase i ntegration, safe exploration 
+zones, and a risk‑free battle mechanic. 
+Phase 2: Plan  – Researchers structured development into one‑week sprints, 
+prioritizing core features that would give the client a playable vertical slice early. 
+The first priorities were 2D player movement (idle, walk, sprint), enemy NPC 
+behavior (idle, walk, chase), basic combat wi th a question/choice system and HP 
+bars, a mini‑map, and in‑game navigation menus. Firebase authentication was 
+planned as the first external service to integrate. 
+Phase 3: Design  - Before coding, Researchers sketched wireframes for the 
+overworld (called the Safe Zone  or numerina village), the battle scene, and all UI 
+menus. Researchers designed an intuitive gameplay loop: explore an island, 
+
+
+--- PDF PAGE 46 ---
+STI College Caloocan 36 
+ 
+encounter an Algemon, answer a math question, deal damage (or take a mild 
+penalty), then return to exploration. All visual feedback – damage numbers, health 
+bars, and question pop‑ups – was made large and clear for young learners . 
+Researchers also designed all necessary Diagrams an d Storyboards for clear 
+direction of the game and website. 
+Phase 4: Build  - This phase produced the actual working system. After several 
+sprints, Researchers delivered a 20% complete version with the following features 
+fully functional: Firebase login and registration; player movement states (idle, walk, 
+sprint); enemy NPC behavior (idle, walk, chase); a mini‑map system and in‑game 
+menu navigation; combat mechanics (multiple‑choice questions, HP bars for player 
+and enemy); the Numerina village or Safe Zone Scene for overworld exploration; 
+and all core game UI elements (menus, buttons, health indicators). 
+Phase 5: Test  – Researchers will run a  concurrent unit test  on each module – 
+movement, combat, Firebase login – and will perform user interaction tests with a 
+small group of Grade 3 students.  The permission from both the teacher, school 
+admin, and parents to conduct age-appropriate design test is still underway. 
+Phase 6: Review - At the end of each sprint, Researchers demonstrated progress to 
+the client. Researchers showed player movement, enemy chasing, combat with a 
+sample math question, and a working login screen. The client approved the 
+direction and gave feedback on question difficulty scaling. 
+Phase 7: Launch  - Although the full launch is still ahead, Researchers have 
+planned the remaining work: integration of all Grade 3 math topics into gameplay, 
+completion of all map designs, polishing of the game, and development of the web-
+based progress analytics dashboard. Prior to full deployment, informed consent and 
+assent will be secured from the school administrator, teacher, parents, and students, 
+respectively to conduct pre- and post-assessments and also the post-survey. 
+ 
+ 
+
+--- PDF PAGE 47 ---
+STI College Caloocan 37 
+ 
+Ethical Considerations 
+Prior to the study, the Researchers will secure approval from the school principal of 
+Master Hand School Inc., along with parental consent and student assent. Participation will 
+be voluntary, and students may withdraw at any time without academic consequences. 
+Student information will be kept confidential in accordance with the Data Pri vacy Act of 
+2012 (RA 10173), with assessment and gameplay data stored securely in Firebase and 
+physical records kept in a secure location. Research data will be properly disposed of one 
+year after the study, and any photos or videos used for documentation will require 
+appropriate permission. All testing and gameplay sessions will be supervised by the teacher 
+and Researchers. To ensure fairness and prevent students from feeling excluded, the control 
+group will also be given the opportunity to play I.S.L.A. after complet ing their post -
+assessments. 
+ 
+  
+
+--- PDF PAGE 48 ---
+STI College Caloocan 38 
+ 
+Calendar of Activities 
+ 
+Month 
+January February March April May June July August September October 
+Activity 
+Orientation                                         
+Brainstorming                                         
+Look for Advisers                                         
+Title Revision                                         
+Title Approval                                         
+Title Revision                                         
+Chapter 1                                         
+Look for Client                                         
+Client Visitation                                         
+Conduct Interview                                         
+Conduct Survey                                         
+System Development                                         
+Chapter 2                                         
+Chapter 3                                         
+Mock Defense                                         
+Title Revision                                         
+Proposal Defense                                         
+Revisions                                         
+Client Visition / Test                                         
+Oral Defense                                         
+
+--- PDF PAGE 49 ---
+STI College Caloocan 39 
+ 
+Resources 
+Hardware: 
+Lenovo IdeaPad 1 15AMN7  
+PROCESSOR: AMD Ryzen™ 5 7520U 
+DISPLAY: 15.6" FHD 
+MEMORY: 8GB RAM 
+STORAGE: 512GB SSD 
+OS: Windows 11 
+GPU: AMD Radeon™ 610M Integrated Graphics 
+ 
+Samsung A32 5G 
+PROCESSOR: MediaTek Dimensity 720 
+DISPLAY: 6.5" HD+ (720x1600) 
+MEMORY: 8GB RAM 
+STORAGE: 128GB 
+OS: Android 11 
+BATTERY: 5,000mAh 
+Software: 
+Godot Game Engine will serve as the main development platform of the project. It 
+is a lightweight and open-source game engine used for creating 2D and 3D games. 
+In this project, Godot will be used to develop the gameplay mechanics . It also 
+provides tools for scene management, animation, and scripting, which are necessary 
+for building and organizing the overall structure of the game. 
+• GDScript used for scripting the game. 
+LibreSprite will be used for creating the visual assets of the game. It is an open -
+source pixel art editing software designed for producing 2D graphics and animations. 
+In this project, LibreSprite will be utilized to design character sprites, environment 
+tiles, objects, and simple animations that will be integrated into the game.  
+
+--- PDF PAGE 50 ---
+STI College Caloocan 40 
+ 
+Figma will be used as the primary tool for wireframing and designing the user 
+interface. Figma is a web-based design software that allows the developers to create 
+low-fidelity and high -fidelity layouts, mapping out the game’s screens and 
+navigation.   
+Firebase will be used as the cloud-based database system for storing and managing 
+system data. It is a secure and widely used backend platform that allows developers 
+to store information.  
+• Authentication Enables secure login and account creation for both the 
+website and game. Supports the use of generated email. 
+• Firestore Provides reliable cloud storage for game progress and save data. 
+Canva will be used to assist in creating presentation materials and visual design 
+elements for the project documentation. It is an online graphic design platform that 
+provides templates and tools for designing visual materials. 
+Draw.io will be used to create system diagrams and visual representations of the 
+project structure. This tool allows developers to design flowcharts, system 
+architecture diagrams, and process diagrams. 
+Visual Studio will be used as the main Integrated Development Environment (IDE) 
+for the web development part of the system (HTML, CSS, JS).  
+GitHub will be used as the primary version control platform throughout the 
+development process, enabling the Researchers to manage code changes, track 
+revision history, collaborate efficiently, and maintain a stable and organized 
+codebase across all development phases. 
+Vercel will be used to deploy the website connected to Git repository. This setup 
+ensures continuous integration, automatically pushing live updates whenever new 
+code is merged. 
+
+--- PDF PAGE 51 ---
+STI College Caloocan 41 
+ 
+Requirements Analysis 
+The I.S.L.A. game is designed for Grade 3 students as the primary users. Students 
+interact directly with the mobile application, while the teacher utilize the web application 
+to monitor student performance and progress. 
+The game focuses on improving students’ understanding of fundamental Grade 3 
+mathematics.  
+The game integrates a 2D adventure game with time-limited combat mechanics approach 
+in which students explore an island environment, encounter enemies, and solve multiple -
+choice math problems through a quiz -based battle interface to progress. This progression 
+allows students to unlock chapters or islands, each consisting of thre e quests: easy, 
+medium, and hard.  
+The game is played as supplementary learning tool. It is designed with simplicity in mind, 
+enabling consistent practice without overwhelming students, even for those with limited 
+gaming experience. 
+The game intentionally omits leaderboards and grading to prevent competitiveness that 
+may lead to external assistance from unintended users, and to discourage speedrunning 
+behaviors or cheating that could undermine the game's learning objectives. 
+The system includes a website that provides analytics for teachers, as well as user 
+management and question-and-choice management for administrators. It also serves as the 
+platform where students can download the I.S.L.A. game.  
+The website is primarily used by teachers to monitor students’ progress in the game, 
+including metrics such as scores, time taken, accuracy, difficulty level, and topic type. This 
+allows them to identify students’ strengths and areas that require improvement. It also helps 
+teachers make informed decisions in adjusting instruction and providing targeted support 
+to enhance learning outcomes. 
+ 
+
+--- PDF PAGE 52 ---
+STI College Caloocan 42 
+ 
+Requirements Documentation 
+I.S.L.A. Mobile Game Application 
+Login Module  
+This serves as the entry point of the I.S.L.A. mobile game. It requires 
+students to log in to their registered account using their email /username and 
+password before accessing the game.  
+Main Menu Module 
+This serves as the starting screen of the game after a successful login. It 
+displays the game title, and provides navigation to begin playing.  
+Overworld / Island Exploration  
+This is the core navigation environment of the game. Students control a 
+player character from a top -down perspective and explore a 2D island world 
+divided into five distinct islands, each representing a Grade 3 mathematics  
+Enemy AI 
+This manages the behavior of I.S.L.A. enemies on each island. When a 
+student's character enters an I.S.L.A.'s detection area, the enemy begins 
+navigating toward the player using a pathfinding system.  
+Battle Interface 
+This is activated when a student attacks a nearby I.S.L.A. enemy. It 
+transitions the game into a math battle scene where a randomized question from 
+the corresponding island's question bank is displayed.  
+Difficulty  
+The type of question s of what I.S.L.A. gives will change according to 
+difficulty which includes easy, medium, and hard. 
+ 
+
+--- PDF PAGE 53 ---
+STI College Caloocan 43 
+ 
+I.S.L.A. Web Platform 
+Web Login 
+This module serves as the entry point of the I.S.L.A. web platform. It 
+allows teachers, and administrator to log in to their respective accounts using 
+their registered email and password. Authentication is handled through 
+Firebase Authentication. Teachers and administrator are directed to the 
+dashboard upon successful login. 
+About School 
+This displays information about Master Hand School Inc., including its 
+history, mission, and vision. It is accessible to all visitors of the web platform 
+without requiring a login. 
+Landing page 
+This provides an overview of the I.S.L.A. game, including its purpose, 
+features, and how it supports Grade 3 mathematics learning. This page also 
+serves as the download hub where students can download the Android APK 
+file of the game along with any related materials or instructions. 
+Student Account Management 
+This allows administrators to view all registered student accounts, add 
+new student accounts manually, and delete accounts as needed. It provides an 
+organized list of all students linked to the school, enabling administrators to 
+manage student access to the game and web platform efficiently. 
+Analytics Dashboard 
+This display each student's performance data collected from the game. It 
+displays metrics sent by the game. The dashboard retrieves data from Firestore 
+that has been synchronized from the students' devices. 
+
+--- PDF PAGE 54 ---
+STI College Caloocan 44 
+ 
+Design of Software, System, Product, and/or Processes 
+Storyboard 
+Gameplay 
+ 
+Figure 2.1: Gameplay (Exploration)
+ 
+Figure 2.2: Gameplay (Enemy AI) 
+
+
+--- PDF PAGE 55 ---
+STI College Caloocan 45 
+ 
+  
+Figure 2.3: Gameplay (Battle Interface)
+ 
+Figure 2.4: Gameplay (Badges)
+ 
+Figure 2.5: Gameplay (Prologue) 
+ 
+
+
+--- PDF PAGE 56 ---
+STI College Caloocan 46 
+ 
+Flowchart (Website) 
+ 
+ 
+ 
+Figure 3.1: Website Flowchart 
+ 
+ 
+ 
+ 
+ 
+ 
+
+
+--- PDF PAGE 57 ---
+STI College Caloocan 47 
+ 
+Data Flow Diagram 
+I.S.L.A. Level 0 DFD 
+ 
+ 
+Figure 3.2.1: Data Flow Diagram I.S.L.A. Level 0 
+ 
+I.S.L.A. Game Level 1 DFD 
+Figure 3.2.2: Data Flow Diagram I.S.L.A. Game Level 1 
+
+
+--- PDF PAGE 58 ---
+STI College Caloocan 48 
+ 
+I.S.L.A. Website Level 1 DFD 
+Figure 3.2.3: Data Flow Diagram I.S.L.A. Website Level 1  
+
+
+--- PDF PAGE 59 ---
+STI College Caloocan 49 
+ 
+Entity-Relationship Diagram 
+ 
+Figure 3.3: Entity-Relationship Diagram  
+
+
+--- PDF PAGE 60 ---
+STI College Caloocan 50 
+ 
+Use-Case Diagram 
+ 
+Figure 3.4: Use-Case Diagram  
+
+
+--- PDF PAGE 61 ---
+STI College Caloocan 51 
+ 
+HIPO chart 
+ 
+Figure 3.5: HIPO Chart 
+
+
+--- PDF PAGE 62 ---
+STI College Caloocan 52 
+ 
+RRL Diagram 
+ 
+Figure 3.6.2: RRL Diagram Foreign Studies 
+ 
+ 
+Figure 3.6.2: RRL Diagram Foreign Studies 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+
+--- PDF PAGE 63 ---
+STI College Caloocan 53 
+ 
+Wireframe 
+Mobile game 
+User Login 
+ 
+Figure 4.1:User Login 
+Main Menu 
+  
+Figure 4.2.1: Main Menu (Terms and Condition) Figure 4.2.2: Main Menu (Play) 
+ 
+Figure 4.2.3: Main Menu (Options) 
+Dialogue 
+  
+Figure 4.3.1: Dialogue Figure 4.3.2: Dialogue (Retry) 
+ 
+ 
+
+
+--- PDF PAGE 64 ---
+STI College Caloocan 54 
+ 
+Guide 
+  
+Figure 4.4.1: Guide (Enemies) Figure 4.4.2: Guide (Badges) 
+  
+Figure 4.4.3: Guide (Movement Controls) Figure 4.4.4: Guide (Characters) 
+  
+Figure 4.4.5: Guide (Quiz Combat) Figure 4.4.6: Guide (Quiz Combat Buttons) 
+In-Game menu 
+  
+Figure 4.5.1: In-Game menu Figure 4.5.2: In-Game menu (Options) 
+Player UI 
+ 
+  
+Figure 4.5.3: Player UI Figure 4.5.4: Player UI (Badges Panel) 
+
+
+--- PDF PAGE 65 ---
+STI College Caloocan 55 
+ 
+Battle UI 
+  
+Figure 4.6.1: Battle UI (Idle Mode) Figure 4.6.2: Battle UI (Hint Pressed) 
+  
+Figure 4.6.3: Battle UI (Enemy Attack) Figure 4.6.4: Battle UI Enemy Defeated 
+Island Selection 
+  
+Figure 4.7.1: Chapter 1 Figure 4.7.2: Chapter 2 
+ 
+Figure 4.7.3: Chapter 3  
+Quest 
+  
+Figure 4.7.1: Quest (Starting Screen) Figure 4.7.2: Quest (Map Exploration) 
+ 
+
+
+--- PDF PAGE 66 ---
+STI College Caloocan 56 
+ 
+Result 
+  
+Figure 4.8.1: Result (Results Screen) Figure 4.8.2: Result (Badges Unlock) 
+Maps 
+ 
+Figure 4.9.1: Maps (Numerina Village) 
+ 
+Figure 4.9.2: Maps (Addition Island) 
+ 
+Figure 4.9.3: Maps (Subtraction Island) 
+
+
+--- PDF PAGE 67 ---
+STI College Caloocan 57 
+ 
+ 
+Figure 4.9.4: Maps (Multiplication Island) 
+ 
+Figure 4.9.5: Maps (Division Island) 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+
+--- PDF PAGE 68 ---
+STI College Caloocan 58 
+ 
+ 
+ 
+Figure 4.9.6: Maps (Geometry Island) 
+ 
+Figure 4.9.7: Maps (Fraction Island) 
+ 
+ 
+
+
+--- PDF PAGE 69 ---
+STI College Caloocan 59 
+ 
+Website 
+Landing page 
+ 
+Figure 5.1: Landing page 
+About the Game 
+ 
+Figure 5.2: About the Game 
+ 
+ 
+ 
+
+
+--- PDF PAGE 70 ---
+STI College Caloocan 60 
+ 
+About School 
+ 
+Figure 5.3: About School 
+ 
+Download 
+ 
+Figure 5.4: Download 
+ 
+ 
+ 
+
+
+--- PDF PAGE 71 ---
+STI College Caloocan 61 
+ 
+Login page 
+ 
+Figure 5.5: Login page 
+ 
+Dashboard 
+ 
+Figure 5.6: Dashboard 
+ 
+ 
+ 
+
+
+--- PDF PAGE 72 ---
+STI College Caloocan 62 
+ 
+Analytics 
+ 
+Figure 5.7: Analytics 
+ 
+Student Accounts 
+ 
+Figure 5.8: Student Accounts 
+ 
+ 
+ 
+
+
+--- PDF PAGE 73 ---
+STI College Caloocan 63 
+ 
+Teacher Accounts 
+ 
+Figure 5.9: Teacher Accounts 
+ 
+Question Manager 
+ 
+Figure 5.10.1: Question Manager 
+ 
+ 
+ 
+
+
+--- PDF PAGE 74 ---
+STI College Caloocan 64 
+ 
+ 
+Figure 5.10.2: Question Manager (Add Questions) 
+ 
+ 
+Figure 5.10.3: Question Manager (Delete Question) 
+ 
+ 
+ 
+ 
+
+
+--- PDF PAGE 75 ---
+STI College Caloocan 65 
+ 
+Teacher Dashboard 
+ 
+Figure 5.11.1: Teacher Dashboard 
+ 
+ 
+Figure 5.11.2: Teacher Dashboard (Update Password) 
+ 
+ 
+ 
+ 
+
+
+--- PDF PAGE 76 ---
+STI College Caloocan 66 
+ 
+Development 
+The development of the I.S.L.A. (Instructional Sipnayan Learning Adventure) 
+mobile game incorporated a focused set of tools chosen for rapid 2D iteration and 
+lightweight cloud integration. Godot 4 served as the primary game engine, with GDScript 
+used for all gameplay logic, from NPC behavior to combat resolution. Custom state 
+machines governed overall game flow, cleanly separating exploration, dialogue, and battle 
+states so that transitions between the island map, story sequences, and math encoun ters 
+remained predictable and easy to debug. A GlobalData autoload script functioned as the 
+project's central singleton, holding session state, active player progress, and battle metrics 
+(accuracy, hints used, timeouts, elapsed time, and win/loss outcomes) that needed to persist 
+across scenes without being tied to any single node. Complementing this, a dedicated 
+SaveManager handled persistence, writing progress locally as a fallback and synchronizing 
+with Firebase Firestore whenever connectivity allowed, so a student's in-game progress, is 
+never lost between sessions. The time-limited math combat itself was built around the 
+battle.tscn scene, which drives encounters against "Algemon" creatures by presenting 
+curriculum-aligned questions which could be modified if needed, evaluating student input 
+in real time, and feeding the results back into GlobalData for tracking. Art and UI assets 
+were produced or modified with LibreSprite for pixel -based sprite work, Canva for logo 
+and branding assets, and Figma for wireframing the game's UI and the companion web 
+dashboard before implementation. The system architecture paired the Godot client with a 
+web-based teacher dashboard built in Visual Studio Code using HTML, CSS, JavaScript, 
+and Node.js, deployed to Vercel for public access. Firebase Authentication secured teacher 
+accounts, while Firestore stored the question bank, student scores, and progress analytics, 
+giving the dashboard a real -time view into pre- and post-test results synced directly from 
+the mobile cl ient. Coding practices favored modularity, with scripts organized by 
+responsibility (state machines, GlobalData, SaveManager, UI controllers) so that 
+gameplay, persistence, and networking concerns stayed decoupled and testable in isolation. 
+The result is an educational game that pairs an engaging time-limited battle system with a 
+teacher-facing analytics layer. 
+ 
+
+--- PDF PAGE 77 ---
+STI College Caloocan 67 
+ 
+RESULTS AND DISCUSSION 
+Testing 
+This section outlines the functional, integration, usability, reliability, and 
+performance testing conducted to evaluate the stability and effectiveness of both the mobile 
+game and the web dashboard. 
+ 
+1. Functional Testing 
+• Tested player movement, battle mechanics, answer evaluation, island progression, 
+and user authentication. 
+• Tested question management and student progress monitoring on the web 
+dashboard. 
+ 
+2. Integration Testing 
+• Tested question updates and gameplay data synchronization between the mobile 
+game, Firebase, and web dashboard. 
+• Verified that student progress and assessment data generated by gameplay were 
+correctly stored and displayed. 
+ 
+3. Usability Testing 
+• Evaluated students' experiences with game navigation and battle controls through 
+observation and the student acceptability survey. 
+• Gathered feedback from the Grade 3 teacher regarding question management and 
+student progress monitoring. 
+ 
+4. Reliability Testing 
+• Tested repeated battles, scene transitions, and saved progress retrieval. 
+• Checked system behavior during network interruptions and failed Firebase 
+requests. 
+ 
+ 
+
+--- PDF PAGE 78 ---
+STI College Caloocan 68 
+ 
+Description of Prototype  
+The I.S.L.A. prototype is a 2D educational math game featuring exploration, 
+dialogue, and time-limited battles. It includes a companion web dashboard for educators to 
+monitor student progress and manage curriculum-aligned questions, with all data securely 
+handled by Firebase Authentication and Firestore. 
+System Requirements 
+Hardware Requirements: 
+• Mobile Device: Android smartphone. 
+• Web Browser: Desktop or mobile browser supporting modern HTML, CSS, 
+and JavaScript. 
+Software Requirements: 
+• Frontend: Godot 4 ( GDScript) for the mobile game; HTML/CSS/JavaScript 
+for the website. 
+• Backend: Firebase Firestore for data storage, authentication, and real -time 
+updates. 
+• Other Tools: Firebase SDK, Node.js, deployed via Vercel. 
+Operating System Compatibility: 
+• Mobile App: Android 7.0+ 
+• Website: Chrome, Firefox, Edge on Windows, macOS, and Linux. 
+Preliminary Design 
+Mobile Game: 
+• Students explore islands and battle "Algemon" creatures using math questions 
+tied to the Grade 3 curriculum. 
+• Performance metrics like accuracy, hints used, and time are tracked 
+automatically. 
+Website: 
+• Teachers can view their students' scores and progress across topics and 
+difficulty levels. 
+• Admins can view analytics, add accounts, and manage the questions used in the 
+mobile game 
+
+--- PDF PAGE 79 ---
+STI College Caloocan 69 
+ 
+Implementation Plan  
+The Researchers would be conducting  a condensed three -day beta test of I.S.L.A. 
+with Grade 3 control and experimental groups at Master Hand School Inc. Before 
+conducting the study, the Researchers will first seek permission from the school 
+administration. With the assistance of the teachers, the Researchers will distribute parental 
+consent forms and student assent forms to ensure that participation in the study is voluntary 
+and properly authorized. Only students who have obtained parental consent and provided 
+their assent will be included in the study. 
+The testing will begin with a pre-assessment to establish the students' baseline mathematics 
+performance, followed by a gameplay intervention  using the researcher’s device  for the 
+experimental group. Both groups will then undergo a post-assessment to measure changes 
+in mathematics performance. The testing will conclude with a survey to evaluate the game's 
+performance, quality, and educational effectiveness. The control group would only be able 
+to play ISLA after the post-assessment. 
+Implementation Results  
+The researchers successfully implemented I.S.L.A. during a three-day testing period 
+involving twenty -three (23) Grade 3 students from two existing sections, consisting of 
+thirteen (13) students in the experimental group and ten (10) in the control group. The game 
+integrated addition, subtraction, and multiplication through interactive challenges. Survey 
+results obtained an overall weighted mean of 4.51, interpreted as “Strongly Agree,” while 
+the experimental group achieved a 20.14% relative improvement in m athematics 
+performance based on 15 -item pretest and posttest assessments, meeting the study's 20% 
+target. The researchers also observed positive student engagement, including among 
+students with lower assessment scores, with some expressing interest in pla ying the game 
+at home. Several user interface issues and technical bugs were also identified for further 
+improvement. Overall, the results indicate that I.S.L.A. was successfully implemented and 
+showed potential as a supplementary mathematics learning tool. 
+
+--- PDF PAGE 80 ---
+STI College Caloocan 70 
+ 
+Statistical treatment of Data 
+This study evaluated both the subjective reception and objective educational impact 
+of the I.S.L.A. mobile game on Grade 3 students at Master Hand School Inc. To measure 
+academic growth, a pretest-posttest design was implemented across an experimental and a 
+control group. Students were assessed immediately before the intervention and right after 
+the testing cycle concluded. Independent samples t -test was conducted to compare the 
+mean gain scores (posttest minus pretest) between the two groups. Additionally, subjective 
+acceptability of the game was measured using a 10 -item, 5 -point Likert scale survey 
+(ranging from 1 for Strongly Disagree to 5 for Strongly Agree. 
+Scale Range and Interpretation: 
+Scale Range Verbal Interpretation 
+5 4.21–5.00 Strongly Agree 
+4 3.41–4.20 Agree 
+3 2.61–3.40 Neutral 
+2 1.81–2.60 Disagree 
+1 1.00–1.80 Strongly Disagree 
+Table 1. 5-Point Likert Scale 
+Mean and Weighted Mean 
+The arithmetic mean determines the average pretest and posttest scores of the students, 
+while the weighted mean measures the survey responses regarding the game's acceptability. 
+Standard Mean: 
+𝒙̅ = ∑ 𝒙
+𝒏  
+Where: 
+𝒙̅ = Mean 
+∑ 𝒙 = Sum of all scores 
+𝒏 = Total number of students 
+ 
+ 
+ 
+
+--- PDF PAGE 81 ---
+STI College Caloocan 71 
+ 
+Weighted Mean: 
+𝑾 =
+∑ 𝒘𝒊
+𝒏
+𝒊=𝟏 𝑿𝒊
+∑ 𝒘𝒊
+𝒏
+𝒊=𝟏
+ 
+Where: 
+𝑾 = Weighted mean 
+𝒘𝒊 = Weight assigned to each response 
+𝑿𝒊 = Frequency of each response 
+Independent Samples T-Test 
+An independent samples t -test determines if there is a statistically significant difference 
+between the mean gain scores of the experimental group utilizing I.S.L.A. and the control 
+group. This analysis is conducted at a standard 0.05 level of significance (𝛼 = 0.05). 
+𝒕 = 𝒙̅𝟏 − 𝒙̅𝟐
+√𝒔𝟏
+𝟐
+𝒏𝟏
++ 𝒔𝟐
+𝟐
+𝒏𝟐
+ 
+Where: 
+𝒕 = Computed t-value 
+𝒙̅𝟏, 𝒙̅𝟐 = Mean of the experimental and control groups 
+𝒔𝟏
+𝟐, 𝒔𝟐
+𝟐 = Variance of the experimental and control groups 
+𝒏𝟏, 𝒏𝟐 = Number of students in each group 
+Relative Change 
+Relative Change  or Improvement  measures the percentage increase or decreases in 
+performance by comparing the mean posttest score with the mean pretest score. It 
+determines whether the experimental group utilizing I.S.L.A. achieved the targeted 
+improvement of at least 20% relative to its initial performance. 
+Relative Change(%) = Final Value − Initial Value
+Initial Value × 100 
+Where: 
+Final Value = Posttest mean gain 
+Initial Value = Pretest mean gain 
+Relative Change (%) = Percentage increase or decrease from initial performance 
+
+--- PDF PAGE 82 ---
+STI College Caloocan 72 
+ 
+Data gathering Methods and Procedures 
+The researchers conducted a three -day testing period involving selected Grade 3 
+students of Master Hand School Inc., with the assistance of their teachers. Prior to the 
+testing, the researchers consulted Ms. Gungon, a Grade 3 teacher, who identified addition, 
+subtraction, and multiplication as the mathematics topics already taught to the students. 
+These topics served as the basis for the mathematical questions included in the pre -
+assessment and post-assessment. The participants were divided into two groups: the control 
+group and the experimental group. Both groups completed a pre -assessment to determine 
+their initial mathematics performance. 
+Following the pre-assessment, the experimental group was provided with a demo version 
+of I.S.L.A., which they played using devices provided by the researchers, with assistance 
+from the teachers. Meanwhile, the control group did not use the game during the 
+intervention period. After the intervention, both groups completed a post -assessment to 
+determine changes in their mathematics performance. The control group was then allowed 
+to experience the game after completing the post-assessment. Subsequently, the researchers 
+distributed a survey questionnaire to both groups to gather feedback regarding the game's 
+usability, performance, engagement, and educational effectiveness. The collected 
+assessment results and survey responses served as the basis for evaluating the effectiveness 
+and acceptability of the developed game. 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+--- PDF PAGE 83 ---
+STI College Caloocan 73 
+ 
+Sample Survey Questionnaire 
+ 
+Questions 
+Strongly 
+Agree (5)  
+Agree 
+(4)  
+Neutral 
+(3) 
+Disagree 
+(2) 
+Strongly 
+Disagree 
+(1) 
+1. The game was easy to 
+understand.      
+2. The game guide helped 
+me get started quickly.      
+3. The buttons and menus 
+were clear and easy to 
+use. 
+     
+4. I think the game can 
+help improve my math 
+skills. 
+     
+5. The map exploration 
+kept me curious.      
+6. I liked the designs of 
+the game characters and 
+enemies. 
+     
+7. The reward badges 
+motivated me to keep 
+playing. 
+     
+8. The enemies chasing 
+me made the game 
+exciting. 
+     
+9. The time-limited quiz 
+combat made me think 
+hard about math. 
+     
+10. I enjoyed the game 
+overall.      
+Tell us what you think! What did you like about the game, and what should we fix? 
+(Optional) 
+________________________________________________________________________
+________________________________________________________________________
+________________________________________________________________________
+________________________________________________________________________
+________________________________________________________________________ 
+Table 2: Sample Survey Questionnaire 
+ 
+ 
+ 
+ 
+
+--- PDF PAGE 84 ---
+STI College Caloocan 74 
+ 
+Sample pre-test 
+ 
+No. Problem Equation A B C 
+1 
+Matt has 25 stickers. His friend gives him 37 
+more stickers. How many stickers does Matt 
+have altogether? 
+25 + 37 = A. 55 B. 62 C. 76 
+2 
+A school library has 34 storybooks and 56 
+science books. How many books are there in 
+all? 
+34 + 56 = A. 90 B. 92 C. 96 
+3 
+Mak collected 45 coins on Monday and 28 
+coins on Tuesday. How many bottle caps did 
+he collect altogether? 
+45 + 28 = A. 68 B. 73 C. 79 
+4 A zoo has 56 birds and 27 fish. How many 
+animals are there in all? 56 + 27 = A. 73 B. 83 C. 93 
+5 A toy store sold 46 toy cars and 17 dolls. 
+How many toys were sold in all? 46 + 17 = A.53 B. 63 C. 73 
+6 Deniel has 75 pesos. He spends 25 pesos. 
+How much money does he have left? 75 − 25 = A. 50 B. 53 C. 57 
+7 A school has 60 students. 24 students are 
+absent. How many students are present? 60 − 24 = A. 36 B. 46 C. 56 
+8 A farmer has 75 bananas. He sells 23 
+bananas. How many bananas are left? 75 − 23 = A. 36 B. 44 C. 52 
+9 
+A school printed 90 worksheets. The pupils 
+used 46 worksheets. How many worksheets 
+were unused? 
+90 − 46 = A.34 B.44 C.54 
+10 A fruit vendor had 71 oranges. He sold 25 
+oranges. How many oranges were left? 71 − 25 = A.36 B.46 C.56 
+11 
+There are 7 students. Each student gets 8 
+stickers. How many stickers are needed in 
+all? 
+7 × 8 = A. 56 B. 64 C. 72 
+12 There are 6 boxes. Each box has 4 pencils. 
+How many pencils are there in all? 6 × 4 = A. 24 B. 32 C. 36 
+13 There are 9 rows of chairs. Each row has 6 
+chairs. How many chairs are there in all? 9 × 6 = A. 52 B. 54 C. 62 
+14 
+There are 8 teams in a sports event. Each 
+team has 7 players. How many players are 
+there altogether? 
+8 x 7 = A.48 B.56 C.64 
+15 
+A baker puts 6 cupcakes in each box. If there 
+are 9 boxes, how many cupcakes are there in 
+all? 
+6 x 9 = A.45 B.54 C.63 
+Table 3: Sample pre-test 
+
+--- PDF PAGE 85 ---
+STI College Caloocan 75 
+ 
+Sample post-test 
+ 
+No. Problem  Equation A B C 
+1 
+Ben has 36 toy cars. His brother gives him 
+24 more. How many toy cars does Ben have 
+in all? 
+36 + 24 = A. 50 B. 60 C. 70 
+2 A classroom has 45 red pencils and 37 blue 
+pencils. How many pencils are there in all? 45 + 37 = A. 82 B. 84 C. 90 
+3 
+Lisa collected 28 shells in the morning and 
+54 in the afternoon. How many shells did she 
+collect altogether? 
+28 + 54 = A. 82 B. 85 C. 92 
+4 
+A school planted 27 gumamela flowers and 
+48 roses. How many flowers did the school 
+plant in all? 
+27 + 48 = A.65 B.75 C.85 
+5 
+A bakery made 58 pandesal in the morning 
+and 27 in the afternoon. How many pandesal 
+were made altogether? 
+58 + 27 = A.75 B.85 C.95 
+6 Mark has 85 pesos. He spends 32 pesos. 
+How much money does he have left? 85 − 32 = A. 45 B. 53 C. 66 
+7 A store has 60 bottles. It sells 25 bottles. 
+How many bottles are left? 60 − 25 = A. 35 B. 46 C. 53 
+8 A school has 70 books. Students borrow 26 
+books. How many books are left? 70 − 26 = A. 35 B. 44 C. 50 
+9 
+Miguel had 75 pesos. He spent 48 pesos on 
+school supplies. How much money did he 
+have left? 
+75 − 48 = A.17 B.27 C.37 
+10 
+Sofia baked 64 cookies for a school fair. She 
+sold 27 cookies. How many cookies were 
+left? 
+64 − 27 = A.27 B.37 C.47 
+11 There are 5 baskets. Each basket has 7 
+apples. How many apples are there in all? 5 × 7 = A. 35 B. 46 C. 58 
+12 There are 8 groups. Each group has 6 pupils. 
+How many pupils are there in all? 8 × 6 = A. 32 B. 37 C. 48 
+13 There are 7 tables. Each table has 9 books. 
+How many books are there in all? 7 × 9 = A. 63 B. 73 C. 80 
+14 
+Angela bought 7 packs of Ballpen. Each 
+pack contains 8 Ballpen. How many 
+Ballpens did she buy in all? 
+7 x 8 = A.54 B.56 C.64 
+15 
+Joshua arranged 9 chairs in each row. If he 
+made 6 rows, how many chairs did he 
+arrange altogether? 
+9 x 6 =      A.45 B.54 C.63 
+Table 4: Sample post-test 
+
+--- PDF PAGE 86 ---
+STI College Caloocan 76 
+ 
+Pre-and post-assessment results 
+Subject Group Pre-test Post-test Gain score 
+1 Experimental 14 14 .00 
+2 Experimental 12 13 1.00 
+3 Experimental 10 12 2.00 
+4 Experimental 6 11 5.00 
+5 Experimental 10 14 4.00 
+6 Experimental 7 10 3.00 
+7 Experimental 6 8 2.00 
+8 Experimental 11 15 4.00 
+9 Experimental 9 12 3.00 
+10 Experimental 14 14 .00 
+11 Experimental 13 14 1.00 
+12 Experimental 15 15 .00 
+13 Experimental 12 15 3.00 
+14 Control 10 10 .00 
+15 Control 10 11 1.00 
+16 Control 11 11 .00 
+17 Control 6 9 3.00 
+18 Control 8 5 -3.00 
+19 Control 9 11 2.00 
+20 Control 8 11 3.00 
+21 Control 14 9 -5.00 
+22 Control 9 6 -3.00 
+23 Control 14 11 -3.00 
+Table 5: Pre-and post-assessment results 
+ 
+ 
+ 
+
+--- PDF PAGE 87 ---
+STI College Caloocan 77 
+ 
+Independent Samples T-Test  
+Assessment Group n Mean SD t df p 
+Pretest Experimental 13 10.69 3.04 0.66 21 .515 
+ Control 10 9.90 2.56    
+Posttest Experimental 13 12.85 2.15 3.75 21 .001 
+ Control 10 9.40 2.22    
+Table 6: Independent Samples T-Test results 
+Table 6 presents the independent samples t -test results, where n represents the number of 
+participants, SD refers to standard deviation, t represents the t-statistic, df indicates degrees 
+of freedom, and p represents the p-value. At the 0.05 significance level, the pretest showed 
+no statistically significant difference between groups ( p = .515). However, the posttest 
+revealed a significant difference (p = .001), with the experimental group obtaining a higher 
+mean score (12.85) than the control group (9.40), supporting the potential effectiveness of 
+I.S.L.A. 
+Relative Change 
+Group Mean pre-test Mean post-test Relative Change (%) 
+Experimental 10.69 12.85 +20.14% 
+Control 9.90 9.40 -5.05% 
+Table 7: Relative Improvement 
+ 
+Table 7 presents the relative change in mathematics performance. The experimental group 
+achieved a 20.14% improvement, meeting the study's target of at least 20%, while the 
+control group experienced a 5.05% decrease. These findings indicate a greater observ ed 
+improvement in mathematics performance among students who used I.S.L.A. compared to 
+those in the control group. 
+ 
+
+--- PDF PAGE 88 ---
+STI College Caloocan 78 
+ 
+Survey Questionnaire Results 
+Category Questions SA 
+(5) 
+A 
+(4) 
+N 
+(3) 
+D 
+(2) 
+SD 
+(1) WM VI 
+Usability and 
+Interface 
+The game was easy to 
+understand. 18 4 1   4.74 SA 
+ The game guide helped me 
+get started quickly. 17 5 1   4.70 SA 
+ The buttons and menus were 
+clear and easy to use. 14 8 1     4.57 SA 
+Map, 
+Characters, and 
+Gameplay 
+The map exploration kept me 
+curious. 11 6 3  3 3.96 A 
+ I liked the designs of the 
+game characters and enemies. 17 4 2   4.65 SA 
+ The reward badges motivated 
+me to keep playing. 15 4 2 1 1 4.35 SA 
+ The enemies chasing me 
+made the game exciting. 15 6   1 1 4.43 SA 
+Combat System 
+with Quiz 
+Mechanics 
+The time-limited quiz combat 
+made me think hard about 
+math. 
+15 2 2 2 2 4.13 A 
+ I think the game can help 
+improve my math skills. 18 3 2     4.70 SA 
+Overall 
+Experience I enjoyed the game overall. 20 3       4.87  
+ Total of Weighted Mean      45.09  
+ General Average      4.51  
+ Verbal Interpretation       SA 
+Table 8: Survey Questionnaire Results 
+ 
+ 
+  
+
+--- PDF PAGE 89 ---
+STI College Caloocan 79 
+ 
+ 
+Figure 6.1: Question 1 
+Figure 6.1 indicates how easily students understood I.S.L.A. 18 respondents (78%) 
+strongly agreed, 4 respondents (17%) agreed, and 1 respondent (4%) was neutral. The 
+result yielded a weighted mean of 4.74, and a verbal interpretation of “Strongly Agree”.  
+0%
+10%
+20%
+30%
+40%
+50%
+60%
+70%
+80%
+90%
+100%
+Strongly Agree Agree Neutral Disagree Strongly Disagree
+The game was easy to understand.
+
+--- PDF PAGE 90 ---
+STI College Caloocan 80 
+ 
+ 
+Figure 6.2: Question 2 
+Figure 6.2 shows whether the game guide helped students get started quickly. 17 
+respondents (74%) strongly agreed, 5 respondents (22%) agreed, and 1 respondent (4%) 
+was neutral. The result yielded a weighted mean of 4.70, and a verbal interpretation of 
+“Strongly Agree”.  
+0%
+10%
+20%
+30%
+40%
+50%
+60%
+70%
+80%
+90%
+100%
+Strongly Agree Agree Neutral Disagree Strongly Disagree
+The game guide helped me get started quickly.
+
+--- PDF PAGE 91 ---
+STI College Caloocan 81 
+ 
+ 
+Figure 6.3: Question 3 
+Figure 6.3 presents students’ responses regarding the clarity of the buttons and menus. 14 
+respondents (61%) strongly agreed, 8 respondents (35%) agreed, and 1 respondent (4%) 
+was neutral. The result yielded a weighted mean of 4.57, and a verbal interpreta tion of 
+“Strongly Agree”.  
+0%
+10%
+20%
+30%
+40%
+50%
+60%
+70%
+80%
+90%
+100%
+Strongly Agree Agree Neutral Disagree Strongly Disagree
+The buttons and menus were clear and easy to use.
+
+--- PDF PAGE 92 ---
+STI College Caloocan 82 
+ 
+ 
+Figure 6.4: Question 4 
+Figure 6.4 indicates whether exploring the map kept students curious. 11 respondents 
+(48%) strongly agreed, 6 respondents (26%) agreed, 3 respondents (13%) were neutral, and 
+3 respondents (13%) strongly disagreed. The result yielded a weighted mean of 3.96 , and 
+a verbal interpretation of “Agree”.  
+0%
+10%
+20%
+30%
+40%
+50%
+60%
+70%
+80%
+90%
+100%
+Strongly Agree Agree Neutral Disagree Strongly Disagree
+The map exploration kept me curious.
+
+--- PDF PAGE 93 ---
+STI College Caloocan 83 
+ 
+ 
+Figure 6.5: Question 5 
+Figure 6.5 presents students’ responses to the game’s character and enemy designs. 17 
+respondents (74%) strongly agreed, 4 respondents (17%) agreed, and 2 respondents (9%) 
+were neutral. The result yielded a weighted mean of 4.65, and a verbal interpretatio n of 
+“Strongly Agree”.  
+0%
+10%
+20%
+30%
+40%
+50%
+60%
+70%
+80%
+90%
+100%
+Strongly Agree Agree Neutral Disagree Strongly Disagree
+I liked the designs of the game characters and enemies.
+
+--- PDF PAGE 94 ---
+STI College Caloocan 84 
+ 
+ 
+Figure 6.6: Question 6 
+Figure 6.6 shows whether reward badges motivated students to continue playing. 15 
+respondents (65%) strongly agreed, 4 respondents (17%) agreed, 2 respondents (9%) were 
+neutral, 1 respondent (4%) disagreed, and 1 respondent (4%) strongly disagreed. The result 
+yielded a weighted mean of 4.35, and a verbal interpretation of “Strongly Agree”. 
+  
+0%
+10%
+20%
+30%
+40%
+50%
+60%
+70%
+80%
+90%
+100%
+Strongly Agree Agree Neutral Disagree Strongly Disagree
+The reward badges motivated me to keep playing.
+
+--- PDF PAGE 95 ---
+STI College Caloocan 85 
+ 
+ 
+Figure 6.7: Question 7 
+Figure 6.7 indicates whether the chasing enemies made the game exciting. 15 respondents 
+(65%) strongly agreed, 6 respondents (26%) agreed, 1 respondent (4%) disagreed, and 1 
+respondent (4%) strongly disagreed. The result yielded a weighted mean of 4.43, an d a 
+verbal interpretation of “Strongly Agree”. 
+  
+0%
+10%
+20%
+30%
+40%
+50%
+60%
+70%
+80%
+90%
+100%
+Strongly Agree Agree Neutral Disagree Strongly Disagree
+The enemies chasing me made the game exciting.
+
+--- PDF PAGE 96 ---
+STI College Caloocan 86 
+ 
+ 
+Figure 6.8: Question 8 
+Figure 6.8 shows whether the time -limited quiz combat made students think hard about 
+mathematics. 15 respondents (65%) strongly agreed, 2 respondents (9%) agreed, 2 
+respondents (9%) were neutral, 2 respondents (9%) disagreed, and 2 respondents (9%) 
+strongly disagreed. The result yielded a weighted mean of 4.13, and a verbal interpretation 
+of “Agree”.  
+0%
+10%
+20%
+30%
+40%
+50%
+60%
+70%
+80%
+90%
+100%
+Strongly Agree Agree Neutral Disagree Strongly Disagree
+The time-limited quiz combat made me think hard about math.
+
+--- PDF PAGE 97 ---
+STI College Caloocan 87 
+ 
+ 
+Figure 6.9: Question 9 
+Figure 6.9 presents students’ belief that the game could help improve their mathematics 
+skills. 18 respondents (78%) strongly agreed, 3 respondents (13%) agreed, and 2 
+respondents (9%) were neutral. The result yielded a weighted mean of 4.70, and a verbal 
+interpretation of “Strongly Agree”.  
+0%
+10%
+20%
+30%
+40%
+50%
+60%
+70%
+80%
+90%
+100%
+Strongly Agree Agree Neutral Disagree Strongly Disagree
+I think the game can help improve my math skills.
+
+--- PDF PAGE 98 ---
+STI College Caloocan 88 
+ 
+ 
+Figure 6.10: Question 10 
+Figure 6.10 indicates the students’ overall enjoyment of I.S.L.A. 20 respondents (87%) 
+strongly agreed and 3 respondents (13%) agreed. The result yielded a weighted mean of 
+4.87, and a verbal interpretation of “Strongly Agree”. 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+0%
+10%
+20%
+30%
+40%
+50%
+60%
+70%
+80%
+90%
+100%
+Strongly Agree Agree Neutral Disagree Strongly Disagree
+I enjoyed the game overall.
+
+--- PDF PAGE 99 ---
+STI College Caloocan 89 
+ 
+CONCLUSION 
+Summary  
+This study developed and evaluated I.S.L.A., a 2D adventure mobile game with a 
+web-based analytics dashboard for Grade 3 mathematics at Master Hand School Inc. 
+A three -day pilot test was conducted on October 13 –15, 2026, involving 23 students 
+divided into an experimental group of 13 and a control group of 10. Both groups completed 
+parallel 15 -item pre - and post -assessments, but only the experimental group played 
+I.S.L.A. between assessments. The control group played after the post -assessment, and 
+both groups answered a 10-item acceptability survey. 
+The experimental group achieved a 20.14% relative improvement, meeting the study's 20% 
+target, while the control group showed a 5.05% decrease. The pre -assessment difference 
+was not statistically significant ( p = .515), while the post -assessment difference was 
+significant (p = .001). The survey obtained an overall weighted mean of 4.51, interpreted 
+as "Strongly Agree," with enjoyment and ease of understanding receiving the highest 
+ratings. 
+Conclusions  
+1. The researchers conclude that I.S.L.A. was successfully developed and 
+implemented as a supplementary learning tool, integrating a mathematics 2D 
+adventure game with a web-based analytics dashboard. 
+2. The researchers conclude that students who used I.S.L.A.  over three-day period  
+demonstrated greater short-term improvement in mathematics performance than the 
+control group, meeting the 20% improvement target. These findings suggest the 
+game's potential to support mathematics learning, although its long -term 
+effectiveness requires further evaluation. 
+3. The researchers conclude that I.S.L.A. received high student acceptability ratings, 
+particularly for enjoyment and ease of understanding, while map exploration and 
+time-limited quiz combat remain areas for improvement. 
+ 
+
+--- PDF PAGE 100 ---
+STI College Caloocan 90 
+ 
+Recommendations 
+The project, designed as a supplementary learning tool to support Grade 3 students' 
+mathematics performance, has room for further improvement. Based on the students' 
+feedback, enhancing map exploration through clearer directions and visual indicators is 
+recommended to make navigation easier. Providing adjustable time limits during quiz 
+combat could also accommodate students with different problem -solving speeds while 
+maintaining the game's ease of use and enjoyment. Additionally, future researchers are 
+encouraged to involve more participants in both control and experimental groups and 
+extend the testing period according to the school's availability. Conducting follow -up 
+assessments could also help determine whether students retain their mathematics learning 
+over time and provide stronger evidence of the game's effectiveness alongside regular 
+classroom instruction. 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+--- PDF PAGE 101 ---
+STI College Caloocan 91 
+ 
+References 
+DePascale, M., & Ramani, G. B. (2025). The role of math games for children's early math 
+learning: A systematic review. Journal of Numerical Cognition , 11, Article 
+e14897. https://eric.ed.gov/?id=EJ1480581 
+Garcia, G., & Jung, I. (2021). Understanding immersion in 2D platform -based online 
+collaborative learning environments. Australasian Journal of Educational 
+Technology, 37(2), 1–15. https://eric.ed.gov/?id=EJ1288156 
+Buray, A. A., & Alferez, R. C. (2025). Digital game -based learning: Its contribution to 
+numeracy skills among Grade 1 learners. Psychology and Education: A 
+Multidisciplinary Journal, 34(5), 592 –602. 
+https://doi.org/10.70838/pemj.340504 
+Verzosa, D. M. B., De Las Peñas, M. L. A. N., Sarmiento, J. F., Aberin, M. A. Q., 
+Tolentino, M. A. C., & Loyola, M. L. (2021, March 3 –5). Using mobile 
+technology to promote higher-order thinking skills in elementary mathematics  
+[Paper presentation]. 17th IADIS International Conference on Mobile Learning 
+& 8th International Conference on Educational Technologies, Virtual. 
+https://eric.ed.gov/?id=ED622423 
+Chen, D.  (2022). Learning  Game Design – Designing a Math Evaluation Game for 
+Children. (6-10) 
+https://www.researchgate.net/publication/374551417_Learning_Game_Desig
+n_-_Designing_a_Math_Evaluation_Game_for_Children_6-10 
+Abbacan, M. D., Lasangen, J. P., Calado, Z. L. F., Catalino, F. G., & Terceño, R. T. (2025). 
+Exploring the impact of educational games on numeracy skill development 
+among the elementary learners: A systematic review. Cognizance Journal of 
+Multidisciplinary Studies, 5(1), 274 –286. 
+https://doi.org/10.47760/cognizance.2025.v05i01.023 
+Balaoing, V. G., & Say, A. Q. (2024). Effects of gaming strategy on the mathematics 
+performance of Grade 3 students in a barangay elementary school. Ignatian 
+International Journal for Multidisciplinary Research, 2(10), 470 –487. 
+https://doi.org/10.5281/zenodo.13910361 
+Cayang, J. A., & Ursabia, E. M. (2024). Leveling up mathematical skills: The effectiveness 
+of game-based learning. Journal of Interdisciplinary Perspectives, 2(7), 784 –
+791. https://doi.org/10.69569/jip.2024.0087a 
+Dan, N. N., Trung, L. T. B. T., Nga, N. T., & Dung, T. M. (2024). Digital game -based 
+learning in mathematics education at primary school level: A systematic 
+
+--- PDF PAGE 102 ---
+STI College Caloocan 92 
+ 
+literature review. Eurasia Journal of Mathematics, Science and Technology 
+Education, 20(4), em2423. https://doi.org/10.29333/ejmste/14377 
+Yulia, N. M., Asna, U. L., Fahma, M. A., Reviana, P. A., Cholili, F. N., 
+Nurhalimahturrafiah, & Sari, D. R. (2025). Use of game -based learning media 
+education as an effort to increase interest elementary school students learning. 
+JERIT: Journal of Educational Research and Innovation Technology, 2(1), 38–
+45. https://www.researchgate.net/publication/396531157_Use_of_Game-
+Based_Learning_Media_Education_as_An_Effort_to_Increase_Interest_Elem
+entary_School_Students_Learning 
+Department of Education. (2023). MATATAG curriculum: Mathematics Grades 1, 4 and 
+7. Republic of the Philippines Department of Education . 
+https://www.deped.gov.ph/wp-content/uploads/MATATAG-Mathematics-
+CG-Grades1-4-and-7.pdf 
+Celemin, G. D. G (2025). Enhancing Numeracy Skills of Grade 3 Students Through 
+Authentic Performance Tasks. 
+https://www.researchgate.net/publication/374201106_Enhancing_Numeracy_
+Skills_of_Grade_3_Students_Through_Authentic_Performance_Tasks 
+UNICEF: Maraming Grade 3 students, pang-kinder lang ang math at literacy level | Videos 
+| GMA News Online. (2025). [Video]. GMA News Online. 
+https://www.gmanetwork.com/news/video/unangbalita/725162/unicef-
+maraming-grade-3-students-pang-kinder-lang-ang-math-at-literacy-
+level/video/?fbclid=IwY2xjawRVy6xleHRuA2FlbQIxMABicmlkETFnQWp
+TaXNuY1BrTnVHaW9oc3J0YwZhcHBfaWQQMjIyMDM5MTc4ODIwMD
+g5MgABHuITuWqxJj78i2L6yz8nH6HBl8C_HwDroMoCltUqS-
+SEjkveXs5RJb93W1e2_aem_cLyi_oMi5vFZpUn4tOqDBg#google_vignette 
+Untalan, S. (2025, September 2). EDCOM 2: Only 1 in 4 Grade 3 students can perform 
+division correctly. GMA News Online. 
+https://www.gmanetwork.com/news/topstories/nation/957824/edcom-2-only-
+one-of-4-grade-3-pupils-
+division/story/?fbclid=IwY2xjawRVy6JleHRuA2FlbQIxMABicmlkETFnQW
+pTaXNuY1BrTnVHaW9oc3J0YwZhcHBfaWQQMjIyMDM5MTc4ODIwM
+Dg5MgABHjfsMaNl9MzQIVVsaXPbN667VjTkVFYtxwz7wUD0ZkSLoDU
+pYw8h5s-niSdV_aem_IBBO_Y477mqzQfWuUaGUbg 
+Priyanka, S., Bokhare, A., Paul, D., & Dsilva, T.( 2022) Math Adventures with Tuffy: A 
+2D Game to Aid in Learning Mathematics. https://www.ijraset.com/research-
+paper/math-adventures-with-tuffy-2d-game-to-aid-in-learning-mathematics 
+
+--- PDF PAGE 103 ---
+STI College Caloocan 93 
+ 
+Kulkarni, N., Aafreen, I., Patel, A. T., & Srihari, G. M. (2024). The development of 
+MINIX: A 2D pixel art game using Godot 4 engine. International Journal of 
+Engineering Applied Sciences and Technology, 9(07), 43 –48. 
+http://www.ijeast.com 
+Qudwatullathifah, R. N., Maharani, A., & Miftahurrohmah , C. (2025). Students' 
+engagement in learning mathematics with the academic performance of 
+elementary school. Klasikal: Journal of Education, Language Teaching and 
+Science, 7(2), 708-715. https://doi.org/10.1234/klasikal.v7i2.1304 
+Abdulrahim, R. ( 2022.). The effects of online learning in the intrinsic motivation of 
+students in learning mathematics. 
+https://www.researchgate.net/publication/403546137_The_Effects_of_Online
+_Learning_in_the_Intrinsic_Motivation_of_Students_in_Learning_Mathemati
+cs 
+Corciega, N. A., Bayot, C. M. A., De Jesus, M. S., Hinampas, G. M. A., Muaña, R., & 
+Ones, S. A. (2025). Engaging young minds: Rating strategies and 
+environmental factors to enhance attention span for primary pupils. Negros 
+Oriental State University Mabinay Campus.  
+ https://www.researchgate.net/publication/395014939_Engaging_Young_
+Minds_Rating_Strategies_and_Environmental_Factors_to_Enhance_Attention
+_Span_for_Primary_Pupils 
+Microsoft. (2022, March 28). Microsoft and Department of Education launch pilot of 
+Minecraft: Education Edition on mobile for 23 million Filipino students. 
+Microsoft News Center. https://news.microsoft.com/en -
+ph/2022/03/28/microsoft-and-department-of-education-launch-pilot-of-
+minecraft-education-edition-on-mobile-for-23-million-filipino-students/ 
+Ramli, ‘I. S. M., Maat, S. M., & Khalid, F. (2020). Game -based learning and student 
+motivation in mathematics. https://doi.org/10.6007/IJARPED/v9-i2/7487 
+Maamin, M., Maat, S. M., & H. Iksan, Z. (2022). The influence of student engagement on 
+mathematical achievement among secondary school students. 
+https://doi.org/10.3390/math10010041 
+Rayan, B., & Watted, A. (2024). Enhancing education in elementary schools through 
+gamified learning: Exploring the impact of Kahoot! on the learning process. 
+https://www.researchgate.net/publication/378786577_Enhancing_Education_i
+n_Elementary_Schools_through_Gamified_Learning_Exploring_the_Impact_
+of_Kahoot_on_the_Learning_Process 
+
+--- PDF PAGE 104 ---
+STI College Caloocan 94 
+ 
+Hargrove, P. L. (2023). The use of teaching methods and strategies and how they affect the 
+student and teacher classroom dynamics 
+https://digitalcommons.murraystate.edu/cgi/viewcontent.cgi?article=1538&co
+ntext=bis437 
+Rohim, D. C., Margaretha, A. P., Rahmawati, A., Abshor, D. A., & Manggalastawa. (2024) 
+Learning obstacles in third grade mathematics learning at SD N 1 Panjang.  
+EduScienceTech. 
+http://103.97.100.158/index.php/edusciencetech/article/view/569 
+Nche, O. M., Che, M. S., Hollingsworth, J. E., Kraemer, E. T., Rhew, K., Sitaraman, M., 
+& Zordan, V. B. (2025). HBot —An instructional video game with concept -
+integrated game mechanics. Acta Psychologica. Elsevier.   
+https://dl.acm.org/doi/full/10.1145/3816424#abstract 
+Bringula, R. P., Atienza, F. A. L., Mangubat, J., Roxas, M., & Miranda, J. P. P. (2025). 
+Impact of intelligent vs non -intelligent mCSCL on mathematics performance: 
+A comparative study of grade 5 students.  
+https://www.sciencedirect.com/science/article/pii/S0001691825008200?arc=H
+V-4&fr=RR-103&ref=cra_js_challenge&rr=a4860603d86120e3 
+Department of Education. (2023). MATATAG curriculum: Mathematics (Grades 1, 4, and 
+7). https://www.deped.gov.ph/wp-content/uploads/MATATAG-Mathematics-
+CG-Grades1-4-and-7.pdf 
+Godot Engine. (2026). Exporting for iOS. Godot Engine Documentation. 
+https://docs.godotengine.org/en/latest/tutorials/export/exporting_for_ios.html 

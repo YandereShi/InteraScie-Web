@@ -21,7 +21,7 @@ function Login() {
   const [LockedSeconds, SetLockedSeconds] = useState(0);
   const [ShowGame, SetShowGame] = useState(false);
   const [forgotpassword, SetForgotPassword] = useState(false);
-  const [RememberMe, SetRememberMe] = useState(GetRememberMe);
+  const [RememberMe, SetRememberMe] = useState(false);
   const [CheckingSession, SetCheckingSession] = useState(true);
 
   useEffect(() => {
