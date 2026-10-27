@@ -1,7 +1,7 @@
 import "../../css/BatchStudentPopup.css";
 import Papa from "papaparse";
 import { useState } from "react";
-import { GetNameError } from "../../lib/nameValidation";
+import { GetNameError, GetNameKey } from "../../lib/nameValidation";
 import { limits } from "../../lib/inputLimits";
 
 function NormalizeName(Value) {
@@ -35,18 +35,6 @@ function MakeUsername(firstname, lastname, usedusernames) {
 
   usedusernames.add(username);
   return username;
-}
-
-function MakeNameKey(firstname, lastname) {
-  return JSON.stringify(
-    [firstname, lastname].map((name) =>
-      String(name ?? "")
-        .normalize("NFC")
-        .trim()
-        .replace(/\s+/g, " ")
-        .toLowerCase()
-    )
-  );
 }
 
 function BatchStudentPopup({
@@ -126,17 +114,19 @@ function BatchStudentPopup({
           return;
         }
 
-        const usedusernames = new Set();
+        const usedusernames = new Set(
+          students.map((student) => String(student.username ?? "").trim().toLowerCase())
+        );
         const usednames = new Set(
           students.map((student) =>
-            MakeNameKey(student.firstName, student.lastName)
+            GetNameKey(student.firstName, student.lastName)
           )
         );
 
         const parsedrows = StudentRows.map((student) => {
           const firstname = student.FirstName;
           const lastname = student.LastName;
-          const namekey = MakeNameKey(firstname, lastname);
+          const namekey = GetNameKey(firstname, lastname);
           const nameerror = GetNameError(firstname, lastname);
           let username = "";
           let errormessage = "";
@@ -146,7 +136,7 @@ function BatchStudentPopup({
           } else if (nameerror) {
             errormessage = nameerror;
           } else if (usednames.has(namekey)) {
-            errormessage = "Duplicate";
+            errormessage = "Duplicate full name.";
           } else {
             username = MakeUsername(firstname, lastname, usedusernames);
 

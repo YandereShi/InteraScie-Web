@@ -3,7 +3,7 @@ import { useState } from "react";
 import studentImage from "../../assets/pfp.png";
 import ProfilePhotoEditor from "../ProfilePhotoEditor";
 import { GetStudentPhotoPath } from "../../lib/profilePhotos";
-import { GetNameError } from "../../lib/nameValidation";
+import { GetNameError, GetUsernameError } from "../../lib/nameValidation";
 import { limits } from "../../lib/inputLimits";
 
 function MakeDefaultPassword(firstName, lastName) {
@@ -84,11 +84,9 @@ function StudentPopup({
       return;
     }
 
-    if (
-      username.length > limits.username ||
-      username.trim().toLowerCase().length > limits.username
-    ) {
-      setSaveError(`Username must be ${limits.username} characters or fewer.`);
+    const usernameError = GetUsernameError(username);
+    if (usernameError) {
+      setSaveError(usernameError);
       return;
     }
 

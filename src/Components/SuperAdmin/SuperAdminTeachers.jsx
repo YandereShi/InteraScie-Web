@@ -9,6 +9,7 @@ import TeacherPopup from "./TeacherPopup";
 import TeacherSectionPopup from "./TeacherSectionPopup";
 import { PopupContext } from "../../lib/PopupContext";
 import { limits } from "../../lib/inputLimits";
+import { GetNameError } from "../../lib/nameValidation";
 
 const maxCards = 12;
 
@@ -107,6 +108,9 @@ function SuperAdminTeachers() {
     }
 
     async function HandleSaveTeacher(teacherData) {
+        const fresh = await queryClient.fetchQuery({ queryKey: teachersQueryKey, queryFn: GetTeachers, staleTime: 0 });
+        const nameError = GetNameError(teacherData.firstName, teacherData.lastName, fresh.teachers);
+        if (nameError) throw new Error(nameError);
         await CreateTeacher(teacherData);
 
         await RefreshTeachers();
@@ -120,6 +124,10 @@ function SuperAdminTeachers() {
         if (!selectedTeacher) {
             return;
         }
+
+        const fresh = await queryClient.fetchQuery({ queryKey: teachersQueryKey, queryFn: GetTeachers, staleTime: 0 });
+        const nameError = GetNameError(firstName, lastName, fresh.teachers, selectedTeacher.staffID);
+        if (nameError) throw new Error(nameError);
 
         await UpdateTeacher(
             selectedTeacher.staffID,

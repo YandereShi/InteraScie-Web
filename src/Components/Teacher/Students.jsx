@@ -5,7 +5,7 @@ import BatchStudentPopup from "./BatchStudentPopup";
 import TeacherPage from "./TeacherPage";
 import { useContext, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { GetNameError } from "../../lib/nameValidation";
+import { GetNameError, GetUsernameError } from "../../lib/nameValidation";
 import { limits } from "../../lib/inputLimits";
 import { InvokeStudentManagement } from "../../lib/supabase";
 import { GetStudents, studentQueryKey } from "../../lib/studentQueries";
@@ -98,24 +98,21 @@ function Students({ PageComponent = TeacherPage }) {
 
     await RefreshStudents();
     setSelectedStudentIDs([]);
-    CloseBatchPopup();
+    if (!batchResult.failed?.length) CloseBatchPopup();
 
     return batchResult;
   }
 
   async function HandleSaveStudent(studentData) {
-    const nameerror = GetNameError(studentData.firstName, studentData.lastName);
+    const fresh = await queryClient.fetchQuery({ queryKey: studentQueryKey, queryFn: GetStudents, staleTime: 0 });
+    const nameerror = GetNameError(studentData.firstName, studentData.lastName, fresh.students, selectedStudent?.studentID ?? null);
 
     if (nameerror) {
       throw new Error(nameerror);
     }
 
-    if (
-      studentData.username.length > limits.username ||
-      studentData.username.trim().toLowerCase().length > limits.username
-    ) {
-      throw new Error(`Username must be ${limits.username} characters or fewer.`);
-    }
+    const usernameError = GetUsernameError(studentData.username, fresh.students, selectedStudent?.studentID ?? null);
+    if (usernameError) throw new Error(usernameError);
 
     const payload = {
       firstName: studentData.firstName.trim(),

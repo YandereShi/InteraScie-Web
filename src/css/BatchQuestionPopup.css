@@ -53,13 +53,30 @@
   min-width: 0;
   margin: 0 0 12px;
   padding: 12px;
-  border: 1px solid #cccccc;
+  border: 3px solid #cccccc;
   border-radius: 6px;
 }
 
 .questionbatchpreview legend {
   padding: 0 5px;
   font-weight: bold;
+  color: #006b3c;
+}
+
+.questionbatchpreview .questionbatchrejected {
+  border-color: #ff0000;
+}
+
+.questionbatchpreview .questionbatchsuccess {
+  border-color: #00bf63;
+}
+
+.questionbatchpreview .questionbatchrowerror {
+  margin: 10px 0 0;
+  font-weight: 400;
+}
+
+.questionbatchpreview .questionbatchsuccess .questionbatchrowerror {
   color: #006b3c;
 }
 

@@ -2,7 +2,24 @@ import Papa from "papaparse";
 import { limits } from "./inputLimits.js";
 
 function QuestionKey(text) {
-  return text.normalize("NFC").trim().replace(/\s+/g, " ").toLowerCase();
+  return String(text ?? "").normalize("NFC").replace(/\s+/g, "").toLowerCase();
+}
+
+export function GetQuestionError(form, existing = [], currentQuestionID = null, requireAnswer = true) {
+  if (form.parseError) return form.parseError;
+  const text = form.text.trim();
+  const choices = form.choices.map((choice) => choice.trim());
+  if (!text || choices.length !== 4 || choices.some((choice) => !choice)) {
+    return "Enter a question and all four choices.";
+  }
+  if (text.length > limits.question) return `Question must be ${limits.question} characters or fewer.`;
+  if (choices.some((choice) => choice.length > limits.choice)) return `Each choice must be ${limits.choice} characters or fewer.`;
+  if (new Set(choices.map(QuestionKey)).size !== 4) return "Choices must be different.";
+  if (existing.some((question) => (currentQuestionID === null || String(question.questionID) !== String(currentQuestionID)) && QuestionKey(question.text) === QuestionKey(text))) {
+    return "This question already exists in this assessment.";
+  }
+  if (requireAnswer && ![0, 1, 2, 3].includes(form.answer)) return "Select the correct answer.";
+  return "";
 }
 
 export function ParseQuestionRows(data) {
@@ -12,19 +29,17 @@ export function ParseQuestionRows(data) {
   const rows = data.slice(1).map((cells, index) => ({ raw: String(cells[0] ?? "").trim(), row: index + 2 }))
     .filter((item) => item.raw);
   if (!rows.length) throw new Error("The file does not contain any questions.");
-  if (rows.length > 15) throw new Error("Only 15 questions can be uploaded at a time.");
-
   return rows.map(({ raw, row }) => {
     const block = raw.replace(/\r\n?/g, "\n");
     const markers = [...block.matchAll(/^\s*([A-Z])[.):][ \t]*/gim)];
-    if (markers.map((match) => match[1].toUpperCase()).join("") !== "ABCD") {
-      throw new Error(`Row ${row}: put A., B., C., and D. on separate lines inside the same cell, in that order.`);
-    }
     return {
       row,
-      text: block.slice(0, markers[0].index).trim().replace(/^\d+\s*[.)]\s*/, ""),
+      text: block.slice(0, markers[0]?.index ?? block.length).trim().replace(/^\d+\s*[.)]\s*/, ""),
       choices: markers.map((match, index) => block.slice(match.index + match[0].length, markers[index + 1]?.index ?? block.length).trim()),
       answer: null,
+      parseError: markers.map((match) => match[1].toUpperCase()).join("") === "ABCD"
+        ? ""
+        : "Put A., B., C., and D. on separate lines inside the same cell, in that order.",
     };
   });
 }
@@ -52,32 +67,21 @@ export async function ReadQuestionFile(file) {
   return ParseQuestionRows(data);
 }
 
-export function ValidateQuestionBatch(rows, existing, maximum, requireAnswers = true) {
-  if (!rows.length) return "Choose a file containing questions.";
-  if (existing.length + rows.length > maximum) {
-    return `This assessment has ${existing.length}/${maximum} questions. Only ${Math.max(0, maximum - existing.length)} more can be added.`;
-  }
-
-  const used = new Set(existing.map((question) => QuestionKey(question.text)));
-  for (const item of rows) {
-    let error = "";
-    if (!item.text.trim() || item.choices.length !== 4 || item.choices.some((choice) => !choice.trim())) {
-      error = "Enter a question and all four choices.";
-    } else if (item.text.length > limits.question) {
-      error = `Question must be ${limits.question} characters or fewer.`;
-    } else if (item.choices.some((choice) => choice.length > limits.choice)) {
-      error = `Each choice must be ${limits.choice} characters or fewer.`;
-    } else if (new Set(item.choices.map((choice) => choice.normalize("NFC").trim().replace(/\s+/g, " "))).size !== 4) {
-      error = "Choices must be different from each other.";
-    } else if (used.has(QuestionKey(item.text))) {
-      error = "This question is duplicated or already exists in this assessment.";
-    } else if (requireAnswers && (!Number.isInteger(item.answer) || item.answer < 0 || item.answer > 3)) {
-      error = "Select the correct answer.";
+export function ValidateQuestionBatch(rows, existing, maximum) {
+  const seen = new Map();
+  let acceptedCount = existing.length;
+  return rows.map((item) => {
+    let error = GetQuestionError(item, existing, null, false);
+    const key = QuestionKey(item.text);
+    if (!error && seen.has(key)) error = `Duplicate question from row ${seen.get(key)}.`;
+    if (!error) seen.set(key, item.row);
+    if (!error && ![0, 1, 2, 3].includes(item.answer)) error = "Select the correct answer.";
+    if (!error && acceptedCount >= maximum) {
+      error = `This assessment can only contain ${maximum} questions.`;
     }
-    if (error) return `Row ${item.row}: ${error}`;
-    used.add(QuestionKey(item.text));
-  }
-  return "";
+    if (!error) acceptedCount += 1;
+    return { ...item, error };
+  });
 }
 
 export function QuestionPayload(form, assessmentID) {

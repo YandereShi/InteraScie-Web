@@ -49,11 +49,6 @@ function StaffProfilePopup({ staff, onclose }) {
       SetMessage("New passwords do not match.");
       return;
     }
-    if (currentPassword === newPassword) {
-      SetMessage("Choose a new password that is different from your current password.");
-      return;
-    }
-
     SetLoading(true);
     SetMessage("");
     let passwordClient;
@@ -80,6 +75,9 @@ function StaffProfilePopup({ staff, onclose }) {
       }
       if (verification.user?.id !== currentUser.user.id) {
         throw new Error("Unable to verify your account. Please log in again.");
+      }
+      if (currentPassword === newPassword) {
+        throw new Error("Choose a new password that is different from your current password.");
       }
 
       const { error: updateError } = await passwordClient.auth.updateUser({ password: newPassword });

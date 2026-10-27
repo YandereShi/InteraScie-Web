@@ -8,8 +8,7 @@ import { teacherDashboardQueryKey } from "../../lib/dashboardQueries";
 import QuestionCard from "./QuestionCard";
 import QuestionPopup from "./QuestionPopup";
 import BatchQuestionPopup from "./BatchQuestionPopup";
-import { QuestionPayload, ValidateQuestionBatch } from "../../lib/questionImport";
-import { limits } from "../../lib/inputLimits";
+import { GetQuestionError, QuestionPayload, ValidateQuestionBatch } from "../../lib/questionImport";
 import { PopupContext } from "../../lib/PopupContext";
 
 const maxQuestions = 15;
@@ -94,7 +93,6 @@ function Questions({ sectionID, sectionName, onBack }) {
   });
 
   const questionData = questionsQuery.data ?? emptyQuestions;
-  const test = questionData.test;
   const questions = questionData.questions;
   const access = accessQuery.data ?? [];
   const activeAccess = access.find(
@@ -251,21 +249,21 @@ function Questions({ sectionID, sectionName, onBack }) {
   }
 
   async function SaveQuestion(form) {
-    if (!current && questions.length >= maxQuestions) {
+    const fresh = await queryClient.fetchQuery({
+      queryKey: questionQueryKey,
+      queryFn: () => GetAssessmentQuestions(staffID, levelID),
+      staleTime: 0,
+    });
+    if (!current && fresh.questions.length >= maxQuestions) {
       throw new Error(
         `This assessment can only contain ${maxQuestions} questions.`
       );
     }
 
-    if (form.text.length > limits.question) {
-      throw new Error(`Question must be ${limits.question} characters or fewer.`);
-    }
+    const message = GetQuestionError(form, fresh.questions, current?.questionID ?? null);
+    if (message) throw new Error(message);
 
-    if (form.choices.some((choice) => choice.length > limits.choice)) {
-      throw new Error(`Each choice must be ${limits.choice} characters or fewer.`);
-    }
-
-    let activeTest = test;
+    let activeTest = fresh.test;
 
     if (!activeTest) {
       const { data, error: testError } = await supabase
@@ -282,6 +280,7 @@ function Questions({ sectionID, sectionName, onBack }) {
       }
 
       activeTest = data;
+      queryClient.setQueryData(questionQueryKey, { ...fresh, test: activeTest });
     }
 
     const payload = QuestionPayload(form, activeTest.assessmentID);
@@ -308,8 +307,9 @@ function Questions({ sectionID, sectionName, onBack }) {
       queryFn: () => GetAssessmentQuestions(staffID, levelID),
       staleTime: 0,
     });
-    const message = ValidateQuestionBatch(rows, fresh.questions, maxQuestions);
-    if (message) throw new Error(message);
+    const reviewed = ValidateQuestionBatch(rows, fresh.questions, maxQuestions);
+    const valid = reviewed.filter((row) => !row.error);
+    if (!valid.length) return { saved: 0, rows: reviewed };
 
     let activeTest = fresh.test;
     if (!activeTest) {
@@ -323,7 +323,7 @@ function Questions({ sectionID, sectionName, onBack }) {
     }
 
     const result = await supabase.from("Question")
-      .insert(rows.map((row) => QuestionPayload(row, activeTest.assessmentID)))
+      .insert(valid.map((row) => QuestionPayload(row, activeTest.assessmentID)))
       .select("questionID, assessmentID, text, answer, choice1, choice2, choice3");
     if (result.error) throw new Error("Unable to confirm the upload. Check your connection and try again. Existing questions will be checked before saving.");
 
@@ -332,11 +332,11 @@ function Questions({ sectionID, sectionName, onBack }) {
       questions: [...fresh.questions, ...result.data],
     });
     setSelected([]);
-    setBatchOpen(false);
     await Promise.all([
       RefreshQuestions(),
       queryClient.invalidateQueries({ queryKey: ["AssessmentScores"] }),
     ]);
+    return { saved: valid.length, rows: reviewed.map((row) => ({ ...row, saved: !row.error })) };
   }
 
   function SelectOne(questionID, isChecked) {
@@ -582,6 +582,7 @@ function Questions({ sectionID, sectionName, onBack }) {
       {open && (
         <QuestionPopup
           question={current}
+          questions={questions}
           number={number}
           onClose={ClosePopup}
           onSave={SaveQuestion}

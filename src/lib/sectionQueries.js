@@ -1,10 +1,11 @@
 import { InvokeStudentManagement } from "./supabase";
+import { NormalizeName } from "./nameValidation";
 
 export const sectionsQueryKey = ["Sections"];
 export const noSectionStudentsQueryKey = ["NoSectionStudents"];
 
 export function IsReservedSectionName(name) {
-  return typeof name === "string" && name.trim().replace(/\s+/g, " ").toLowerCase() === "no section";
+  return NormalizeName(name) === "nosection";
 }
 
 export function GetSectionStudentsQueryKey(sectionID) {

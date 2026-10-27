@@ -14,6 +14,7 @@ import { superAdminDashboardQueryKey, teacherDashboardQueryKey } from "../../lib
 import { PopupContext } from "../../lib/PopupContext";
 import { GetStudents, studentQueryKey } from "../../lib/studentQueries";
 import { GetPageSelection, SavePageSelection } from "../../lib/pageSelection";
+import { NormalizeName } from "../../lib/nameValidation";
 
 const maxRows = 15;
 
@@ -367,6 +368,11 @@ function Sections({ PageComponent = TeacherPage }) {
 
     if (name.length > limits.section) {
       throw new Error(`Section name must be ${limits.section} characters or fewer.`);
+    }
+
+    const fresh = await queryClient.fetchQuery({ queryKey: sectionsQueryKey, queryFn: GetSections, staleTime: 0 });
+    if (fresh.sections.some((item) => NormalizeName(item.sectionName) === NormalizeName(name))) {
+      throw new Error("This section name already exists.");
     }
 
     const data = await InvokeStudentManagement("createsection", {

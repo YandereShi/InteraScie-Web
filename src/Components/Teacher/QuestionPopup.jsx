@@ -1,9 +1,11 @@
 import "../../css/QuestionPopup.css";
 import { useState } from "react";
 import { limits } from "../../lib/inputLimits";
+import { GetQuestionError } from "../../lib/questionImport";
 
 function QuestionPopup({
   question,
+  questions,
   number,
   onClose,
   onSave,
@@ -39,18 +41,9 @@ function QuestionPopup({
       choice.trim()
     );
 
-    if (!cleanText || cleanChoices.some((choice) => !choice)) {
-      setError("Enter the question and all four choices.");
-      return;
-    }
-
-    if (text.length > limits.question) {
-      setError(`Question must be ${limits.question} characters or fewer.`);
-      return;
-    }
-
-    if (choices.some((choice) => choice.length > limits.choice)) {
-      setError(`Each choice must be ${limits.choice} characters or fewer.`);
+    const message = GetQuestionError({ text: cleanText, choices: cleanChoices, answer }, questions, question?.questionID ?? null);
+    if (message) {
+      setError(message);
       return;
     }
 

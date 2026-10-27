@@ -10,7 +10,10 @@ function BatchQuestionPopup({ questions, maximum, onClose, onSave }) {
   const [filename, setFilename] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
-  const validation = ValidateQuestionBatch(rows, questions, maximum);
+  const [hasResults, setHasResults] = useState(false);
+  const [summary, setSummary] = useState("");
+  const reviewed = hasResults ? rows : ValidateQuestionBatch(rows, questions, maximum);
+  const ready = reviewed.filter((row) => !row.error).length;
 
   useEffect(() => {
     const element = dialog.current;
@@ -31,12 +34,11 @@ function BatchQuestionPopup({ questions, maximum, onClose, onSave }) {
     setBusy(true);
     setError("");
     setRows([]);
+    setHasResults(false);
+    setSummary("");
     setFilename(file.name);
     try {
-      const parsed = await ReadQuestionFile(file);
-      const message = ValidateQuestionBatch(parsed, questions, maximum, false);
-      if (message) throw new Error(message);
-      setRows(parsed);
+      setRows(await ReadQuestionFile(file));
     } catch (fileError) {
       setError(fileError.message);
     } finally {
@@ -47,12 +49,15 @@ function BatchQuestionPopup({ questions, maximum, onClose, onSave }) {
 
   async function Submit(event) {
     event.preventDefault();
-    if (request.current || validation) return;
+    if (request.current || hasResults || !ready) return;
     request.current = true;
     setBusy(true);
     setError("");
     try {
-      await onSave(rows);
+      const result = await onSave(rows);
+      setRows(result.rows);
+      setHasResults(true);
+      setSummary(`${result.saved} saved · ${result.rows.length - result.saved} rejected.${result.saved < result.rows.length ? " Choose a corrected file to upload the rejected questions." : ""}`);
     } catch (saveError) {
       setError(saveError.message);
     } finally {
@@ -81,30 +86,31 @@ function BatchQuestionPopup({ questions, maximum, onClose, onSave }) {
         {filename && <p className="batchfilename">{filename}</p>}
         {busy && <p role="status">Processing...</p>}
         {error && <p className="batcherror" role="alert">{error}</p>}
+        {summary && <p role="status">{summary}</p>}
         {rows.length > 0 && <>
-          <p>Select the correct answer for every question.</p>
+          {!hasResults && <p>{ready} ready. Questions with errors or no selected correct answer will be skipped.</p>}
           <div className="questionbatchpreview">
-            {rows.map((item, index) => (
-              <fieldset key={item.row} disabled={busy}>
-                <legend>Question {questions.length + index + 1}</legend>
+            {reviewed.map((item) => (
+              <fieldset key={item.row} disabled={busy || hasResults} className={item.error && item.error !== "Select the correct answer." ? "questionbatchrejected" : "questionbatchsuccess"}>
+                <legend>Row {item.row}{item.saved ? " · Saved" : ""}</legend>
                 <p>{item.text}</p>
                 {item.choices.map((choice, position) => (
                   <label key={position}>
                     <input type="radio" name={`batchanswer-${item.row}`} checked={item.answer === position} onChange={() => {
                       setError("");
                       setRows((current) => current.map((row) => row.row === item.row ? { ...row, answer: position } : row));
-                    }} required />
+                    }} />
                     <span>{String.fromCharCode(65 + position)}. {choice}</span>
                   </label>
                 ))}
+                {item.error && <p className="batcherror questionbatchrowerror">{item.error}</p>}
               </fieldset>
             ))}
           </div>
-          {validation && <p className="batcherror" role="status">{validation}</p>}
         </>}
         <div className="batchactions">
-          <button type="button" disabled={busy} onClick={onClose}>Cancel</button>
-          <button type="submit" disabled={busy || Boolean(validation)}>{busy ? "Processing..." : `Save ${rows.length} Questions`}</button>
+          <button type="button" disabled={busy} onClick={onClose}>{hasResults ? "Close" : "Cancel"}</button>
+          <button type="submit" disabled={busy || hasResults || !ready}>{busy ? "Processing..." : hasResults ? "Upload completed" : `Save ${ready} Questions`}</button>
         </div>
       </form>
     </dialog>
