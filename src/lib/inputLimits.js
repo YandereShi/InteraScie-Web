@@ -1,11 +1,11 @@
 export const limits = {
-  firstname: 50,
-  lastname: 20,
+  firstname: 25,
+  lastname: 15,
   question: 150,
-  choice: 50,
-  username: 50,
-  email: 50,
-  loginpassword: 50,
+  choice: 40,
+  username: 40,
+  email: 30,
+  loginpassword: 40,
   search: 30,
-  section: 30,
+  section: 20,
 };

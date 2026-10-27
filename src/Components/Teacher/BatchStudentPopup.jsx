@@ -1,41 +1,8 @@
 import "../../css/BatchStudentPopup.css";
-import Papa from "papaparse";
 import { useState } from "react";
-import { GetNameError, GetNameKey } from "../../lib/nameValidation";
+import { GetNameError } from "../../lib/nameValidation";
 import { limits } from "../../lib/inputLimits";
-
-function NormalizeName(Value) {
-  return String(Value)
-    .normalize("NFD")
-    .replace(/\p{Diacritic}/gu, "")
-    .toLowerCase()
-    .replace(
-      /[^abcdefghijklmnopqrstuvwxyz0123456789]/g,
-      ""
-    );
-}
-
-function MakeUsername(firstname, lastname, usedusernames) {
-  const cleanfirstname = NormalizeName(firstname);
-  const cleanlastname = NormalizeName(lastname);
-
-  if (!cleanfirstname || !cleanlastname) {
-    return "";
-  }
-
-  const baseusername = `${cleanfirstname}.${cleanlastname}`.slice(0, limits.username);
-  let username = baseusername;
-  let number = 2;
-
-  while (usedusernames.has(username)) {
-    const suffix = String(number);
-    username = `${baseusername.slice(0, limits.username - suffix.length)}${suffix}`;
-    number += 1;
-  }
-
-  usedusernames.add(username);
-  return username;
-}
+import { ReadStudentFile, ValidateStudentBatch } from "../../lib/studentImport";
 
 function BatchStudentPopup({
   Sections,
@@ -50,21 +17,25 @@ function BatchStudentPopup({
   const [FileName, SetFileName] = useState("");
   const [FileError, SetFileError] = useState("");
   const [IsUploading, SetIsUploading] = useState(false);
+  const [IsReading, SetIsReading] = useState(false);
   const [hasresults, SetHasResults] = useState(false);
+  const reviewed = hasresults ? Rows : ValidateStudentBatch(Rows, students);
 
   function HandleDownload() {
     const Anchor = document.createElement("a");
 
-    Anchor.href = "/files/students.csv";
-    Anchor.download = "students.csv";
+    Anchor.href = "/files/students.xlsx";
+    Anchor.download = "students.xlsx";
 
     document.body.append(Anchor);
     Anchor.click();
     Anchor.remove();
   }
 
-  function HandleFile(Event) {
+  async function HandleFile(Event) {
     const SelectedFile = Event.target.files?.[0];
+    Event.target.value = "";
+    if (IsUploading || IsReading) return;
 
     SetRows([]);
     SetFileError("");
@@ -76,96 +47,25 @@ function BatchStudentPopup({
     }
 
     SetFileName(SelectedFile.name);
+    SetIsReading(true);
+    try {
+      SetRows(await ReadStudentFile(SelectedFile));
+    } catch (error) {
+      SetFileError(error.message);
+    } finally {
+      SetIsReading(false);
+    }
+  }
 
-    Papa.parse(SelectedFile, {
-      header: true,
-      skipEmptyLines: "greedy",
-      transformHeader: (Header) => Header.trim(),
-      complete: (Result) => {
-        const Fields = (Result.meta.fields ?? []).slice(0, 2);
-
-        if (
-          !Fields.includes("firstName") ||
-          !Fields.includes("lastName")
-        ) {
-          SetFileError(
-            "The first two CSV columns must be lastName and firstName."
-          );
-          return;
-        }
-
-        const StudentRows = Result.data
-          .map((Student, Index) => ({
-            RowNumber: Index + 2,
-            FirstName: String(Student.firstName ?? "").trim(),
-            LastName: String(Student.lastName ?? "").trim(),
-          }))
-          .filter((Student) => Student.FirstName || Student.LastName);
-
-        if (StudentRows.length === 0) {
-          SetFileError("The CSV does not contain any students.");
-          return;
-        }
-
-        if (StudentRows.length > 50) {
-          SetFileError(
-            "Only 50 students can be uploaded at one time."
-          );
-          return;
-        }
-
-        const usedusernames = new Set(
-          students.map((student) => String(student.username ?? "").trim().toLowerCase())
-        );
-        const usednames = new Set(
-          students.map((student) =>
-            GetNameKey(student.firstName, student.lastName)
-          )
-        );
-
-        const parsedrows = StudentRows.map((student) => {
-          const firstname = student.FirstName;
-          const lastname = student.LastName;
-          const namekey = GetNameKey(firstname, lastname);
-          const nameerror = GetNameError(firstname, lastname);
-          let username = "";
-          let errormessage = "";
-
-          if (!firstname || !lastname) {
-            errormessage = "First name and last name are required.";
-          } else if (nameerror) {
-            errormessage = nameerror;
-          } else if (usednames.has(namekey)) {
-            errormessage = "Duplicate full name.";
-          } else {
-            username = MakeUsername(firstname, lastname, usedusernames);
-
-            if (!username) {
-              errormessage = "The name cannot produce a valid username.";
-            } else {
-              usednames.add(namekey);
-            }
-          }
-
-          return {
-            ...student,
-            Username: username,
-            ErrorMessage: errormessage,
-          };
-        });
-
-        SetRows(parsedrows);
-      },
-      error: () => {
-        SetFileError("Unable to read the CSV file.");
-      },
-    });
+  function EditName(rowNumber, field, value) {
+    SetRows((current) => current.map((row) => row.RowNumber === rowNumber ? { ...row, [field]: value } : row));
+    SetFileError("");
   }
 
   async function HandleSubmit(Event) {
     Event.preventDefault();
 
-    if (IsUploading || hasresults) {
+    if (IsUploading || IsReading || hasresults) {
       return;
     }
 
@@ -175,11 +75,11 @@ function BatchStudentPopup({
     }
 
     if (Rows.length === 0) {
-      SetFileError("Select a CSV file.");
+      SetFileError("Select an Excel (.xlsx) file.");
       return;
     }
 
-    const validrows = Rows.filter((row) =>
+    const validrows = reviewed.filter((row) =>
       !row.ErrorMessage &&
       !GetNameError(row.FirstName, row.LastName)
     );
@@ -204,7 +104,7 @@ function BatchStudentPopup({
       });
 
       if (result.failed?.length > 0) {
-        SetRows(Rows.map((row) => {
+        SetRows(reviewed.map((row) => {
           const index = validrows.findIndex((student) => student.RowNumber === row.RowNumber);
 
           if (index === -1) {
@@ -222,7 +122,7 @@ function BatchStudentPopup({
           };
         }));
         SetHasResults(true);
-        SetFileError("Some students failed. Review the statuses and choose a corrected CSV to try again.");
+        SetFileError("Some students failed. Review the statuses and choose a corrected Excel file to try again.");
       }
     } catch (error) {
       SetFileError(error.message);
@@ -292,26 +192,30 @@ function BatchStudentPopup({
             </button>
 
             <label htmlFor="batchfile">
-              Choose CSV
+              Choose Excel
             </label>
 
             <input
               type="file"
               id="batchfile"
-              accept=".csv,text/csv"
+              accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
               onChange={HandleFile}
-              disabled={IsUploading}
+              disabled={IsUploading || IsReading}
             />
           </div>
 
           {FileName && (
-            <p className="batchfilename">{FileName}</p>
+            <p className="batchfilename">{IsReading ? "Reading..." : FileName}</p>
           )}
 
           {FileError && (
             <p className="batcherror" role="alert">
               {FileError}
             </p>
+          )}
+
+          {Rows.length > 0 && (
+            <p className="batchfilename">Middle initials are ignored. Check the first and last names and correct them before uploading.</p>
           )}
 
           {Rows.length > 0 && (
@@ -328,11 +232,29 @@ function BatchStudentPopup({
                 </thead>
 
                 <tbody>
-                  {Rows.map((Row) => (
-                    <tr key={Row.RowNumber}>
+                  {reviewed.map((Row, index) => (
+                    <tr key={Row.RowNumber} className={!Row.ErrorMessage && Row.status !== "Failed" ? "batchstudentsuccess" : undefined}>
                       <td>{Row.RowNumber}</td>
-                      <td>{Row.FirstName}</td>
-                      <td>{Row.LastName}</td>
+                      <td>
+                        <input
+                          type="text"
+                          value={Rows[index].FirstName}
+                          maxLength={limits.firstname}
+                          aria-label={`First name, row ${Row.RowNumber}`}
+                          disabled={IsUploading || hasresults}
+                          onChange={(event) => EditName(Row.RowNumber, "FirstName", event.target.value)}
+                        />
+                      </td>
+                      <td>
+                        <input
+                          type="text"
+                          value={Rows[index].LastName}
+                          maxLength={limits.lastname}
+                          aria-label={`Last name, row ${Row.RowNumber}`}
+                          disabled={IsUploading || hasresults}
+                          onChange={(event) => EditName(Row.RowNumber, "LastName", event.target.value)}
+                        />
+                      </td>
                       <td>{Row.Username}</td>
                       <td>
                         {Row.ErrorMessage || Row.status || "Ready"}
@@ -357,16 +279,17 @@ function BatchStudentPopup({
               type="submit"
               disabled={
                 IsUploading ||
+                IsReading ||
                 hasresults ||
                 Rows.length === 0 ||
-                Rows.every((row) => row.ErrorMessage)
+                reviewed.every((row) => row.ErrorMessage)
               }
             >
               {IsUploading
                 ? "Uploading..."
                 : hasresults
                   ? "Upload completed"
-                  : `Upload ${Rows.filter((row) => !row.ErrorMessage).length} Students`}
+                  : `Upload ${reviewed.filter((row) => !row.ErrorMessage).length} Students`}
             </button>
           </div>
         </form>

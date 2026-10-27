@@ -79,13 +79,8 @@
 }
 
 .superadminnavlink.active {
-  background-color: #f7fffb;
-  color: #006b3c;
+  background-color: #005f36;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
-}
-
-.superadminnavlink.active .superadminnavicon{
-  color: #006b3c;
 }
 
 .superadminnavicon {

@@ -1,18 +1,23 @@
 import { useEffect, useRef, useState } from "react";
 import { createClient } from "@supabase/supabase-js";
+import { useQueryClient } from "@tanstack/react-query";
 import "../css/StaffProfilePopup.css";
 import { supabase } from "../lib/supabase";
-import { GetStaffPhotoPath } from "../lib/profilePhotos";
+import { GetProfilePhotoQueryKey, GetStaffPhotoPath, SaveProfilePhoto } from "../lib/profilePhotos";
 import profileImage from "../assets/pfp.png";
 import ProfilePhotoEditor from "./ProfilePhotoEditor";
 
 function StaffProfilePopup({ staff, onclose }) {
   const dialog = useRef(null);
+  const queryClient = useQueryClient();
   const [view, SetView] = useState("profile");
   const [loading, SetLoading] = useState(false);
   const [message, SetMessage] = useState("");
   const [status, SetStatus] = useState("");
   const [photoSaving, SetPhotoSaving] = useState(false);
+  const [photoPreparing, SetPhotoPreparing] = useState(false);
+  const [photo, SetPhoto] = useState(null);
+  const photoBusy = photoSaving || photoPreparing;
 
   useEffect(() => {
     const popup = dialog.current;
@@ -21,9 +26,34 @@ function StaffProfilePopup({ staff, onclose }) {
   }, []);
 
   function OpenPassword() {
+    if (photoBusy || loading) return;
     SetMessage("");
     SetStatus("");
     SetView("password");
+  }
+
+  function ChangePhoto(nextPhoto) {
+    SetPhoto(nextPhoto);
+    SetMessage("");
+    SetStatus("");
+  }
+
+  async function SavePhoto() {
+    if (!photo || photoBusy || loading) return;
+
+    SetPhotoSaving(true);
+    SetMessage("");
+
+    try {
+      const path = GetStaffPhotoPath(staff.authUserID);
+      await SaveProfilePhoto(path, photo.file);
+      await queryClient.invalidateQueries({ queryKey: GetProfilePhotoQueryKey(path), exact: true });
+      onclose();
+    } catch (error) {
+      SetMessage(error.message || "Unable to save the photo.");
+    } finally {
+      SetPhotoSaving(false);
+    }
   }
 
   function CancelPassword() {
@@ -102,19 +132,21 @@ function StaffProfilePopup({ staff, onclose }) {
   }
 
   return (
-    <dialog ref={dialog} className="staffprofiledialog" aria-labelledby="staffprofiletitle" onCancel={(event) => { event.preventDefault(); if (!loading && !photoSaving) onclose(); }}>
+    <dialog ref={dialog} className="staffprofiledialog" aria-labelledby="staffprofiletitle" onCancel={(event) => { event.preventDefault(); if (!loading && !photoBusy) onclose(); }}>
       {view === "profile" ? (
         <>
           <h2 id="staffprofiletitle">My Profile</h2>
-          <ProfilePhotoEditor path={GetStaffPhotoPath(staff.authUserID)} fallback={profileImage} alt="Profile photo" imageClassName="staffprofileimage" onBusyChange={SetPhotoSaving} />
+          <ProfilePhotoEditor path={GetStaffPhotoPath(staff.authUserID)} fallback={profileImage} alt="Profile photo" imageClassName="staffprofileimage" photo={photo} onPhotoChange={ChangePhoto} disabled={photoBusy || loading} onBusyChange={SetPhotoPreparing} />
           <div className="staffprofiledetails">
             <div><span>First name</span><strong>{staff.firstName}</strong></div>
             <div><span>Last name</span><strong>{staff.lastName}</strong></div>
           </div>
           {status && <p className="staffprofilestatus" role="status">{status}</p>}
+          {message && <p className="staffprofileerror" role="alert">{message}</p>}
           <div className="staffprofileactions">
-            <button type="button" className="staffprofilesecondary" onClick={onclose} disabled={photoSaving}>Close</button>
-            <button type="button" className="staffprofileprimary" onClick={OpenPassword} disabled={photoSaving}>Change Password</button>
+            <button type="button" className="staffprofilesecondary" onClick={onclose} disabled={photoBusy}>Cancel</button>
+            <button type="button" className="staffprofileprimary" onClick={OpenPassword} disabled={photoBusy}>Change Password</button>
+            <button type="button" className="staffprofileprimary" onClick={SavePhoto} disabled={!photo || photoBusy}>{photoSaving ? "Saving..." : "Save"}</button>
           </div>
         </>
       ) : (

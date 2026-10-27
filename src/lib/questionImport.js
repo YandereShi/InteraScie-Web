@@ -5,6 +5,14 @@ function QuestionKey(text) {
   return String(text ?? "").normalize("NFC").replace(/\s+/g, "").toLowerCase();
 }
 
+export function GetQuestionSaveError(error) {
+  if (error?.code === "23505" && error.message?.includes("Question_assessment_text_unique")) {
+    return "This question already exists in this assessment.";
+  }
+  if (error?.code === "P0001") return error.message || "Unable to validate the question.";
+  return "";
+}
+
 export function GetQuestionError(form, existing = [], currentQuestionID = null, requireAnswer = true) {
   if (form.parseError) return form.parseError;
   const text = form.text.trim();

@@ -11,6 +11,7 @@ import { InvokeStudentManagement } from "../../lib/supabase";
 import { GetStudents, studentQueryKey } from "../../lib/studentQueries";
 import { superAdminDashboardQueryKey, teacherDashboardQueryKey } from "../../lib/dashboardQueries";
 import { PopupContext } from "../../lib/PopupContext";
+import { GetProfilePhotoQueryKey, GetStudentPhotoPath, SaveProfilePhoto } from "../../lib/profilePhotos";
 
 const maxCards = 12;
 
@@ -121,12 +122,24 @@ function Students({ PageComponent = TeacherPage }) {
       sectionID: studentData.sectionID,
     };
 
-    await InvokeStudentManagement(
+    const result = await InvokeStudentManagement(
       selectedStudent ? "update" : "create",
       selectedStudent
         ? { ...payload, studentID: selectedStudent.studentID }
         : payload
     );
+
+    if (studentData.photo) {
+      const path = GetStudentPhotoPath(selectedStudent?.studentID ?? result.studentID);
+
+      try {
+        await SaveProfilePhoto(path, studentData.photo.file);
+        await queryClient.invalidateQueries({ queryKey: GetProfilePhotoQueryKey(path), exact: true });
+      } catch (error) {
+        await RefreshStudents();
+        throw new Error(`Student details were saved, but the photo could not be saved. ${error.message}`, { cause: error });
+      }
+    }
 
     await RefreshStudents();
     setSelectedStudentIDs([]);

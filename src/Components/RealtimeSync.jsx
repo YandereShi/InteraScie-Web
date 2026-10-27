@@ -38,6 +38,11 @@ const schoolStaffQueryNames = new Set([
   "AssessmentOptions",
 ]);
 
+const accuracyQueryNames = new Set([
+  "QuestionAccuracy",
+  "BranchAccuracy",
+]);
+
 function InvalidateQueries(queryClient, queryNames) {
   return queryClient.invalidateQueries({
     predicate: (query) => queryNames.has(query.queryKey[0]),
@@ -101,10 +106,20 @@ function RealtimeSync() {
         },
         (payload) => InvalidateAssessmentScoresQueries(queryClient, payload)
       )
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "StudentAnswer",
+        },
+        () => InvalidateQueries(queryClient, accuracyQueryNames)
+      )
       .subscribe((status) => {
         if (status === "SUBSCRIBED") {
           void InvalidateProgressQueries(queryClient, {});
           void InvalidateAssessmentScoresQueries(queryClient, {});
+          void InvalidateQueries(queryClient, accuracyQueryNames);
         }
       });
 

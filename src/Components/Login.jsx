@@ -5,6 +5,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import ForgotPasswordPopup from "./ForgotPasswordPopup";
 import { limits } from "../lib/inputLimits";
+import { emailPattern, GetEmailError, NormalizeEmail } from "../lib/emailValidation";
 import { supabase } from "../lib/supabase";
 import { GetRememberMe, SaveRememberMe } from "../lib/authStorage";
 import { useNavigate } from "react-router";
@@ -84,8 +85,18 @@ function Login() {
 
     try {
       const FormDataValue = new FormData(event.currentTarget);
-      const Email = String(FormDataValue.get("email"));
+      const Email = NormalizeEmail(FormDataValue.get("email"));
       const Password = String(FormDataValue.get("password"));
+
+      const emailError = GetEmailError(Email);
+      if (emailError) {
+        SetLoginMessage(emailError);
+        return;
+      }
+      if (Password.length > limits.loginpassword) {
+        SetLoginMessage(`Password must be ${limits.loginpassword} characters or fewer.`);
+        return;
+      }
 
       const { data: LoginData, error: LoginError } = await supabase.functions.invoke(
         "teacherlogin",
@@ -197,6 +208,7 @@ function Login() {
                           placeholder="Example@gmail.com"
                           autoComplete="email"
                           maxLength={limits.email}
+                          pattern={emailPattern}
                           required
                         />
 

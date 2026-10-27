@@ -34,6 +34,29 @@ export async function UpdateAssessmentAccess(sectionID, levelID, isAssessmentEna
   });
 }
 
+export async function CreateAssessment(staffID, levelID) {
+  const { data, error } = await supabase
+    .from("Assessment")
+    .insert({ staffID, levelID })
+    .select("assessmentID, levelID")
+    .single();
+
+  if (!error && data) return data;
+
+  if (error?.code === "23505" && error.message?.includes("Assessment_staff_level_unique")) {
+    const existing = await supabase
+      .from("Assessment")
+      .select("assessmentID, levelID")
+      .eq("staffID", staffID)
+      .eq("levelID", levelID)
+      .single();
+
+    if (!existing.error && existing.data) return existing.data;
+  }
+
+  throw new Error("Unable to create the lesson assessment.");
+}
+
 export async function GetAssessmentOptions() {
   const { data: userData, error: userError } =
     await supabase.auth.getUser();

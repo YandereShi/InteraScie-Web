@@ -29,7 +29,7 @@ export async function GetProfilePhotoUrl(path) {
   return data.signedUrl;
 }
 
-async function PrepareProfilePhoto(file) {
+export async function PrepareProfilePhoto(file) {
   if (!allowedTypes.has(file.type)) {
     throw new Error("Choose a JPEG, PNG, or WebP image.");
   }
@@ -85,12 +85,15 @@ async function PrepareProfilePhoto(file) {
   return photo;
 }
 
-export async function SaveProfilePhoto(path, file) {
+export async function SaveProfilePhoto(path, photo) {
   if (!path) {
     throw new Error("Save the account before adding a photo.");
   }
 
-  const photo = await PrepareProfilePhoto(file);
+  if (photo?.type !== "image/jpeg" || !photo.size || photo.size > maxPhotoSize) {
+    throw new Error("Choose a valid profile photo before saving.");
+  }
+
   const { error } = await supabase.storage.from(bucket).upload(path, photo, {
     cacheControl: "0",
     contentType: "image/jpeg",

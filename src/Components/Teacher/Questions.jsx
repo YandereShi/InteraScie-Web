@@ -3,12 +3,12 @@ import { useContext, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { FaLock, FaLockOpen } from "react-icons/fa";
 import { supabase } from "../../lib/supabase";
-import { GetAssessmentAccess, GetAssessmentAccessQueryKey, GetAssessmentOptions, GetAssessmentQuestions, GetAssessmentQuestionsQueryKey, UpdateAssessmentAccess, assessmentOptionsQueryKey } from "../../lib/assessmentQueries";
+import { CreateAssessment, GetAssessmentAccess, GetAssessmentAccessQueryKey, GetAssessmentOptions, GetAssessmentQuestions, GetAssessmentQuestionsQueryKey, UpdateAssessmentAccess, assessmentOptionsQueryKey } from "../../lib/assessmentQueries";
 import { teacherDashboardQueryKey } from "../../lib/dashboardQueries";
 import QuestionCard from "./QuestionCard";
 import QuestionPopup from "./QuestionPopup";
 import BatchQuestionPopup from "./BatchQuestionPopup";
-import { GetQuestionError, QuestionPayload, ValidateQuestionBatch } from "../../lib/questionImport";
+import { GetQuestionError, GetQuestionSaveError, QuestionPayload, ValidateQuestionBatch } from "../../lib/questionImport";
 import { PopupContext } from "../../lib/PopupContext";
 import { GetBranches } from "../../lib/branches";
 
@@ -31,6 +31,7 @@ function Questions({ sectionID, sectionName, onBack }) {
   const [open, setOpen] = useState(false);
   const [batchOpen, setBatchOpen] = useState(false);
   const [actionError, setActionError] = useState("");
+  const [deleting, setDeleting] = useState(false);
 
   const optionsQuery = useQuery({
     queryKey: assessmentOptionsQueryKey,
@@ -226,6 +227,10 @@ function Questions({ sectionID, sectionName, onBack }) {
       queryClient.invalidateQueries({
         queryKey: teacherDashboardQueryKey,
       }),
+      queryClient.invalidateQueries({ queryKey: ["AssessmentScores"] }),
+      queryClient.invalidateQueries({ queryKey: ["TeacherRadar"] }),
+      queryClient.invalidateQueries({ queryKey: ["QuestionAccuracy"] }),
+      queryClient.invalidateQueries({ queryKey: ["BranchAccuracy"] }),
     ]);
   }
 
@@ -247,20 +252,7 @@ function Questions({ sectionID, sectionName, onBack }) {
     let activeTest = fresh.test;
 
     if (!activeTest) {
-      const { data, error: testError } = await supabase
-        .from("Assessment")
-        .insert({
-          staffID,
-          levelID,
-        })
-        .select("assessmentID, levelID")
-        .single();
-
-      if (testError) {
-        throw new Error("Unable to create the lesson assessment.");
-      }
-
-      activeTest = data;
+      activeTest = await CreateAssessment(staffID, levelID);
       queryClient.setQueryData(questionQueryKey, { ...fresh, test: activeTest });
     }
 
@@ -274,7 +266,7 @@ function Questions({ sectionID, sectionName, onBack }) {
       : await supabase.from("Question").insert(payload);
 
     if (result.error) {
-      throw new Error("Unable to save the question.");
+      throw new Error(GetQuestionSaveError(result.error) || "Unable to save the question.");
     }
 
     await RefreshQuestions();
@@ -294,30 +286,54 @@ function Questions({ sectionID, sectionName, onBack }) {
 
     let activeTest = fresh.test;
     if (!activeTest) {
-      const result = await supabase.from("Assessment")
-        .insert({ staffID, levelID })
-        .select("assessmentID, levelID")
-        .single();
-      if (result.error) throw new Error("Unable to create the lesson assessment.");
-      activeTest = result.data;
+      activeTest = await CreateAssessment(staffID, levelID);
       queryClient.setQueryData(questionQueryKey, { ...fresh, test: activeTest });
     }
 
     const result = await supabase.from("Question")
       .insert(valid.map((row) => QuestionPayload(row, activeTest.assessmentID)))
       .select("questionID, assessmentID, text, answer, choice1, choice2, choice3");
-    if (result.error) throw new Error("Unable to confirm the upload. Check your connection and try again. Existing questions will be checked before saving.");
+    const savedQuestions = result.data ?? [];
+    let resultRows = reviewed.map((row) => ({ ...row, saved: !row.error }));
+
+    if (result.error) {
+      if (!GetQuestionSaveError(result.error)) {
+        throw new Error("Unable to confirm the upload. Check your connection and try again. Existing questions will be checked before saving.");
+      }
+
+      resultRows = [];
+      for (const row of reviewed) {
+        if (row.error) {
+          resultRows.push({ ...row, saved: false });
+          continue;
+        }
+
+        const saved = await supabase.from("Question")
+          .insert(QuestionPayload(row, activeTest.assessmentID))
+          .select("questionID, assessmentID, text, answer, choice1, choice2, choice3")
+          .single();
+
+        if (saved.error) {
+          const message = GetQuestionSaveError(saved.error);
+          if (!message) {
+            await RefreshQuestions();
+            throw new Error("Unable to confirm every upload. Some questions may already be saved. Check your connection and try again.");
+          }
+          resultRows.push({ ...row, error: message, saved: false });
+        } else {
+          savedQuestions.push(saved.data);
+          resultRows.push({ ...row, saved: true });
+        }
+      }
+    }
 
     queryClient.setQueryData(questionQueryKey, {
       test: activeTest,
-      questions: [...fresh.questions, ...result.data],
+      questions: [...fresh.questions, ...savedQuestions],
     });
     setSelected([]);
-    await Promise.all([
-      RefreshQuestions(),
-      queryClient.invalidateQueries({ queryKey: ["AssessmentScores"] }),
-    ]);
-    return { saved: valid.length, rows: reviewed.map((row) => ({ ...row, saved: !row.error })) };
+    await RefreshQuestions();
+    return { saved: savedQuestions.length, rows: resultRows };
   }
 
   function SelectOne(questionID, isChecked) {
@@ -347,32 +363,48 @@ function Questions({ sectionID, sectionName, onBack }) {
   }
 
   async function DeleteQuestions() {
-    if (selected.length === 0) {
+    if (selected.length === 0 || deleting || loading || queryError || accessMutation.isPending) {
       return;
     }
 
-    const confirmed = await ShowConfirmation(
-      "Are you sure you want to delete the selected questions?",
-      true
-    );
+    setDeleting(true);
+    setActionError("");
 
-    if (!confirmed) {
-      return;
+    try {
+      const confirmed = await ShowConfirmation(
+        "Deleting the selected questions will close this assessment in all your sections. Continue?",
+        true
+      );
+
+      if (!confirmed) return;
+
+      const { error: deleteError } = await supabase
+        .from("Question")
+        .delete()
+        .eq("assessmentID", questionData.test.assessmentID)
+        .in("questionID", selected);
+
+      if (deleteError) {
+        const message = deleteError.code === "23503"
+          ? "One or more selected questions have student answers and cannot be deleted."
+          : GetQuestionSaveError(deleteError);
+        if (message) await ShowConfirmation(message);
+        else setActionError("Unable to delete the selected questions.");
+        return;
+      }
+
+      await Promise.all([
+        RefreshQuestions(),
+        queryClient.invalidateQueries({ queryKey: ["AssessmentAccess"] }),
+        queryClient.invalidateQueries({ queryKey: ["LessonAccess"] }),
+      ]);
+      setSelected([]);
+      setPage(1);
+    } catch (deleteError) {
+      setActionError(deleteError.message || "Unable to delete the selected questions.");
+    } finally {
+      setDeleting(false);
     }
-
-    const { error: deleteError } = await supabase
-      .from("Question")
-      .delete()
-      .in("questionID", selected);
-
-    if (deleteError) {
-      setActionError("Unable to delete the selected questions.");
-      return;
-    }
-
-    await RefreshQuestions();
-    setSelected([]);
-    setPage(1);
   }
 
   const pages = Math.max(
@@ -407,7 +439,7 @@ function Questions({ sectionID, sectionName, onBack }) {
             value={branch}
             onChange={PickBranch}
             aria-label="Question branch"
-            disabled={branches.length === 0}
+            disabled={branches.length === 0 || deleting}
           >
             {branches.length === 0 && (
               <option value="">No branches</option>
@@ -424,7 +456,7 @@ function Questions({ sectionID, sectionName, onBack }) {
             value={lesson}
             onChange={PickLesson}
             aria-label="Question lesson"
-            disabled={lessons.length === 0}
+            disabled={lessons.length === 0 || deleting}
           >
             {lessons.length === 0 && (
               <option value="">No lessons</option>
@@ -446,6 +478,7 @@ function Questions({ sectionID, sectionName, onBack }) {
                 loading ||
                 !sectionID ||
                 !levelID ||
+                deleting ||
                 accessMutation.isPending
               }
               onChange={ToggleAssessmentAccess}
@@ -480,10 +513,10 @@ function Questions({ sectionID, sectionName, onBack }) {
             <button
               type="button"
               className="questiondelete"
-              disabled={selected.length === 0}
+              disabled={selected.length === 0 || deleting || loading || Boolean(queryError)}
               onClick={DeleteQuestions}
             >
-              Delete Selected
+              {deleting ? "Processing..." : "Delete Selected"}
             </button>
           </div>
         </div>

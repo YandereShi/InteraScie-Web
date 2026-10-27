@@ -16,6 +16,13 @@
   object-fit: cover;
 }
 
+.staffprofiletrigger img,
+.staffmobileprofilebutton img {
+  box-shadow:
+    0 0 0 4px color-mix(in srgb, #ffffff 15%, transparent),
+    0 8px 18px color-mix(in srgb, #000000 20%, transparent);
+}
+
 .staffprofiletrigger:focus-visible,
 .staffmobileprofilebutton:focus-visible {
   outline: 3px solid #ffffff;
@@ -103,6 +110,7 @@
 
 .staffprofileactions {
   display: flex;
+  flex-wrap: wrap;
   justify-content: flex-end;
   gap: 10px;
   margin-top: 24px;

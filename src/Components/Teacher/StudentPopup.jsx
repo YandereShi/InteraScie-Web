@@ -14,7 +14,7 @@ function MakeDefaultPassword(firstName, lastName) {
     return "firstname_lastname";
   }
 
-  return `${cleanFirstName}_${cleanLastName}`;
+  return `${cleanFirstName}_${cleanLastName}`.padEnd(6, "0");
 }
 
 function StudentPopup({
@@ -48,6 +48,7 @@ function StudentPopup({
   const [saveError, setSaveError] = useState("");
   const [resetting, setResetting] = useState(false);
   const [photoSaving, SetPhotoSaving] = useState(false);
+  const [photo, SetPhoto] = useState(null);
   const defaultPassword = MakeDefaultPassword(firstName, lastName);
 
   async function resetPassword() {
@@ -76,6 +77,7 @@ function StudentPopup({
 
   async function HandleSubmit(event) {
     event.preventDefault();
+    if (saving || resetting || photoSaving) return;
 
     const nameerror = GetNameError(firstName, lastName);
 
@@ -99,6 +101,7 @@ function StudentPopup({
         lastName,
         username,
         sectionID: Number(sectionID),
+        photo,
       });
     } catch (error) {
       console.error(error.message);
@@ -137,7 +140,7 @@ function StudentPopup({
           className="studentpopupcontent"
           onSubmit={HandleSubmit}
         >
-          <ProfilePhotoEditor path={GetStudentPhotoPath(student?.studentID)} fallback={studentImage} alt="Student photo" imageClassName="studentpopupimage" onBusyChange={SetPhotoSaving} />
+          <ProfilePhotoEditor path={GetStudentPhotoPath(student?.studentID)} fallback={studentImage} alt="Student photo" imageClassName="studentpopupimage" photo={photo} onPhotoChange={SetPhoto} disabled={saving || resetting || photoSaving} onBusyChange={SetPhotoSaving} />
 
           <div className="studentpopupform">
             <label htmlFor="studentfirstname">

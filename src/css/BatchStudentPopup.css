@@ -119,6 +119,24 @@
     color: #ffffff;
 }
 
+.batchpreview input {
+    width: 100%;
+    min-width: 140px;
+    padding: .5rem;
+    border: 1px solid #cccccc;
+    border-radius: 4px;
+    font: inherit;
+}
+
+.batchpreview .batchstudentsuccess td {
+    background-color: #00bf63;
+    color: #000000;
+}
+
+.batchpreview .batchstudentsuccess input {
+    color: #000000;
+}
+
 .batchactions {
     display: flex;
     justify-content: flex-end;

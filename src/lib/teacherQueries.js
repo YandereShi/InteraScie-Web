@@ -1,4 +1,5 @@
 import { supabase } from "./supabase";
+import { GetEmailError, NormalizeEmail } from "./emailValidation.js";
 
 export const teachersQueryKey = ["Teachers"];
 
@@ -47,7 +48,10 @@ export async function GetTeachers() {
 }
 
 export async function CreateTeacher(teacherData) {
-  return InvokeTeacherManagement("CreateTeacher", teacherData);
+  const email = NormalizeEmail(teacherData.email);
+  const error = GetEmailError(email);
+  if (error) throw new Error(error);
+  return InvokeTeacherManagement("CreateTeacher", { ...teacherData, email });
 }
 
 export async function UpdateTeacher(staffID, firstName, lastName, sectionIDs) {

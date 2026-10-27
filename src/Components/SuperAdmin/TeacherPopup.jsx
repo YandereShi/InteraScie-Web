@@ -3,6 +3,7 @@ import { useState } from "react";
 import teacherImage from "../../assets/pfp.png";
 import { GetNameError } from "../../lib/nameValidation";
 import { limits } from "../../lib/inputLimits";
+import { emailPattern, GetEmailError, NormalizeEmail } from "../../lib/emailValidation";
 
 function TeacherPopup({ sections, onClose, onSave }) {
     const [firstName, setFirstName] = useState("");
@@ -47,8 +48,9 @@ function TeacherPopup({ sections, onClose, onSave }) {
             return;
         }
 
-        if (email.trim().length > limits.email) {
-            setSaveError(`Email must be ${limits.email} characters or fewer.`);
+        const emailError = GetEmailError(email);
+        if (emailError) {
+            setSaveError(emailError);
             return;
         }
 
@@ -59,7 +61,7 @@ function TeacherPopup({ sections, onClose, onSave }) {
             await onSave({
                 firstName: firstName.trim(),
                 lastName: lastName.trim(),
-                email: email.trim().toLowerCase(),
+                email: NormalizeEmail(email),
                 sectionIDs,
             });
         } catch (error) {
@@ -145,6 +147,7 @@ function TeacherPopup({ sections, onClose, onSave }) {
                             type="email"
                             id="teacheremail"
                             maxLength={limits.email}
+                            pattern={emailPattern}
                             value={email}
                             onChange={(event) =>
                                 setEmail(event.target.value)

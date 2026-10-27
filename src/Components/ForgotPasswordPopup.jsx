@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { supabase } from "../lib/supabase";
 import { limits } from "../lib/inputLimits";
+import { emailPattern, GetEmailError, NormalizeEmail } from "../lib/emailValidation";
 import "../css/PasswordRecovery.css";
 
 function ForgotPasswordPopup({ onclose }) {
@@ -19,7 +20,12 @@ function ForgotPasswordPopup({ onclose }) {
     event.preventDefault();
     if (loading || sent) return;
     const values = new FormData(event.currentTarget);
-    const email = String(values.get("email")).trim();
+    const email = NormalizeEmail(values.get("email"));
+    const emailError = GetEmailError(email);
+    if (emailError) {
+      SetMessage(emailError);
+      return;
+    }
     SetLoading(true);
     SetMessage("");
 
@@ -54,7 +60,7 @@ function ForgotPasswordPopup({ onclose }) {
         <form onSubmit={SendResetLink}>
           <p>Enter the email registered to your staff account.</p>
           <label htmlFor="recoveryemail">Account email</label>
-          <input id="recoveryemail" name="email" type="email" autoComplete="email" maxLength={limits.email} required disabled={loading} />
+          <input id="recoveryemail" name="email" type="email" autoComplete="email" maxLength={limits.email} pattern={emailPattern} required disabled={loading} />
           {message && <p className="recoveryerror" role="alert">{message}</p>}
           <button className="recoveryprimary" type="submit" disabled={loading}>{loading ? "Sending..." : "Send reset link"}</button>
           <button className="recoverysecondary" type="button" onClick={onclose} disabled={loading}>Cancel</button>
