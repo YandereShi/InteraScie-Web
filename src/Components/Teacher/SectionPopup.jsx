@@ -18,6 +18,11 @@ function SectionPopup({ onClose, onCreate }) {
       return;
     }
 
+    if (!/[\p{L}\p{N}]/u.test(cleanName)) {
+      setError("Section name must contain at least one letter or number.");
+      return;
+    }
+
     if (IsReservedSectionName(cleanName)) {
       setError("No Section is reserved and cannot be created.");
       return;

@@ -10,6 +10,7 @@ import QuestionPopup from "./QuestionPopup";
 import BatchQuestionPopup from "./BatchQuestionPopup";
 import { GetQuestionError, QuestionPayload, ValidateQuestionBatch } from "../../lib/questionImport";
 import { PopupContext } from "../../lib/PopupContext";
+import { GetBranches } from "../../lib/branches";
 
 const maxQuestions = 15;
 const maxCards = 6;
@@ -17,26 +18,6 @@ const emptyQuestions = {
   test: null,
   questions: [],
 };
-
-function GetBranches(levels) {
-  return [
-    ...new Set(
-      levels
-        .map((item) => item.branchName)
-        .filter(Boolean)
-    ),
-  ].sort((first, second) => {
-    if (first === "Chemistry") {
-      return -1;
-    }
-
-    if (second === "Chemistry") {
-      return 1;
-    }
-
-    return first.localeCompare(second);
-  });
-}
 
 function Questions({ sectionID, sectionName, onBack }) {
   const { ShowConfirmation } = useContext(PopupContext);

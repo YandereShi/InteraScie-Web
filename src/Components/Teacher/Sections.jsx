@@ -362,6 +362,10 @@ function Sections({ PageComponent = TeacherPage }) {
   }
 
   async function CreateSection(name) {
+    if (!/[\p{L}\p{N}]/u.test(name)) {
+      throw new Error("Section name must contain at least one letter or number.");
+    }
+
     if (IsReservedSectionName(name)) {
       throw new Error("No Section is reserved and cannot be created.");
     }

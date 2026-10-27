@@ -44,7 +44,7 @@
 }
 
 .assessmenttable col {
-  width: 16%;
+  width: calc(48% / var(--assessment-lesson-count, 3));
 }
 
 .assessmenttable .assessmentname {
@@ -276,7 +276,7 @@
   }
 
   .assessmenttable col {
-    width: 20%;
+    width: calc(60% / var(--assessment-lesson-count, 3));
   }
 
   .assessmenttable .assessmentname {

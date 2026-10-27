@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { GetAssessmentOptions, assessmentOptionsQueryKey } from "../../lib/assessmentQueries";
 import { GetQuestionAccuracy, GetQuestionAccuracyQueryKey } from "../../lib/questionAccuracyQueries";
+import { GetBranches } from "../../lib/branches";
 
 function QuestionAccuracyPopup({ initialBranch, onClose: OnClose }) {
   const [branch, setBranch] = useState(initialBranch);
@@ -19,7 +20,7 @@ function QuestionAccuracyPopup({ initialBranch, onClose: OnClose }) {
   const selectedSection = section === "all" || sections.some((item) => String(item.sectionID) === section)
     ? section
     : "all";
-  const branches = [...new Set(levels.map((level) => level.branchName).filter(Boolean))];
+  const branches = GetBranches(levels);
   const selectedBranch = branches.includes(branch) ? branch : branches[0] ?? "";
   const branchLevels = levels
     .filter((level) => level.branchName === selectedBranch)

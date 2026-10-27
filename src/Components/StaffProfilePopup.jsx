@@ -41,6 +41,10 @@ function StaffProfilePopup({ staff, onclose }) {
     const newPassword = String(values.get("newPassword"));
     const confirmPassword = String(values.get("confirmPassword"));
 
+    if (!newPassword.trim()) {
+      SetMessage("Password cannot contain only spaces.");
+      return;
+    }
     if (newPassword.length < 8 || newPassword.length > 16) {
       SetMessage("Use 8–16 characters for your new password.");
       return;

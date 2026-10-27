@@ -8,6 +8,7 @@ import { GetProgressOptions, UpdateLessonAccess } from "../../lib/progressQuerie
 import { GetLessonAccessOptions, GetSectionProgressOptions, PrefetchProgress, progressLessonCount } from "../../lib/progressCache";
 import { GetPageSelection, SavePageSelection } from "../../lib/pageSelection";
 import { GetStudentPhotoPath } from "../../lib/profilePhotos";
+import { GetBranches } from "../../lib/branches";
 import studentImage from "../../assets/pfp.png";
 import ProfilePhoto from "../ProfilePhoto";
 import TeacherPage from "./TeacherPage";
@@ -50,6 +51,14 @@ const taskHeadings = {
     "Conduction",
     "Convection & Radiation",
   ],
+  Earth: [
+    "Faults",
+    "Earthquake",
+    "Tsunami",
+    "Solar Energy",
+    "Roles and Earth Tilt",
+    "Weather Patterns",
+  ],
 };
 
 function Progress() {
@@ -76,25 +85,7 @@ function Progress() {
   const levels =
     optionsQuery.data?.levels ?? emptyList;
 
-  const branches = useMemo(() => {
-    return [
-      ...new Set(
-        levels
-          .map((item) => item.branchName)
-          .filter(Boolean)
-      ),
-    ].sort((first, second) => {
-      if (first === "Chemistry") {
-        return -1;
-      }
-
-      if (second === "Chemistry") {
-        return 1;
-      }
-
-      return first.localeCompare(second);
-    });
-  }, [levels]);
+  const branches = useMemo(() => GetBranches(levels), [levels]);
 
   const section = sections.some(
     (item) =>
@@ -110,14 +101,17 @@ function Progress() {
     ? selectedBranch
     : branches[0] ?? "";
 
+  const lessonCount = branch === "Earth" ? 2 : maxLessons;
+  const taskCount = lessonCount * maxTasks;
+
   const lessons = useMemo(() => {
     return levels
       .filter(
         (item) =>
           item.branchName === branch
       )
-      .slice(0, maxLessons);
-  }, [branch, levels]);
+      .slice(0, lessonCount);
+  }, [branch, levels, lessonCount]);
 
   const lessonIDs = useMemo(() => {
     return lessons.map(
@@ -440,14 +434,14 @@ function Progress() {
         </div>
 
         <div className="progressbox">
-          <table className="progresstable">
+          <table className="progresstable" style={{ "--progress-task-count": taskCount }}>
             <colgroup>
               <col className="progressname" />
 
               {Array.from(
                 {
                   length:
-                    maxLessons * maxTasks,
+                    taskCount,
                 },
                 (_, index) => (
                   <col key={index} />
@@ -485,7 +479,7 @@ function Progress() {
                 </th>
 
                 {Array.from(
-                  { length: maxLessons },
+                  { length: lessonCount },
                   (_, index) => (
                     <th
                       colSpan={maxTasks}
@@ -560,7 +554,7 @@ function Progress() {
               {loading && (
                 <tr>
                   <td
-                    colSpan="10"
+                    colSpan={taskCount + 1}
                     className="progressnote"
                   >
                     Loading progress...
@@ -571,7 +565,7 @@ function Progress() {
               {!loading && error && (
                 <tr>
                   <td
-                    colSpan="10"
+                    colSpan={taskCount + 1}
                     className="progressnote"
                   >
                     {error}
@@ -584,7 +578,7 @@ function Progress() {
                 shown.length === 0 && (
                   <tr>
                     <td
-                      colSpan="10"
+                      colSpan={taskCount + 1}
                       className="progressnote"
                     >
                       No students found.
@@ -611,7 +605,7 @@ function Progress() {
                     </td>
 
                     {Array.from(
-                      { length: maxLessons },
+                      { length: lessonCount },
                       (_, lessonIndex) => {
                         const lesson =
                           lessons[lessonIndex];
@@ -650,8 +644,7 @@ function Progress() {
                       {Array.from(
                         {
                           length:
-                            maxLessons *
-                            maxTasks,
+                            taskCount,
                         },
                         (_, cellIndex) => (
                           <td

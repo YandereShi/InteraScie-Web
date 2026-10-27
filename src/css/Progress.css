@@ -52,7 +52,7 @@
 }
 
 .progresstable col {
-  width: 8.22%;
+  width: calc(75% / var(--progress-task-count, 9));
 }
 
 .progresstable .progressname {
@@ -322,7 +322,7 @@
   }
 
   .progresstable col {
-    width: 9.22%;
+    width: calc(83% / var(--progress-task-count, 9));
   }
 
   .progresstable .progressname {

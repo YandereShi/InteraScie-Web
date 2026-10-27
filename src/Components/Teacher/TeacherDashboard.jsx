@@ -251,7 +251,7 @@ function TeacherDashboard() {
               <option value="Chemistry">Chemistry</option>
               <option value="Biology">Biology</option>
               <option value="Physics">Physics</option>
-              <option value="Earth">Earth Science</option>
+              <option value="Earth">Earth</option>
             </select>
           </div>
 

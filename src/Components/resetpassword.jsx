@@ -78,6 +78,10 @@ function ResetPassword() {
     const values = new FormData(event.currentTarget);
     const password = String(values.get("password"));
     const confirmation = String(values.get("confirmation"));
+    if (!password.trim()) {
+      SetMessage("Password cannot contain only spaces.");
+      return;
+    }
     if (password.length < 8 || password.length > 16) {
       SetMessage("Use 8–16 characters for your new password.");
       return;

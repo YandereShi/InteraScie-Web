@@ -10,6 +10,7 @@ import ProfilePhoto from "../ProfilePhoto";
 import Questions from "./Questions";
 import TeacherPage from "./TeacherPage";
 import { GetPageSelection, SavePageSelection } from "../../lib/pageSelection";
+import { GetBranches } from "../../lib/branches";
 
 const maxRows = 10;
 const maxLessons = assessmentLessonCount;
@@ -20,26 +21,6 @@ const emptyScores = {
   tests: [],
   scores: [],
 };
-
-function GetBranches(levels) {
-  return [
-    ...new Set(
-      levels
-        .map((item) => item.branchName)
-        .filter(Boolean)
-    ),
-  ].sort((first, second) => {
-    if (first === "Chemistry") {
-      return -1;
-    }
-
-    if (second === "Chemistry") {
-      return 1;
-    }
-
-    return first.localeCompare(second);
-  });
-}
 
 function Assessments() {
   const { teacher } = useOutletContext();
@@ -69,13 +50,14 @@ function Assessments() {
   const branch = branches.includes(selectedBranch)
     ? selectedBranch
     : branches[0] ?? "";
+  const lessonCount = branch === "Earth" ? 2 : maxLessons;
   const sectionID = Number(section) || 0;
   const sectionName = sections.find(
     (item) => item.sectionID === sectionID
   )?.sectionName ?? "";
   const lessons = levels
     .filter((item) => item.branchName === branch)
-    .slice(0, maxLessons);
+    .slice(0, lessonCount);
   const lessonIDs = lessons.map((item) => item.levelID);
   const scoresQuery = useQuery({
     ...GetAssessmentScoresOptions(sectionID, staffID, branch, lessonIDs),
@@ -147,8 +129,8 @@ function Assessments() {
   }
 
   function GetTotal(studentID) {
-    if (lessons.length < maxLessons) {
-      return `--/${maxScore * maxLessons}`;
+    if (lessons.length < lessonCount) {
+      return `--/${maxScore * lessonCount}`;
     }
 
     const values = lessons.map((lesson) => {
@@ -162,7 +144,7 @@ function Assessments() {
     });
 
     if (values.some((value) => value === null)) {
-      return `--/${maxScore * maxLessons}`;
+      return `--/${maxScore * lessonCount}`;
     }
 
     const total = values.reduce(
@@ -170,7 +152,7 @@ function Assessments() {
       0
     );
 
-    return `${total}/${maxScore * maxLessons}`;
+    return `${total}/${maxScore * lessonCount}`;
   }
 
   function GetValue(student, key) {
@@ -191,7 +173,7 @@ function Assessments() {
 
     if (key === "total") {
       if (
-        values.length < maxLessons ||
+        values.length < lessonCount ||
         values.some((value) => value === null)
       ) {
         return null;
@@ -277,12 +259,12 @@ function Assessments() {
           </div>
 
           <div className="assessmentbox">
-            <table className="assessmenttable">
+            <table className="assessmenttable" style={{ "--assessment-lesson-count": lessonCount }}>
               <colgroup>
                 <col className="assessmentname" />
-                <col />
-                <col />
-                <col />
+                {Array.from({ length: lessonCount }, (_, index) => (
+                  <col key={index} />
+                ))}
                 <col className="assessmenttotal" />
               </colgroup>
 
@@ -311,7 +293,7 @@ function Assessments() {
                   </th>
 
                   {Array.from(
-                    { length: maxLessons },
+                    { length: lessonCount },
                     (_, index) => (
                       <th key={index}>
                         {lessons[index]?.levelName ||
@@ -356,7 +338,7 @@ function Assessments() {
                   </th>
 
                   {Array.from(
-                    { length: maxLessons },
+                    { length: lessonCount },
                     (_, index) => (
                       <th key={index}>
                         <button
@@ -387,7 +369,7 @@ function Assessments() {
               <tbody>
                 {loading && (
                   <tr>
-                    <td colSpan="5" className="assessmentnote">
+                    <td colSpan={lessonCount + 2} className="assessmentnote">
                       Loading assessment scores...
                     </td>
                   </tr>
@@ -395,7 +377,7 @@ function Assessments() {
 
                 {!loading && error && (
                   <tr>
-                    <td colSpan="5" className="assessmentnote">
+                    <td colSpan={lessonCount + 2} className="assessmentnote">
                       {error}
                     </td>
                   </tr>
@@ -403,7 +385,7 @@ function Assessments() {
 
                 {!loading && !error && shown.length === 0 && (
                   <tr>
-                    <td colSpan="5" className="assessmentnote">
+                    <td colSpan={lessonCount + 2} className="assessmentnote">
                       No students found.
                     </td>
                   </tr>
@@ -428,7 +410,7 @@ function Assessments() {
                       </td>
 
                       {Array.from(
-                        { length: maxLessons },
+                        { length: lessonCount },
                         (_, index) => {
                           const lesson = lessons[index];
                           const test = lesson
@@ -466,9 +448,9 @@ function Assessments() {
                       key={`empty${index}`}
                     >
                       <td>&nbsp;</td>
-                      <td></td>
-                      <td></td>
-                      <td></td>
+                      {Array.from({ length: lessonCount }, (_, lessonIndex) => (
+                        <td key={lessonIndex}></td>
+                      ))}
                       <td></td>
                     </tr>
                   ))}
