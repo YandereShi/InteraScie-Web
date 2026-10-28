@@ -5,16 +5,18 @@ import { NavLink } from "react-router";
 import { FaChalkboardTeacher, FaHome } from "react-icons/fa";
 import { FaPeopleGroup } from "react-icons/fa6";
 import { IoPerson } from "react-icons/io5";
-import { useState } from "react";
+import { useContext, useState } from "react";
+import { PopupContext } from "../../lib/PopupContext";
 import StaffProfilePopup from "../StaffProfilePopup";
 import ProfilePhoto from "../ProfilePhoto";
 import { GetStaffPhotoPath } from "../../lib/profilePhotos";
 
 function SuperAdminSidebar({ superadmin }) {
+    const { actionPending } = useContext(PopupContext);
     const [profileOpen, SetProfileOpen] = useState(false);
 
     return (
-        <aside className="superadminsidebar">
+        <aside className="superadminsidebar" inert={actionPending} aria-busy={actionPending}>
             <img
                 className="superadminlogo"
                 src={InteraScie}

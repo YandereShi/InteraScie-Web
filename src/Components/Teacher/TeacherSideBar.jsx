@@ -6,16 +6,18 @@ import { FaHome, FaPen } from "react-icons/fa";
 import { FaPeopleGroup } from "react-icons/fa6";
 import { IoPerson } from "react-icons/io5";
 import { TbProgressCheck } from "react-icons/tb";
-import { useState } from "react";
+import { useContext, useState } from "react";
+import { PopupContext } from "../../lib/PopupContext";
 import StaffProfilePopup from "../StaffProfilePopup";
 import ProfilePhoto from "../ProfilePhoto";
 import { GetStaffPhotoPath } from "../../lib/profilePhotos";
 
 function TeacherSidebar({ teacher }) {
+    const { actionPending } = useContext(PopupContext);
     const [profileOpen, SetProfileOpen] = useState(false);
 
     return (
-        <aside className="teachersidebar">
+        <aside className="teachersidebar" inert={actionPending} aria-busy={actionPending}>
             <img src={InteraScie} alt="InteraScie Logo" id="interascielogo" />
             <button type="button" className="staffprofiletrigger" aria-label="Open my profile" onClick={() => SetProfileOpen(true)}>
                 <ProfilePhoto path={GetStaffPhotoPath(teacher.authUserID)} fallback={teacherPfp} alt="" id="teacherpfp" />

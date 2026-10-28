@@ -4,17 +4,18 @@ import AddPopup from "./AddPopup";
 import BatchStudentPopup from "./BatchStudentPopup";
 import SectionPopup from "./SectionPopup";
 import SectionStudentCard from "./SectionStudentCard";
-import { useContext, useState } from "react";
+import { useContext, useRef, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useOutletContext } from "react-router";
 import { limits } from "../../lib/inputLimits";
 import { InvokeStudentManagement } from "../../lib/supabase";
 import { DeleteSection, GetNoSectionStudents, GetSections, GetSectionStudents, GetSectionStudentsQueryKey, IsReservedSectionName, noSectionStudentsQueryKey, sectionsQueryKey } from "../../lib/sectionQueries";
-import { superAdminDashboardQueryKey, teacherDashboardQueryKey } from "../../lib/dashboardQueries";
+import { InvalidateSectionQueries, InvalidateStudentQueries } from "../../lib/studentCache";
 import { PopupContext } from "../../lib/PopupContext";
 import { GetStudents, studentQueryKey } from "../../lib/studentQueries";
 import { GetPageSelection, SavePageSelection } from "../../lib/pageSelection";
 import { NormalizeName } from "../../lib/nameValidation";
+import { useActionPending } from "../../lib/useActionPending";
 
 const maxRows = 15;
 
@@ -32,6 +33,9 @@ function Sections({ PageComponent = TeacherPage }) {
   const [batchStudents, setBatchStudents] = useState([]);
   const [createOpen, setCreateOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [moving, setMoving] = useState(false);
+  const actionPending = useRef(false);
+  useActionPending(deleting || moving);
 
   const sectionsQuery = useQuery({
     queryKey: sectionsQueryKey,
@@ -86,35 +90,6 @@ function Sections({ PageComponent = TeacherPage }) {
       : noSectionStudentsQuery.error
         ? "Unable to load No Section students."
         : "";
-
-  async function RefreshSections() {
-    await queryClient.invalidateQueries({
-      queryKey: sectionsQueryKey,
-      exact: true,
-    });
-  }
-
-  async function RefreshSectionStudents() {
-    if (!sectionID) {
-      return;
-    }
-
-    await queryClient.invalidateQueries({
-      queryKey: GetSectionStudentsQueryKey(sectionID),
-      exact: true,
-    });
-  }
-
-  async function RefreshDashboards() {
-    await Promise.all([
-      queryClient.invalidateQueries({
-        queryKey: teacherDashboardQueryKey,
-      }),
-      queryClient.invalidateQueries({
-        queryKey: superAdminDashboardQueryKey,
-      }),
-    ]);
-  }
 
   function PickSection(event) {
     const value = event.target.value;
@@ -179,6 +154,8 @@ function Sections({ PageComponent = TeacherPage }) {
   }
 
   async function RemoveStudents() {
+    if (actionPending.current) return;
+
     if (selected.length === 0) {
       await ShowConfirmation("Please select at least one student.");
       return;
@@ -189,53 +166,49 @@ function Sections({ PageComponent = TeacherPage }) {
       .filter((student) => studentIDs.includes(student.studentID))
       .map((student) => `${student.lastName}, ${student.firstName}`);
 
-    const confirmed = await ShowConfirmation(
-      "Move the selected students to No Section?",
-      false,
-      selectedNames
-    );
-
-    if (!confirmed) {
-      return;
-    }
+    actionPending.current = true;
+    setMoving(true);
 
     try {
+      const confirmed = await ShowConfirmation(
+        "Move the selected students to No Section?",
+        false,
+        selectedNames
+      );
+
+      if (!confirmed) return;
+
       const data = await InvokeStudentManagement("movetonosection", {
         studentIDs,
       });
       setSelected([]);
-      await Promise.all([
-        RefreshSectionStudents(),
-        RefreshDashboards(),
-        queryClient.invalidateQueries({
-          queryKey: noSectionStudentsQueryKey,
-          exact: true,
-        }),
-      ]);
+      await InvalidateStudentQueries(queryClient);
       await ShowConfirmation(`${data.moved?.length ?? 0} student(s) moved to No Section.`);
     } catch (moveError) {
       console.error(moveError.message);
       await ShowConfirmation(moveError.message);
+    } finally {
+      actionPending.current = false;
+      setMoving(false);
     }
   }
 
   async function DeleteActiveSection() {
-    if (!sectionID || !activeSection || isNoSection || deleting) {
+    if (!sectionID || !activeSection || isNoSection || actionPending.current) {
       return;
     }
 
-    const confirmed = await ShowConfirmation(
-      `Delete "${activeSection.sectionName}"? Its ${students.length} student(s) will be moved to No Section.`,
-      true
-    );
-
-    if (!confirmed) {
-      return;
-    }
-
+    actionPending.current = true;
     setDeleting(true);
 
     try {
+      const confirmed = await ShowConfirmation(
+        `Delete "${activeSection.sectionName}"? Its ${students.length} student(s) will be moved to No Section.`,
+        true
+      );
+
+      if (!confirmed) return;
+
       const data = await DeleteSection(sectionID);
 
       queryClient.removeQueries({
@@ -248,28 +221,13 @@ function Sections({ PageComponent = TeacherPage }) {
       setSearch("");
       setPage(1);
 
-      await Promise.all([
-        RefreshSections(),
-        RefreshDashboards(),
-        queryClient.invalidateQueries({
-          queryKey: noSectionStudentsQueryKey,
-          exact: true,
-        }),
-        queryClient.invalidateQueries({
-          queryKey: ["ProgressOptions"],
-        }),
-        queryClient.invalidateQueries({
-          queryKey: ["AssessmentOptions"],
-        }),
-        queryClient.invalidateQueries({
-          queryKey: ["Teachers"],
-        }),
-      ]);
+      await InvalidateSectionQueries(queryClient);
 
       await ShowConfirmation(`Section deleted. ${data.moved ?? 0} student(s) moved to No Section.`);
     } catch (deleteError) {
       await ShowConfirmation(deleteError.message || "Unable to delete the section.");
     } finally {
+      actionPending.current = false;
       setDeleting(false);
     }
   }
@@ -317,14 +275,7 @@ function Sections({ PageComponent = TeacherPage }) {
     setSearch("");
     setPage(1);
 
-    await Promise.all([
-      RefreshSectionStudents(),
-      RefreshDashboards(),
-      queryClient.invalidateQueries({
-        queryKey: studentQueryKey,
-        exact: true,
-      }),
-    ]);
+    await InvalidateStudentQueries(queryClient);
 
     if (!result.failed?.length) {
       CloseBatch();
@@ -342,14 +293,7 @@ function Sections({ PageComponent = TeacherPage }) {
       sectionID,
       studentIDs,
     });
-    await Promise.all([
-      RefreshSectionStudents(),
-      RefreshDashboards(),
-      queryClient.invalidateQueries({
-        queryKey: noSectionStudentsQueryKey,
-        exact: true,
-      }),
-    ]);
+    await InvalidateStudentQueries(queryClient);
     CloseAdd();
   }
 
@@ -389,10 +333,7 @@ function Sections({ PageComponent = TeacherPage }) {
     setSearch("");
     setSelected([]);
     setPage(1);
-    await Promise.all([
-      RefreshSections(),
-      RefreshDashboards(),
-    ]);
+    await InvalidateSectionQueries(queryClient);
     CloseCreate();
   }
 
@@ -406,7 +347,7 @@ function Sections({ PageComponent = TeacherPage }) {
               value={section}
               onChange={PickSection}
               aria-label="Active section"
-              disabled={choices.length === 0}
+              disabled={deleting || moving || choices.length === 0}
             >
               {choices.length === 0 && <option value="">No sections</option>}
 
@@ -430,7 +371,7 @@ function Sections({ PageComponent = TeacherPage }) {
             <button
               type="button"
               className="sectiondelete"
-              disabled={!section || isNoSection || loading || deleting}
+              disabled={!section || isNoSection || loading || deleting || moving}
               onClick={DeleteActiveSection}
             >
               {deleting ? "Deleting..." : "Delete Section"}
@@ -439,10 +380,10 @@ function Sections({ PageComponent = TeacherPage }) {
             <button
               type="button"
               className="sectionremove"
-              disabled={selected.length === 0 || isNoSection}
+              disabled={deleting || moving || selected.length === 0 || isNoSection}
               onClick={RemoveStudents}
             >
-              Remove Selected
+              {moving ? "Moving..." : "Remove Selected"}
             </button>
           </div>
 
@@ -508,12 +449,12 @@ function Sections({ PageComponent = TeacherPage }) {
         </div>
 
         <div className="sectionactions">
-          <button type="button" onClick={OpenCreate}>
+          <button type="button" onClick={OpenCreate} disabled={deleting || moving}>
             Create Section
           </button>
           <button
             type="button"
-            disabled={!section || isNoSection}
+            disabled={deleting || moving || !section || isNoSection}
             onClick={OpenAdd}
           >
             Add Student

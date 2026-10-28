@@ -8,9 +8,10 @@ import { PopupContext } from "../../lib/PopupContext";
 function TeacherPage({ title, children }) {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const { ShowConfirmation } = useContext(PopupContext);
+  const { ShowConfirmation, actionPending } = useContext(PopupContext);
 
   async function HandleLogout() {
+    if (actionPending) return;
     const { error } = await supabase.auth.signOut();
 
     if (error) {
@@ -27,12 +28,12 @@ function TeacherPage({ title, children }) {
       <header className="teacherheader">
         <h1>{title}</h1>
 
-        <button type="button" onClick={HandleLogout}>
+        <button type="button" onClick={HandleLogout} disabled={actionPending}>
           Log out
         </button>
       </header>
 
-      <main className="mainpanel">
+      <main className="mainpanel" tabIndex={-1}>
         {children}
       </main>
     </div>

@@ -1,6 +1,8 @@
 import './App.css'
 import Login from './Components/Login';
-import { BrowserRouter, Navigate, Route, Routes } from "react-router";
+import { createBrowserRouter, createRoutesFromElements, Navigate, Outlet, Route, RouterProvider, useBeforeUnload, useBlocker } from "react-router";
+import { useCallback, useContext, useEffect } from "react";
+import { PopupContext } from "./lib/PopupContext";
 import Assessments from "./Components/Teacher/Assessments";
 import Progress from "./Components/Teacher/Progress";
 import Sections from "./Components/Teacher/Sections";
@@ -17,10 +19,25 @@ import SuperAdminTeachers from "./Components/SuperAdmin/SuperAdminTeachers";
 import CreateTeacherPassword from "./Components/Teacher/CreateTeacherPassword";
 import PolicyPage from "./Components/PolicyPage";
 
-function App() {
-  return (
-    <BrowserRouter>
-      <Routes>
+function NavigationGuard() {
+  const { actionPending } = useContext(PopupContext);
+  const blocker = useBlocker(actionPending);
+
+  useEffect(() => {
+    if (blocker.state === "blocked") blocker.reset();
+  }, [blocker]);
+
+  useBeforeUnload(useCallback((event) => {
+    if (!actionPending) return;
+    event.preventDefault();
+    event.returnValue = "";
+  }, [actionPending]));
+
+  return <Outlet />;
+}
+
+const router = createBrowserRouter(createRoutesFromElements(
+      <Route element={<NavigationGuard />}>
         <Route path="/" element={<Login />} />
         <Route path="/resetpassword" element={<ResetPassword />} />
         <Route path="/teacherpassword" element={<CreateTeacherPassword />} />
@@ -45,9 +62,11 @@ function App() {
         <Route path="/teacher-dashboard" element={<Navigate to="/teacher" replace />} />
 
         <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
-    </BrowserRouter>
-  )
+      </Route>
+));
+
+function App() {
+  return <RouterProvider router={router} />;
 }
 
 export default App

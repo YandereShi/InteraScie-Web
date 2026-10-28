@@ -1,9 +1,10 @@
 import "../../css/StudentPopup.css";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import teacherImage from "../../assets/pfp.png";
 import { GetNameError } from "../../lib/nameValidation";
 import { limits } from "../../lib/inputLimits";
 import { emailPattern, GetEmailError, NormalizeEmail } from "../../lib/emailValidation";
+import { useActionPending } from "../../lib/useActionPending";
 
 function TeacherPopup({ sections, onClose, onSave }) {
     const [firstName, setFirstName] = useState("");
@@ -12,6 +13,12 @@ function TeacherPopup({ sections, onClose, onSave }) {
     const [sectionIDs, setSectionIDs] = useState([]);
     const [saving, setSaving] = useState(false);
     const [saveError, setSaveError] = useState("");
+    const savePending = useRef(false);
+    useActionPending(saving);
+
+    function ClosePopup() {
+        if (!savePending.current) onClose();
+    }
 
     function HandleNameChange(value, setName) {
         if (!/^[\p{L}\p{M} ]*$/u.test(value)) {
@@ -40,6 +47,7 @@ function TeacherPopup({ sections, onClose, onSave }) {
 
     async function HandleSubmit(event) {
         event.preventDefault();
+        if (savePending.current) return;
 
         const nameerror = GetNameError(firstName, lastName);
 
@@ -54,6 +62,7 @@ function TeacherPopup({ sections, onClose, onSave }) {
             return;
         }
 
+        savePending.current = true;
         setSaving(true);
         setSaveError("");
 
@@ -65,7 +74,9 @@ function TeacherPopup({ sections, onClose, onSave }) {
                 sectionIDs,
             });
         } catch (error) {
-            setSaveError(error.message || "Unable to create teacher.");
+            setSaveError(error?.message || "Unable to create teacher.");
+        } finally {
+            savePending.current = false;
             setSaving(false);
         }
     }
@@ -73,7 +84,7 @@ function TeacherPopup({ sections, onClose, onSave }) {
     return (
         <div
             className="studentpopupoverlay"
-            onMouseDown={onClose}
+            onMouseDown={ClosePopup}
         >
             <div
                 className="studentpopup"
@@ -85,7 +96,7 @@ function TeacherPopup({ sections, onClose, onSave }) {
                     <button
                         type="button"
                         className="closestudentpopup"
-                        onClick={onClose}
+                        onClick={ClosePopup}
                         disabled={saving}
                     >
                         ×
@@ -95,6 +106,7 @@ function TeacherPopup({ sections, onClose, onSave }) {
                 <form
                     className="studentpopupcontent"
                     onSubmit={HandleSubmit}
+                    aria-busy={saving}
                 >
                     <img
                         className="studentpopupimage"
@@ -110,6 +122,7 @@ function TeacherPopup({ sections, onClose, onSave }) {
                         <input
                             type="text"
                             id="teacherfirstname"
+                            disabled={saving}
                             maxLength={limits.firstname}
                             value={firstName}
                             onChange={(event) =>
@@ -128,6 +141,7 @@ function TeacherPopup({ sections, onClose, onSave }) {
                         <input
                             type="text"
                             id="teacherlastname"
+                            disabled={saving}
                             maxLength={limits.lastname}
                             value={lastName}
                             onChange={(event) =>
@@ -146,6 +160,7 @@ function TeacherPopup({ sections, onClose, onSave }) {
                         <input
                             type="email"
                             id="teacheremail"
+                            disabled={saving}
                             maxLength={limits.email}
                             pattern={emailPattern}
                             value={email}
@@ -155,7 +170,7 @@ function TeacherPopup({ sections, onClose, onSave }) {
                             required
                         />
 
-                        <fieldset className="teachersectionlist">
+                        <fieldset className="teachersectionlist" disabled={saving}>
                             <legend>Sections</legend>
 
                             <div className="teachersectionscroll">
@@ -191,7 +206,7 @@ function TeacherPopup({ sections, onClose, onSave }) {
                     </div>
 
                     {saveError && (
-                        <p className="studentpopuperror">
+                        <p className="studentpopuperror" role="alert">
                             {saveError}
                         </p>
                     )}
@@ -200,7 +215,7 @@ function TeacherPopup({ sections, onClose, onSave }) {
                         <button
                             type="button"
                             className="cancelstudent"
-                            onClick={onClose}
+                            onClick={ClosePopup}
                             disabled={saving}
                         >
                             Cancel

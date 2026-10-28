@@ -392,7 +392,14 @@ function Progress() {
     Math.ceil(students.length / maxRows)
   );
 
-  const first = (page - 1) * maxRows;
+  const activePage = Math.min(page, pages);
+
+  // Keep the stored page in range so Previous works on the first click.
+  if (progressQuery.isSuccess && page > pages) {
+    setPage(pages);
+  }
+
+  const first = (activePage - 1) * maxRows;
 
   const shown = students.slice(
     first,
@@ -663,7 +670,7 @@ function Progress() {
           <button
             type="button"
             aria-label="Previous page"
-            disabled={page === 1}
+            disabled={activePage === 1}
             onClick={() =>
               setPage(
                 (current) => current - 1
@@ -673,12 +680,12 @@ function Progress() {
             &lt;
           </button>
 
-          <span>{page}</span>
+          <span>{activePage}</span>
 
           <button
             type="button"
             aria-label="Next page"
-            disabled={page === pages}
+            disabled={activePage === pages}
             onClick={() =>
               setPage(
                 (current) => current + 1

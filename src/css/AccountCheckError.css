@@ -1,0 +1,30 @@
+.accountcheckerror {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  min-height: 100dvh;
+  padding: 24px;
+  text-align: center;
+}
+
+.accountcheckerror button {
+  padding: 10px 20px;
+  border: 0;
+  border-radius: 6px;
+  background-color: #00bf63;
+  color: #ffffff;
+  font: inherit;
+  cursor: pointer;
+}
+
+.accountcheckerror button:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+.accountcheckerrorinline {
+  min-height: auto;
+  background-color: #fff4d6;
+}

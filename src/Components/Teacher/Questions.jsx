@@ -11,6 +11,7 @@ import BatchQuestionPopup from "./BatchQuestionPopup";
 import { GetQuestionError, GetQuestionSaveError, QuestionPayload, ValidateQuestionBatch } from "../../lib/questionImport";
 import { PopupContext } from "../../lib/PopupContext";
 import { GetBranches } from "../../lib/branches";
+import { useActionPending } from "../../lib/useActionPending";
 
 const maxQuestions = 15;
 const maxCards = 6;
@@ -32,6 +33,7 @@ function Questions({ sectionID, sectionName, onBack }) {
   const [batchOpen, setBatchOpen] = useState(false);
   const [actionError, setActionError] = useState("");
   const [deleting, setDeleting] = useState(false);
+  useActionPending(deleting);
 
   const optionsQuery = useQuery({
     queryKey: assessmentOptionsQueryKey,
@@ -427,6 +429,7 @@ function Questions({ sectionID, sectionName, onBack }) {
         <button
           type="button"
           className="questionsback"
+          disabled={deleting}
           onClick={onBack}
         >
           View Scores &rarr;

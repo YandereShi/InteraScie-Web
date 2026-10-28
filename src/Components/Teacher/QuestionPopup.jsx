@@ -1,7 +1,8 @@
 import "../../css/QuestionPopup.css";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { limits } from "../../lib/inputLimits";
 import { GetQuestionError } from "../../lib/questionImport";
+import { useActionPending } from "../../lib/useActionPending";
 
 function QuestionPopup({
   question,
@@ -24,6 +25,12 @@ function QuestionPopup({
   const [answer, setAnswer] = useState(0);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+  const savePending = useRef(false);
+  useActionPending(saving);
+
+  function ClosePopup() {
+    if (!savePending.current) onClose();
+  }
 
   function ChangeChoice(index, value) {
     setChoices((current) =>
@@ -35,6 +42,7 @@ function QuestionPopup({
 
   async function Submit(event) {
     event.preventDefault();
+    if (savePending.current) return;
 
     const cleanText = text.trim();
     const cleanChoices = choices.map((choice) =>
@@ -47,6 +55,7 @@ function QuestionPopup({
       return;
     }
 
+    savePending.current = true;
     setSaving(true);
     setError("");
 
@@ -57,8 +66,10 @@ function QuestionPopup({
         answer,
       });
     } catch (saveError) {
-      console.error(saveError.message);
-      setError(saveError.message);
+      console.error(saveError?.message);
+      setError(saveError?.message || "Unable to save the question. Please try again.");
+    } finally {
+      savePending.current = false;
       setSaving(false);
     }
   }
@@ -66,7 +77,7 @@ function QuestionPopup({
   return (
     <div
       className="questionoverlay"
-      onMouseDown={onClose}
+      onMouseDown={ClosePopup}
     >
       <div
         className="questionpopup"
@@ -82,18 +93,20 @@ function QuestionPopup({
           <button
             type="button"
             aria-label="Close popup"
-            onClick={onClose}
+            onClick={ClosePopup}
+            disabled={saving}
           >
             x
           </button>
         </div>
 
-        <form onSubmit={Submit}>
+        <form onSubmit={Submit} aria-busy={saving}>
           <textarea
             className="questioninput"
             placeholder="Type the question..."
             value={text}
             maxLength={limits.question}
+            disabled={saving}
             autoFocus
             onChange={(event) =>
               setText(event.target.value)
@@ -105,6 +118,7 @@ function QuestionPopup({
               <label className="choiceinput" key={index}>
                 <input
                   type="radio"
+                  disabled={saving}
                   name="correct-answer"
                   checked={answer === index}
                   aria-label={`Mark choice ${index + 1} as correct`}
@@ -113,6 +127,7 @@ function QuestionPopup({
 
                 <input
                   type="text"
+                  disabled={saving}
                   placeholder={`Choice ${index + 1}`}
                   value={choice}
                   maxLength={limits.choice}
@@ -125,7 +140,7 @@ function QuestionPopup({
           </div>
 
           {error && (
-            <p className="questionpopuperror">{error}</p>
+            <p className="questionpopuperror" role="alert">{error}</p>
           )}
 
           <div className="questionpopupactions">

@@ -62,6 +62,12 @@
   color: #000000;
 }
 
+.reusablepopupactions button:focus-visible,
+.reusablepopupitems:focus-visible {
+  outline: 3px solid #174ea6;
+  outline-offset: 3px;
+}
+
 .reusablepopupok {
   background-color: #00bf63;
   color: #ffffff;

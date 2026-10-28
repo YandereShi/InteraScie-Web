@@ -8,9 +8,10 @@ import { PopupContext } from "../../lib/PopupContext";
 function SuperAdminPage({ title, children }) {
     const navigate = useNavigate();
     const queryClient = useQueryClient();
-    const { ShowConfirmation } = useContext(PopupContext);
+    const { ShowConfirmation, actionPending } = useContext(PopupContext);
 
     async function HandleLogout() {
+        if (actionPending) return;
         const { error } = await supabase.auth.signOut();
 
         if (error) {
@@ -27,12 +28,12 @@ function SuperAdminPage({ title, children }) {
             <header className="superadminheader">
                 <h1>{title}</h1>
 
-                <button type="button" onClick={HandleLogout}>
+                <button type="button" onClick={HandleLogout} disabled={actionPending}>
                     Logout
                 </button>
             </header>
 
-            <main className="superadminmainpanel">
+            <main className="superadminmainpanel" tabIndex={-1}>
                 {children}
             </main>
         </div>

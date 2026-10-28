@@ -3,33 +3,11 @@ import { useQueryClient } from "@tanstack/react-query";
 import { supabase } from "../lib/supabase";
 import { InvalidateProgressQueries } from "../lib/progressCache";
 import { InvalidateAssessmentScoresQueries } from "../lib/assessmentCache";
-
-const studentQueryNames = new Set([
-  "Students",
-  "SectionStudents",
-  "NoSectionStudents",
-  "TeacherDashboard",
-  "SuperAdminDashboard",
-  "SectionProgress",
-  "AssessmentScores",
-]);
-
-const sectionQueryNames = new Set([
-  "Students",
-  "Sections",
-  "SectionStudents",
-  "NoSectionStudents",
-  "Teachers",
-  "TeacherDashboard",
-  "SuperAdminDashboard",
-  "ProgressOptions",
-  "SectionProgress",
-  "AssessmentOptions",
-  "AssessmentScores",
-]);
+import { InvalidateSectionQueries, InvalidateStudentQueries } from "../lib/studentCache";
 
 const schoolStaffQueryNames = new Set([
   "TeacherProfile",
+  "SuperAdminProfile",
   "Teachers",
   "Sections",
   "TeacherDashboard",
@@ -63,7 +41,7 @@ function RealtimeSync() {
           table: "Student",
         },
         async () => {
-          await InvalidateQueries(queryClient, studentQueryNames);
+          await InvalidateStudentQueries(queryClient);
         }
       )
       .on(
@@ -74,7 +52,7 @@ function RealtimeSync() {
           table: "Section",
         },
         async () => {
-          await InvalidateQueries(queryClient, sectionQueryNames);
+          await InvalidateSectionQueries(queryClient);
         }
       )
       .on(
@@ -117,9 +95,7 @@ function RealtimeSync() {
       )
       .subscribe((status) => {
         if (status === "SUBSCRIBED") {
-          void InvalidateProgressQueries(queryClient, {});
-          void InvalidateAssessmentScoresQueries(queryClient, {});
-          void InvalidateQueries(queryClient, accuracyQueryNames);
+          void InvalidateSectionQueries(queryClient);
         }
       });
 

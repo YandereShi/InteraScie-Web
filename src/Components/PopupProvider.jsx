@@ -4,6 +4,8 @@ import ReusablePopup from "./ReusablePopup";
 
 function PopupProvider({ children }) {
   const [popup, setPopup] = useState(null);
+  const [pendingActions, SetPendingActions] = useState(0);
+  const actionPending = pendingActions > 0;
   const resolver = useRef(null);
 
   function ShowConfirmation(text, danger = false, items = []) {
@@ -13,7 +15,7 @@ function PopupProvider({ children }) {
       }
 
       resolver.current = resolve;
-      setPopup({ text: String(text), danger, items });
+      setPopup({ text: String(text), danger, items, returnFocus: document.activeElement });
     });
   }
 
@@ -29,7 +31,7 @@ function PopupProvider({ children }) {
   }
 
   return (
-    <PopupContext.Provider value={{ ShowConfirmation }}>
+    <PopupContext.Provider value={{ ShowConfirmation, actionPending, SetPendingActions }}>
       {children}
 
       {popup && (
@@ -37,6 +39,7 @@ function PopupProvider({ children }) {
           text={popup.text}
           danger={popup.danger}
           items={popup.items}
+          returnFocus={popup.returnFocus}
           onCancel={() => FinishPopup(false)}
           onOK={() => FinishPopup(true)}
         />

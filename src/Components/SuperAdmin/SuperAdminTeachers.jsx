@@ -1,5 +1,5 @@
 import "../../css/Students.css";
-import { useContext, useState } from "react";
+import { useContext, useRef, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { CreateTeacher, DeleteTeachers, GetTeachers, UpdateTeacher, teachersQueryKey } from "../../lib/teacherQueries";
 import { superAdminDashboardQueryKey } from "../../lib/dashboardQueries";
@@ -10,6 +10,7 @@ import TeacherSectionPopup from "./TeacherSectionPopup";
 import { PopupContext } from "../../lib/PopupContext";
 import { limits } from "../../lib/inputLimits";
 import { GetNameError } from "../../lib/nameValidation";
+import { useActionPending } from "../../lib/useActionPending";
 
 const maxCards = 12;
 
@@ -22,6 +23,9 @@ function SuperAdminTeachers() {
     const [popupOpen, setPopupOpen] = useState(false);
     const [selectedTeacher, setSelectedTeacher] = useState(null);
     const [actionError, setActionError] = useState("");
+    const [deleting, setDeleting] = useState(false);
+    const deletePending = useRef(false);
+    useActionPending(deleting);
 
     const teachersQuery = useQuery({
         queryKey: teachersQueryKey,
@@ -170,23 +174,24 @@ function SuperAdminTeachers() {
     }
 
     async function HandleDeleteTeachers() {
-        if (selectedTeacherIDs.length === 0) {
+        if (deletePending.current || selectedTeacherIDs.length === 0) {
             return;
         }
 
-        const confirmed = await ShowConfirmation(
-            "Delete the selected teachers? Their sections will become unassigned.",
-            true
-        );
-
-        if (!confirmed) {
-            return;
-        }
-
-        setActionError("");
+        const staffIDs = [...selectedTeacherIDs];
+        deletePending.current = true;
+        setDeleting(true);
 
         try {
-            const data = await DeleteTeachers(selectedTeacherIDs);
+            const confirmed = await ShowConfirmation(
+                "Delete the selected teachers? Their sections will become unassigned.",
+                true
+            );
+
+            if (!confirmed) return;
+
+            setActionError("");
+            const data = await DeleteTeachers(staffIDs);
             const deleted = data.deleted?.length ?? 0;
             const failed = data.failed?.length ?? 0;
 
@@ -204,6 +209,9 @@ function SuperAdminTeachers() {
             setActionError(
                 deleteError.message || "Unable to delete teachers."
             );
+        } finally {
+            deletePending.current = false;
+            setDeleting(false);
         }
     }
 
@@ -230,7 +238,7 @@ function SuperAdminTeachers() {
                                 type="button"
                                 className="studentadd"
                                 onClick={OpenPopup}
-                                disabled={loading}
+                                disabled={deleting || loading}
                             >
                                 Add Teacher
                             </button>
@@ -239,9 +247,9 @@ function SuperAdminTeachers() {
                                 type="button"
                                 id="remove"
                                 onClick={HandleDeleteTeachers}
-                                disabled={selectedTeacherIDs.length === 0}
+                                disabled={deleting || selectedTeacherIDs.length === 0}
                             >
-                                Remove Selected
+                                {deleting ? "Deleting..." : "Remove Selected"}
                             </button>
                         </div>
                     </div>

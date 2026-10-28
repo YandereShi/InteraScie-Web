@@ -1,15 +1,23 @@
 import "../../css/SectionPopup.css";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { limits } from "../../lib/inputLimits";
 import { IsReservedSectionName } from "../../lib/sectionQueries";
+import { useActionPending } from "../../lib/useActionPending";
 
 function SectionPopup({ onClose, onCreate }) {
   const [name, setName] = useState("");
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+  const savePending = useRef(false);
+  useActionPending(saving);
+
+  function ClosePopup() {
+    if (!savePending.current) onClose();
+  }
 
   async function Submit(event) {
     event.preventDefault();
+    if (savePending.current) return;
 
     const cleanName = name.trim();
 
@@ -33,14 +41,17 @@ function SectionPopup({ onClose, onCreate }) {
       return;
     }
 
+    savePending.current = true;
     setSaving(true);
     setError("");
 
     try {
       await onCreate(cleanName);
     } catch (saveError) {
-      console.error(saveError.message);
-      setError(saveError.message);
+      console.error(saveError?.message);
+      setError(saveError?.message || "Unable to create the section. Please try again.");
+    } finally {
+      savePending.current = false;
       setSaving(false);
     }
   }
@@ -48,7 +59,7 @@ function SectionPopup({ onClose, onCreate }) {
   return (
     <div
       className="createoverlay"
-      onMouseDown={onClose}
+      onMouseDown={ClosePopup}
     >
       <div
         className="createpopup"
@@ -63,19 +74,21 @@ function SectionPopup({ onClose, onCreate }) {
             type="button"
             className="createclose"
             aria-label="Close popup"
-            onClick={onClose}
+            onClick={ClosePopup}
+            disabled={saving}
           >
             x
           </button>
         </div>
 
-        <form onSubmit={Submit}>
+        <form onSubmit={Submit} aria-busy={saving}>
           <input
             className="createinput"
             type="text"
             placeholder="Section Name"
             value={name}
             maxLength={limits.section}
+            disabled={saving}
             autoFocus
             onChange={(event) => {
               setName(event.target.value);
@@ -84,7 +97,7 @@ function SectionPopup({ onClose, onCreate }) {
           />
 
           {error && (
-            <p className="createerror">{error}</p>
+            <p className="createerror" role="alert">{error}</p>
           )}
 
           <div className="createactions">

@@ -3,15 +3,16 @@ import StudentCard from "./StudentCard";
 import StudentPopup from "./StudentPopup";
 import BatchStudentPopup from "./BatchStudentPopup";
 import TeacherPage from "./TeacherPage";
-import { useContext, useState } from "react";
+import { useContext, useRef, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { GetNameError, GetUsernameError } from "../../lib/nameValidation";
 import { limits } from "../../lib/inputLimits";
 import { InvokeStudentManagement } from "../../lib/supabase";
 import { GetStudents, studentQueryKey } from "../../lib/studentQueries";
-import { superAdminDashboardQueryKey, teacherDashboardQueryKey } from "../../lib/dashboardQueries";
+import { InvalidateStudentQueries } from "../../lib/studentCache";
 import { PopupContext } from "../../lib/PopupContext";
 import { GetProfilePhotoQueryKey, GetStudentPhotoPath, SaveProfilePhoto } from "../../lib/profilePhotos";
+import { useActionPending } from "../../lib/useActionPending";
 
 const maxCards = 12;
 
@@ -25,6 +26,9 @@ function Students({ PageComponent = TeacherPage }) {
   const [selectedStudentIDs, setSelectedStudentIDs] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [search, setSearch] = useState("");
+  const [deleting, setDeleting] = useState(false);
+  const deletePending = useRef(false);
+  useActionPending(deleting);
 
   const studentsQuery = useQuery({
     queryKey: studentQueryKey,
@@ -46,18 +50,7 @@ function Students({ PageComponent = TeacherPage }) {
   async function RefreshStudents() {
     setActionError("");
 
-    await Promise.all([
-      queryClient.invalidateQueries({
-        queryKey: studentQueryKey,
-        exact: true,
-      }),
-      queryClient.invalidateQueries({
-        queryKey: teacherDashboardQueryKey,
-      }),
-      queryClient.invalidateQueries({
-        queryKey: superAdminDashboardQueryKey,
-      }),
-    ]);
+    await InvalidateStudentQueries(queryClient);
   }
 
   function OpenAddPopup() {
@@ -182,7 +175,7 @@ function Students({ PageComponent = TeacherPage }) {
   function HandleSelectAll(event) {
     if (event.target.checked) {
       setSelectedStudentIDs(
-        students.map((student) => student.studentID)
+        filteredStudents.map((student) => student.studentID)
       );
       return;
     }
@@ -191,6 +184,8 @@ function Students({ PageComponent = TeacherPage }) {
   }
 
   async function HandleRemoveSelected() {
+    if (deletePending.current) return;
+
     if (selectedStudentIDs.length === 0) {
       await ShowConfirmation("Please select at least one student.");
       return;
@@ -201,17 +196,18 @@ function Students({ PageComponent = TeacherPage }) {
       .filter((student) => studentIDs.includes(student.studentID))
       .map((student) => `${student.lastName}, ${student.firstName}`);
 
-    const confirmed = await ShowConfirmation(
-      "Are you sure you want to delete the selected students?",
-      true,
-      selectedNames
-    );
-
-    if (!confirmed) {
-      return;
-    }
+    deletePending.current = true;
+    setDeleting(true);
 
     try {
+      const confirmed = await ShowConfirmation(
+        "Are you sure you want to delete the selected students?",
+        true,
+        selectedNames
+      );
+
+      if (!confirmed) return;
+
       const data = await InvokeStudentManagement("delete", {
         studentIDs,
       });
@@ -231,6 +227,9 @@ function Students({ PageComponent = TeacherPage }) {
     } catch (error) {
       console.error(error.message);
       await ShowConfirmation(error.message);
+    } finally {
+      deletePending.current = false;
+      setDeleting(false);
     }
   }
 
@@ -260,8 +259,8 @@ function Students({ PageComponent = TeacherPage }) {
     firstStudentIndex + maxCards
   );
   const allChecked =
-    students.length > 0 &&
-    students.every((student) =>
+    filteredStudents.length > 0 &&
+    filteredStudents.every((student) =>
       selectedStudentIDs.includes(student.studentID)
     );
 
@@ -288,7 +287,7 @@ function Students({ PageComponent = TeacherPage }) {
                 type="button"
                 id="batch"
                 onClick={OpenBatchPopup}
-                disabled={loadingStudents || sections.length === 0}
+                disabled={deleting || loadingStudents || sections.length === 0}
               >
                 Batch Upload
               </button>
@@ -297,7 +296,7 @@ function Students({ PageComponent = TeacherPage }) {
                 type="button"
                 className="studentadd"
                 onClick={OpenAddPopup}
-                disabled={loadingStudents || sections.length === 0}
+                disabled={deleting || loadingStudents || sections.length === 0}
               >
                 Add Student
               </button>
@@ -306,9 +305,9 @@ function Students({ PageComponent = TeacherPage }) {
                 type="button"
                 id="remove"
                 onClick={HandleRemoveSelected}
-                disabled={selectedStudentIDs.length === 0}
+                disabled={deleting || selectedStudentIDs.length === 0}
               >
-                Remove Selected
+                {deleting ? "Deleting..." : "Remove Selected"}
               </button>
             </div>
           </div>
@@ -321,6 +320,7 @@ function Students({ PageComponent = TeacherPage }) {
                 type="checkbox"
                 id="selectall"
                 checked={allChecked}
+                disabled={filteredStudents.length === 0}
                 onChange={HandleSelectAll}
               />
             </div>

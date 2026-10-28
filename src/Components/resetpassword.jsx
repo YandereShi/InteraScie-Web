@@ -17,7 +17,7 @@ function ResetPassword() {
   });
   const [stage, SetStage] = useState(token ? "password" : "invalid");
   const [loading, SetLoading] = useState(false);
-  const [message, SetMessage] = useState("");
+  const [message, SetMessage] = useState(token ? "" : "This reset link is invalid or expired. Please request a new link.");
   const verified = useRef(false);
   const [visible, SetVisible] = useState(false);
   const [confirmvisible, SetConfirmVisible] = useState(false);
@@ -109,7 +109,7 @@ function ResetPassword() {
     <main className="recoverypage">
       <section className="recoverycard" aria-labelledby="resetpasswordtitle">
         <h1 id="resetpasswordtitle">Reset account password</h1>
-        {stage !== "success" && <form onSubmit={SavePassword}>
+        {stage === "password" && <form onSubmit={SavePassword}>
           <p>Enter and confirm your new account password.</p>
           <label htmlFor="newpassword">New Password</label>
           <div className="recoverypasswordfield">
@@ -129,6 +129,7 @@ function ResetPassword() {
           {message && <p className="recoveryerror" role="alert">{message}</p>}
           <button className="recoveryprimary" type="submit" disabled={loading || stage === "invalid"}>{loading ? "Saving..." : "Save new password"}</button>
         </form>}
+        {stage === "invalid" && <p className="recoveryerror" role="alert">{message}</p>}
         {stage === "success" && <p role="status">Your password has been updated. Log in with your new password.</p>}
         {!loading && <Link className="recoveryback" to="/">Back to login</Link>}
       </section>
