@@ -1,7 +1,7 @@
 const studentQueryNames = new Set([
   "Students", "SectionStudents", "NoSectionStudents", "SectionProgress",
   "AssessmentScores", "TeacherDashboard", "SuperAdminDashboard", "TeacherRadar",
-  "TeacherLevelProgress", "QuestionAccuracy", "BranchAccuracy",
+  "TeacherLevelProgress", "QuestionAccuracy", "BranchAccuracy", "StudentAnswers",
 ]);
 
 const sectionQueryNames = new Set([

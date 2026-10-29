@@ -146,7 +146,7 @@ export async function GetAssessmentScores(sectionID, staffID, levelIDs) {
     const testIDs = tests.map((test) => test.assessmentID);
     const { data, error } = await supabase
       .from("StudentAssessment")
-      .select("studentID, assessmentID, score")
+      .select("studentAssessmentID, studentID, assessmentID, score")
       .in("studentID", studentIDs)
       .in("assessmentID", testIDs);
 
@@ -207,4 +207,40 @@ export async function GetAssessmentQuestions(staffID, levelID) {
     test,
     questions: questions ?? [],
   };
+}
+
+export async function GetStudentAnswers(assessmentID, studentAssessmentID) {
+  const [questionResult, answerResult] = await Promise.all([
+    supabase
+      .from("Question")
+      .select("questionID, answer")
+      .eq("assessmentID", assessmentID)
+      .order("questionID", { ascending: true }),
+    supabase
+      .from("StudentAnswer")
+      .select("questionID, selectedAnswer, isCorrect")
+      .eq("studentAssessmentID", studentAssessmentID),
+  ]);
+
+  if (questionResult.error || answerResult.error) {
+    throw new Error("Unable to load the student's answers.");
+  }
+
+  const answers = new Map(
+    (answerResult.data ?? []).map((answer) => [answer.questionID, answer])
+  );
+
+  if (answers.size === 0) return [];
+
+  return (questionResult.data ?? []).map((question, index) => {
+    const answer = answers.get(question.questionID);
+
+    return {
+      questionID: question.questionID,
+      number: index + 1,
+      selectedAnswer: answer?.selectedAnswer ?? null,
+      correctAnswer: question.answer,
+      isCorrect: typeof answer?.isCorrect === "boolean" ? answer.isCorrect : null,
+    };
+  });
 }

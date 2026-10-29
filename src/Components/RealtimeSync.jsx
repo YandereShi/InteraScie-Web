@@ -19,6 +19,7 @@ const schoolStaffQueryNames = new Set([
 const accuracyQueryNames = new Set([
   "QuestionAccuracy",
   "BranchAccuracy",
+  "StudentAnswers",
 ]);
 
 function InvalidateQueries(queryClient, queryNames) {
@@ -82,7 +83,10 @@ function RealtimeSync() {
           schema: "public",
           table: "StudentAssessment",
         },
-        (payload) => InvalidateAssessmentScoresQueries(queryClient, payload)
+        (payload) => Promise.all([
+          InvalidateAssessmentScoresQueries(queryClient, payload),
+          queryClient.invalidateQueries({ queryKey: ["StudentAnswers"] }),
+        ])
       )
       .on(
         "postgres_changes",

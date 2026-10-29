@@ -1,0 +1,135 @@
+.studentanswerspopup {
+  position: fixed;
+  inset: 0;
+  margin: auto;
+  width: min(780px, calc(100% - 32px));
+  max-width: none;
+  max-height: calc(100dvh - 32px);
+  padding: clamp(16px, 3vw, 28px);
+  box-sizing: border-box;
+  overflow: hidden;
+  border: 1px solid #d5d5d5;
+  border-radius: 16px;
+  background-color: #ffffff;
+  color: #171717;
+  box-shadow: 0 14px 40px color-mix(in srgb, #000000 30%, transparent);
+}
+
+.studentanswerspopup[open] {
+  display: flex;
+  flex-direction: column;
+}
+
+.studentanswerspopup::backdrop {
+  background-color: color-mix(in srgb, #000000 55%, transparent);
+}
+
+.studentanswersheader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  padding-bottom: 18px;
+  flex-shrink: 0;
+}
+
+.studentanswersheader > div {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.studentanswersheader h2 {
+  margin: 0;
+  color: #007944;
+  font-size: clamp(1.3rem, 4vw, 2rem);
+}
+
+.studentanswersheader p {
+  margin: 8px 0 4px;
+  font-size: clamp(0.9rem, 2.8vw, 1.15rem);
+  font-weight: 600;
+}
+
+.studentanswersheader span {
+  color: #555555;
+  font-size: clamp(0.8rem, 2.4vw, 0.95rem);
+}
+
+.studentanswersheader button {
+  flex-shrink: 0;
+  padding: 0 4px;
+  border: none;
+  background: none;
+  color: #171717;
+  font-size: 2rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.studentanswerslist {
+  min-height: 0;
+  overflow: auto;
+  overscroll-behavior: contain;
+  border: 1px solid #dddddd;
+  border-radius: 8px;
+}
+
+.studentanswerstable {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: clamp(0.75rem, 2.5vw, 1rem);
+}
+
+.studentanswerstable th,
+.studentanswerstable td {
+  padding: clamp(8px, 2vw, 14px);
+  border-bottom: 1px solid #dddddd;
+  text-align: left;
+  vertical-align: top;
+  white-space: normal;
+  word-break: normal;
+  overflow-wrap: anywhere;
+}
+
+.studentanswerstable thead th {
+  position: sticky;
+  top: 0;
+  background-color: #f3f4f6;
+  z-index: 1;
+}
+
+.studentanswerstable th:first-child {
+  width: 18%;
+  text-align: center;
+}
+
+.studentanswerstable tbody tr:last-child > * {
+  border-bottom: none;
+}
+
+.studentanswerstable .studentanswercorrect > * {
+  background-color: #dcfce7;
+}
+
+.studentanswerstable .studentanswerincorrect > * {
+  background-color: #fee2e2;
+}
+
+.studentanswersstate {
+  margin: 0;
+  padding: 24px 16px;
+  text-align: center;
+  font-size: clamp(0.85rem, 2.5vw, 1rem);
+}
+
+@media (max-width: 768px) {
+  .studentanswerspopup {
+    max-height: min(520px, 70dvh);
+  }
+
+  .studentanswerslist {
+    flex: 1;
+  }
+}

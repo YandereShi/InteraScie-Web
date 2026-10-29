@@ -8,6 +8,7 @@ import { GetStudentPhotoPath } from "../../lib/profilePhotos";
 import studentImage from "../../assets/pfp.png";
 import ProfilePhoto from "../ProfilePhoto";
 import Questions from "./Questions";
+import StudentAnswersPopup from "./StudentAnswersPopup";
 import TeacherPage from "./TeacherPage";
 import { GetPageSelection, SavePageSelection } from "../../lib/pageSelection";
 import { GetBranches } from "../../lib/branches";
@@ -31,6 +32,7 @@ function Assessments() {
   const [selectedBranch, setSelectedBranch] = useState(() => GetPageSelection(authUserID, "Assessments", "Branch"));
   const [page, setPage] = useState(1);
   const [sort, setSort] = useState({ key: null, order: "asc" });
+  const [selectedAnswers, setSelectedAnswers] = useState(null);
 
   const optionsQuery = useQuery({
     queryKey: assessmentOptionsQueryKey,
@@ -419,18 +421,30 @@ function Assessments() {
                                   item.levelID === lesson.levelID
                               )
                             : null;
-                          const score = test
-                            ? GetScore(
-                                student.studentID,
-                                test.assessmentID
-                              )
-                            : null;
+                          const result = test && scores.find(
+                            (item) => item.studentID === student.studentID &&
+                              item.assessmentID === test.assessmentID
+                          );
+                          const score = result?.score === null || result?.score === undefined
+                            ? null : Number(result.score);
 
                           return (
                             <td key={index}>
-                              {score === null
-                                ? `--/${maxScore}`
-                                : `${score}/${maxScore}`}
+                              {score !== null && result?.studentAssessmentID ? (
+                                <button
+                                  type="button"
+                                  className="assessmentscorebutton"
+                                  aria-label={`View ${student.firstName} ${student.lastName}'s answers for ${branch}, Lesson ${index + 1}`}
+                                  onClick={() => setSelectedAnswers({
+                                    student,
+                                    assessmentID: test.assessmentID,
+                                    studentAssessmentID: result.studentAssessmentID,
+                                    lesson: `${branch} · ${lesson.levelName || `Lesson ${index + 1}`}`,
+                                  })}
+                                >
+                                  {score}/{maxScore}
+                                </button>
+                              ) : score === null ? `--/${maxScore}` : `${score}/${maxScore}`}
                             </td>
                           );
                         }
@@ -489,6 +503,13 @@ function Assessments() {
           sectionID={sectionID}
           sectionName={sectionName}
           onBack={() => setView("scores")}
+        />
+      )}
+      {selectedAnswers && (
+        <StudentAnswersPopup
+          key={selectedAnswers.studentAssessmentID}
+          {...selectedAnswers}
+          onClose={() => setSelectedAnswers(null)}
         />
       )}
     </TeacherPage>

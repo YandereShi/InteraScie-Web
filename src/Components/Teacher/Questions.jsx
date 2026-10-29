@@ -233,6 +233,7 @@ function Questions({ sectionID, sectionName, onBack }) {
       queryClient.invalidateQueries({ queryKey: ["TeacherRadar"] }),
       queryClient.invalidateQueries({ queryKey: ["QuestionAccuracy"] }),
       queryClient.invalidateQueries({ queryKey: ["BranchAccuracy"] }),
+      queryClient.invalidateQueries({ queryKey: ["StudentAnswers"] }),
     ]);
   }
 
