@@ -61,6 +61,9 @@ function DashboardLevelProgress({ sections, students, levels, records, loading, 
   });
   const pages = [...groups];
   const currentPage = Math.min(page, Math.max(pages.length - 1, 0));
+  if (!loading && !error && page > currentPage) {
+    setPage(currentPage);
+  }
   const [currentBranch, currentRows] = pages[currentPage] ?? ["", []];
 
   return (

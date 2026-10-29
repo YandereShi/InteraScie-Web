@@ -134,6 +134,9 @@ function Sections({ PageComponent = TeacherPage }) {
   });
   const pages = Math.max(1, Math.ceil(filtered.length / maxRows));
   const activePage = Math.min(page, pages);
+  if (studentsQuery.isSuccess && page > pages) {
+    setPage(pages);
+  }
   const first = (activePage - 1) * maxRows;
   const shown = filtered.slice(first, first + maxRows);
   const allChecked =
@@ -273,7 +276,6 @@ function Sections({ PageComponent = TeacherPage }) {
     setBatchStudents((current) => [...current, ...(result.created ?? [])]);
     setSelected([]);
     setSearch("");
-    setPage(1);
 
     await InvalidateStudentQueries(queryClient);
 

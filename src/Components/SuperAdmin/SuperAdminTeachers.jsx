@@ -31,6 +31,7 @@ function SuperAdminTeachers() {
         queryKey: teachersQueryKey,
         queryFn: GetTeachers,
         staleTime: 5 * 60 * 1000,
+        refetchOnWindowFocus: "always",
     });
 
     const teachers = teachersQuery.data?.teachers ?? [];
@@ -60,6 +61,9 @@ function SuperAdminTeachers() {
         Math.ceil(filteredTeachers.length / maxCards)
     );
     const activePage = Math.min(page, pages);
+    if (teachersQuery.isSuccess && page > pages) {
+        setPage(pages);
+    }
     const first = (activePage - 1) * maxCards;
     const shown = filteredTeachers.slice(
         first,
@@ -105,6 +109,7 @@ function SuperAdminTeachers() {
     function OpenSectionPopup(teacher) {
         setActionError("");
         setSelectedTeacher(teacher);
+        if (teacher.emailPending === true) void teachersQuery.refetch();
     }
 
     function CloseSectionPopup() {
@@ -331,7 +336,7 @@ function SuperAdminTeachers() {
 
             {selectedTeacher && (
                 <TeacherSectionPopup
-                    teacher={selectedTeacher}
+                    teacher={teachers.find((teacher) => teacher.staffID === selectedTeacher.staffID) ?? selectedTeacher}
                     sections={availableSections}
                     onClose={CloseSectionPopup}
                     onSave={HandleUpdateTeacher}

@@ -9,7 +9,7 @@ function TeacherCard({ teacher, isSelected, onSelect, onEdit }) {
         .filter(Boolean);
     const sectionText = sectionNames.length > 0
         ? sectionNames.join(", ")
-        : "No sections handled";
+        : "No sections";
 
     function HandleKeyDown(event) {
         if (
@@ -23,7 +23,7 @@ function TeacherCard({ teacher, isSelected, onSelect, onEdit }) {
 
     return (
         <article
-            className="studentcard teachercard"
+            className={teacher.emailPending === true ? "studentcard teachercard teacheremailpendingcard" : "studentcard teachercard"}
             role="button"
             tabIndex="0"
             onClick={() => onEdit(teacher)}
@@ -44,8 +44,11 @@ function TeacherCard({ teacher, isSelected, onSelect, onEdit }) {
                     Username: {teacher.username || "No login email"}
                 </p>
                 <p title={sectionText}>
-                    Sections Handled: {sectionText}
+                    Section/s: {sectionText}
                 </p>
+                {teacher.emailPending === true && (
+                    <p className="teacherpendingtext">Email pending</p>
+                )}
             </div>
 
             <input

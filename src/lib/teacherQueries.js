@@ -54,12 +54,24 @@ export async function CreateTeacher(teacherData) {
   return InvokeTeacherManagement("CreateTeacher", { ...teacherData, email });
 }
 
+export async function ResendTeacherInvitation(staffID) {
+  return InvokeTeacherManagement("ResendTeacherInvitation", { staffID });
+}
+
 export async function UpdateTeacher(staffID, firstName, lastName, sectionIDs) {
   return InvokeTeacherManagement("UpdateTeacher", {
     staffID,
     firstName,
     lastName,
     sectionIDs,
+  });
+}
+
+export async function AssignTeacherSections(staffID, sectionIDs) {
+  return InvokeTeacherManagement("UpdateTeacherSections", {
+    staffID,
+    sectionIDs,
+    assignOnly: true,
   });
 }
 

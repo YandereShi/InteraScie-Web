@@ -335,6 +335,7 @@ function Questions({ sectionID, sectionName, onBack }) {
       questions: [...fresh.questions, ...savedQuestions],
     });
     setSelected([]);
+    setBatchOpen(false);
     await RefreshQuestions();
     return { saved: savedQuestions.length, rows: resultRows };
   }
@@ -402,7 +403,6 @@ function Questions({ sectionID, sectionName, onBack }) {
         queryClient.invalidateQueries({ queryKey: ["LessonAccess"] }),
       ]);
       setSelected([]);
-      setPage(1);
     } catch (deleteError) {
       setActionError(deleteError.message || "Unable to delete the selected questions.");
     } finally {
@@ -415,6 +415,9 @@ function Questions({ sectionID, sectionName, onBack }) {
     Math.ceil(questions.length / maxCards)
   );
   const activePage = Math.min(page, pages);
+  if (questionsQuery.isSuccess && page > pages) {
+    setPage(pages);
+  }
   const first = (activePage - 1) * maxCards;
   const shown = questions.slice(first, first + maxCards);
   const allChecked =

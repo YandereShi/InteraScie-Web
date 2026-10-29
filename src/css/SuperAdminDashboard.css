@@ -1,5 +1,7 @@
-.superadmindashboardtotals {
-  flex-wrap: wrap;
+.superadmindashboardpanel {
+  grid-template-areas:
+    "totals progress important"
+    "overview overview overview";
 }
 
 .totalteachercard {
@@ -11,13 +13,156 @@
 }
 
 .superadmindashboardmessage {
-  margin: 18px 30px 0 0;
+  margin: 18px 0;
   color: #c40000;
   text-align: center;
 }
 
+.superadminimportant {
+  grid-area: important;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 18px;
+}
+
+.superadminimportant h2 {
+  color: #c2410c;
+  font-size: clamp(1.1rem, 1.6vw, 1.4rem);
+  overflow-wrap: anywhere;
+}
+
+.superadminimportantitems {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  justify-content: center;
+  gap: 12px;
+}
+
+.superadminimportantitem {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 14px;
+  border: 1px solid #fdba74;
+  border-radius: 12px;
+  background-color: #ffedd5;
+  color: #7c2d12;
+  font: inherit;
+  text-align: left;
+  overflow-wrap: anywhere;
+  cursor: pointer;
+}
+
+.superadminimportantitem:hover {
+  background-color: #fed7aa;
+}
+
+.superadminimportantitem:focus-visible {
+  outline: 2px solid #c2410c;
+  outline-offset: 2px;
+}
+
+.superadminimportantitem strong {
+  font-size: clamp(1.4rem, 2.4vw, 2rem);
+}
+
+.superadminimportantitem span {
+  font-size: clamp(0.8rem, 1.2vw, 0.95rem);
+}
+
+.superadminoverview {
+  grid-area: overview;
+  display: flex;
+  flex-direction: column;
+  min-height: 350px;
+  padding: 18px;
+}
+
+.superadminoverview .performancehead {
+  flex-wrap: wrap;
+}
+
+.superadminoverviewtablewrap {
+  overflow: auto;
+  border: 1px solid #d5d5d5;
+  border-radius: 10px;
+}
+
+.superadminoverviewtable {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: separate;
+  border-spacing: 0;
+  color: #171717;
+  font-size: clamp(0.8rem, 1.4vw, 1rem);
+}
+
+.superadminoverviewtable th,
+.superadminoverviewtable td {
+  padding: 12px;
+  border-bottom: 1px solid #dddddd;
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+
+.superadminoverviewtable th:first-child {
+  width: 60%;
+  text-align: left;
+}
+
+.superadminoverviewtable thead th {
+  background-color: #007944;
+  color: #ffffff;
+}
+
+.superadminoverviewtable tbody tr:nth-child(even) > * {
+  background-color: #f3f4f6;
+}
+
+.superadminoverviewtable tbody tr:last-child > * {
+  border-bottom: none;
+}
+
+.superadminoverviewpager {
+  justify-content: center;
+  margin-top: auto;
+  padding-top: 12px;
+}
+
+@media (max-width: 1150px) {
+  .superadmindashboardpanel {
+    grid-template-areas:
+      "totals progress"
+      "important important"
+      "overview overview";
+  }
+
+  .superadminimportantitems {
+    flex-direction: row;
+  }
+
+  .superadminimportantitem {
+    flex: 1;
+  }
+}
+
 @media (max-width: 768px) {
-  .superadmindashboardmessage {
-    margin-right: 0;
+  .superadmindashboardpanel {
+    grid-template-areas:
+      "totals"
+      "progress"
+      "important"
+      "overview";
+  }
+
+  .superadminimportantitems {
+    flex-direction: column;
+  }
+
+  .superadminoverviewtable th,
+  .superadminoverviewtable td {
+    padding: 10px 6px;
   }
 }

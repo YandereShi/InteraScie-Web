@@ -253,6 +253,9 @@ function Students({ PageComponent = TeacherPage }) {
     Math.ceil(filteredStudents.length / maxCards)
   );
   const activePage = Math.min(currentPage, totalPages);
+  if (studentsQuery.isSuccess && currentPage > totalPages) {
+    setCurrentPage(totalPages);
+  }
   const firstStudentIndex = (activePage - 1) * maxCards;
   const currentStudents = filteredStudents.slice(
     firstStudentIndex,

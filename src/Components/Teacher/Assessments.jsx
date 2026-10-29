@@ -243,6 +243,9 @@ function Assessments() {
     Math.ceil(sorted.length / maxRows)
   );
   const activePage = Math.min(page, pages);
+  if (scoresQuery.isSuccess && page > pages) {
+    setPage(pages);
+  }
   const first = (activePage - 1) * maxRows;
   const shown = sorted.slice(first, first + maxRows);
   const empty = Math.max(0, maxRows - shown.length);

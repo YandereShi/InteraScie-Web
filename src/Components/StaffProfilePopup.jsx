@@ -135,7 +135,10 @@ function StaffProfilePopup({ staff, onclose }) {
     <dialog ref={dialog} className="staffprofiledialog" aria-labelledby="staffprofiletitle" onCancel={(event) => { event.preventDefault(); if (!loading && !photoBusy) onclose(); }}>
       {view === "profile" ? (
         <>
-          <h2 id="staffprofiletitle">My Profile</h2>
+          <div className="staffprofileheader">
+            <h2 id="staffprofiletitle">My Profile</h2>
+            <button type="button" className="staffprofileclose" onClick={onclose} disabled={photoBusy || loading} aria-label="Close profile">&times;</button>
+          </div>
           <ProfilePhotoEditor path={GetStaffPhotoPath(staff.authUserID)} fallback={profileImage} alt="Profile photo" imageClassName="staffprofileimage" photo={photo} onPhotoChange={ChangePhoto} disabled={photoBusy || loading} onBusyChange={SetPhotoPreparing} />
           <div className="staffprofiledetails">
             <div><span>First name</span><strong>{staff.firstName}</strong></div>
@@ -143,8 +146,7 @@ function StaffProfilePopup({ staff, onclose }) {
           </div>
           {status && <p className="staffprofilestatus" role="status">{status}</p>}
           {message && <p className="staffprofileerror" role="alert">{message}</p>}
-          <div className="staffprofileactions">
-            <button type="button" className="staffprofilesecondary" onClick={onclose} disabled={photoBusy}>Cancel</button>
+          <div className="staffprofileactions staffprofilephotoactions">
             <button type="button" className="staffprofileprimary" onClick={OpenPassword} disabled={photoBusy}>Change Password</button>
             <button type="button" className="staffprofileprimary" onClick={SavePhoto} disabled={!photo || photoBusy}>{photoSaving ? "Saving..." : "Save"}</button>
           </div>

@@ -74,7 +74,10 @@ function RealtimeSync() {
           schema: "public",
           table: "Progress",
         },
-        (payload) => InvalidateProgressQueries(queryClient, payload)
+        (payload) => Promise.all([
+          InvalidateProgressQueries(queryClient, payload),
+          queryClient.invalidateQueries({ queryKey: ["SuperAdminDashboard"] }),
+        ])
       )
       .on(
         "postgres_changes",

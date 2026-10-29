@@ -1,12 +1,17 @@
 import "../../css/StudentPopup.css";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import teacherImage from "../../assets/pfp.png";
 import ProfilePhoto from "../ProfilePhoto";
 import { GetStaffPhotoPath } from "../../lib/profilePhotos";
 import { GetNameError } from "../../lib/nameValidation";
 import { limits } from "../../lib/inputLimits";
+import { ResendTeacherInvitation, teachersQueryKey } from "../../lib/teacherQueries";
+import { useActionPending } from "../../lib/useActionPending";
 
 function TeacherSectionPopup({ teacher, sections, onClose, onSave }) {
+    const queryClient = useQueryClient();
+    const resendPending = useRef(false);
     const [firstName, setFirstName] = useState(teacher.firstName ?? "");
     const [lastName, setLastName] = useState(teacher.lastName ?? "");
     const [sectionIDs, setSectionIDs] = useState(
@@ -14,6 +19,11 @@ function TeacherSectionPopup({ teacher, sections, onClose, onSave }) {
     );
     const [saving, setSaving] = useState(false);
     const [saveError, setSaveError] = useState("");
+    const [resending, setResending] = useState(false);
+    const [resendCooldown, setResendCooldown] = useState(0);
+    const [resendMessage, setResendMessage] = useState("");
+    const [resendError, setResendError] = useState("");
+    useActionPending(resending);
     const sectionMap = new Map();
 
     for (const section of [...(teacher.sections ?? []), ...sections]) {
@@ -25,6 +35,32 @@ function TeacherSectionPopup({ teacher, sections, onClose, onSave }) {
             String(second.sectionName ?? "")
         )
     );
+
+    useEffect(() => {
+        if (resendCooldown <= 0 || teacher.emailPending !== true) return;
+        const timer = window.setTimeout(() => setResendCooldown((current) => Math.max(0, current - 1)), 1000);
+        return () => window.clearTimeout(timer);
+    }, [resendCooldown, teacher.emailPending]);
+
+    async function HandleResend() {
+        if (saving || resendPending.current || resendCooldown > 0 || teacher.emailPending !== true) return;
+        resendPending.current = true;
+        setResending(true);
+        setResendMessage("");
+        setResendError("");
+
+        try {
+            const result = await ResendTeacherInvitation(teacher.staffID);
+            setResendMessage(result.message || "Invitation email resent successfully.");
+            setResendCooldown(result.cooldownSeconds || 60);
+        } catch (error) {
+            setResendError(error.message || "Unable to resend the invitation email.");
+        } finally {
+            resendPending.current = false;
+            setResending(false);
+            void queryClient.invalidateQueries({ queryKey: teachersQueryKey, exact: true });
+        }
+    }
 
     function HandleSectionChange(sectionID, isChecked) {
         if (isChecked) {
@@ -43,6 +79,7 @@ function TeacherSectionPopup({ teacher, sections, onClose, onSave }) {
 
     async function HandleSubmit(event) {
         event.preventDefault();
+        if (saving || resendPending.current) return;
         const nameError = GetNameError(firstName, lastName);
 
         if (nameError) {
@@ -68,7 +105,7 @@ function TeacherSectionPopup({ teacher, sections, onClose, onSave }) {
     return (
         <div
             className="studentpopupoverlay"
-            onMouseDown={saving ? undefined : onClose}
+            onMouseDown={saving || resending ? undefined : onClose}
         >
             <div
                 className="studentpopup"
@@ -81,7 +118,7 @@ function TeacherSectionPopup({ teacher, sections, onClose, onSave }) {
                         type="button"
                         className="closestudentpopup"
                         onClick={onClose}
-                        disabled={saving}
+                        disabled={saving || resending}
                     >
                         ×
                     </button>
@@ -136,6 +173,13 @@ function TeacherSectionPopup({ teacher, sections, onClose, onSave }) {
                             value={teacher.username || "No login email"}
                             readOnly
                         />
+                        {teacher.emailPending === true && (
+                            <button type="button" className="teacherresendbutton" onClick={HandleResend} disabled={saving || resending || resendCooldown > 0}>
+                                {resending ? "Sending..." : resendCooldown > 0 ? `Resend Email (${resendCooldown}s)` : "Resend Email"}
+                            </button>
+                        )}
+                        {resendMessage && <p className="teacherresendstatus" role="status">{resendMessage}</p>}
+                        {resendError && <p className="teacherresenderror" role="alert">{resendError}</p>}
 
                         <fieldset className="teachersectionlist">
                             <legend>Sections</legend>
@@ -183,7 +227,7 @@ function TeacherSectionPopup({ teacher, sections, onClose, onSave }) {
                             type="button"
                             className="cancelstudent"
                             onClick={onClose}
-                            disabled={saving}
+                            disabled={saving || resending}
                         >
                             Cancel
                         </button>
@@ -191,7 +235,7 @@ function TeacherSectionPopup({ teacher, sections, onClose, onSave }) {
                         <button
                             type="submit"
                             className="savestudent"
-                            disabled={saving}
+                            disabled={saving || resending}
                         >
                             {saving ? "Saving..." : "Save"}
                         </button>

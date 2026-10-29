@@ -394,7 +394,6 @@ function Progress() {
 
   const activePage = Math.min(page, pages);
 
-  // Keep the stored page in range so Previous works on the first click.
   if (progressQuery.isSuccess && page > pages) {
     setPage(pages);
   }

@@ -252,12 +252,17 @@ export async function GetSuperAdminDashboard() {
   );
 
   if (error || !data) {
-    throw new Error("Unable to load dashboard totals.");
+    throw new Error("Unable to load the superadmin dashboard.");
   }
 
   return {
     studentTotal: Number(data.studentTotal) || 0,
     teacherTotal: Number(data.teacherTotal) || 0,
     sectionTotal: Number(data.sectionTotal) || 0,
+    students: data.students ?? [],
+    teachers: data.teachers ?? [],
+    sections: data.sections ?? [],
+    levels: data.levels ?? [],
+    records: data.records ?? [],
   };
 }

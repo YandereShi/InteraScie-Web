@@ -17,7 +17,6 @@ import SuperAdminSections from "./Components/SuperAdmin/SuperAdminSections";
 import SuperAdminStudents from "./Components/SuperAdmin/SuperAdminStudents";
 import SuperAdminTeachers from "./Components/SuperAdmin/SuperAdminTeachers";
 import CreateTeacherPassword from "./Components/Teacher/CreateTeacherPassword";
-import PolicyPage from "./Components/PolicyPage";
 
 function NavigationGuard() {
   const { actionPending } = useContext(PopupContext);
@@ -41,8 +40,6 @@ const router = createBrowserRouter(createRoutesFromElements(
         <Route path="/" element={<Login />} />
         <Route path="/resetpassword" element={<ResetPassword />} />
         <Route path="/teacherpassword" element={<CreateTeacherPassword />} />
-        <Route path="/privacy" element={<PolicyPage policy="privacy" />} />
-        <Route path="/terms" element={<PolicyPage policy="terms" />} />
         <Route path="download" element={<Downloadpage />} />
         <Route path="/teacher" element={<TeacherLayout />}>
           <Route index element={<TeacherDashboard />} />

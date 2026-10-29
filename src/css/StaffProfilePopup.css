@@ -55,6 +55,37 @@
   font-size: 1.7rem;
 }
 
+.staffprofileheader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 22px;
+}
+
+.staffprofileheader h2 {
+  margin: 0;
+  min-width: 0;
+  font-size: clamp(1.3rem, 4vw, 1.7rem);
+  overflow-wrap: anywhere;
+}
+
+.staffprofileclose {
+  flex-shrink: 0;
+  padding: 0 4px;
+  border: none;
+  background: none;
+  color: #17251d;
+  font-size: 2rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.staffprofileclose:disabled {
+  opacity: .65;
+  cursor: wait;
+}
+
 .staffprofiledialog .profilephotoeditor {
   margin: 0 auto 20px;
 }
@@ -124,6 +155,10 @@
   font: inherit;
   font-weight: 600;
   cursor: pointer;
+}
+
+.staffprofilephotoactions > button:first-child {
+  margin-right: auto;
 }
 
 .staffprofileactions button:disabled {

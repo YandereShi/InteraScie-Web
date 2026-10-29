@@ -16,6 +16,16 @@
   cursor: pointer;
 }
 
+.teacheremailpendingcard {
+  border: 2px solid #eab308;
+}
+
+.teachercard .teacherpendingtext {
+  margin-top: 6px;
+  color: #854d0e;
+  font-weight: 600;
+}
+
 .teachercard:focus-visible {
   outline: 3px solid #00bf63;
   outline-offset: 2px;

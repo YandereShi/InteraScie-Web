@@ -10,9 +10,7 @@ function BatchQuestionPopup({ questions, maximum, onClose, onSave }) {
   const [filename, setFilename] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
-  const [hasResults, setHasResults] = useState(false);
-  const [summary, setSummary] = useState("");
-  const reviewed = hasResults ? rows : ValidateQuestionBatch(rows, questions, maximum);
+  const reviewed = ValidateQuestionBatch(rows, questions, maximum);
   const ready = reviewed.filter((row) => !row.error).length;
 
   useEffect(() => {
@@ -34,8 +32,6 @@ function BatchQuestionPopup({ questions, maximum, onClose, onSave }) {
     setBusy(true);
     setError("");
     setRows([]);
-    setHasResults(false);
-    setSummary("");
     setFilename(file.name);
     try {
       setRows(await ReadQuestionFile(file));
@@ -49,15 +45,13 @@ function BatchQuestionPopup({ questions, maximum, onClose, onSave }) {
 
   async function Submit(event) {
     event.preventDefault();
-    if (request.current || hasResults || !ready) return;
+    if (request.current || !ready) return;
     request.current = true;
     setBusy(true);
     setError("");
     try {
-      const result = await onSave(rows);
-      setRows(result.rows);
-      setHasResults(true);
-      setSummary(`${result.saved} saved · ${result.rows.length - result.saved} rejected.${result.saved < result.rows.length ? " Choose a corrected file to upload the rejected questions." : ""}`);
+      await onSave(rows);
+      onClose();
     } catch (saveError) {
       setError(saveError.message);
     } finally {
@@ -86,12 +80,11 @@ function BatchQuestionPopup({ questions, maximum, onClose, onSave }) {
         {filename && <p className="batchfilename">{filename}</p>}
         {busy && <p role="status">Processing...</p>}
         {error && <p className="batcherror" role="alert">{error}</p>}
-        {summary && <p role="status">{summary}</p>}
         {rows.length > 0 && <>
-          {!hasResults && <p>{ready} ready. Questions with errors or no selected correct answer will be skipped.</p>}
+          <p>{ready} ready. Questions with errors or no selected correct answer will be skipped.</p>
           <div className="questionbatchpreview">
             {reviewed.map((item) => (
-              <fieldset key={item.row} disabled={busy || hasResults} className={item.error && item.error !== "Select the correct answer." ? "questionbatchrejected" : "questionbatchsuccess"}>
+              <fieldset key={item.row} disabled={busy} className={item.error && item.error !== "Select the correct answer." ? "questionbatchrejected" : "questionbatchsuccess"}>
                 <legend>Row {item.row}{item.saved ? " · Saved" : ""}</legend>
                 <p>{item.text}</p>
                 {item.choices.map((choice, position) => (
@@ -109,8 +102,8 @@ function BatchQuestionPopup({ questions, maximum, onClose, onSave }) {
           </div>
         </>}
         <div className="batchactions">
-          <button type="button" disabled={busy} onClick={onClose}>{hasResults ? "Close" : "Cancel"}</button>
-          <button type="submit" disabled={busy || hasResults || !ready}>{busy ? "Processing..." : hasResults ? "Upload completed" : `Save ${ready} Questions`}</button>
+          <button type="button" disabled={busy} onClick={onClose}>Cancel</button>
+          <button type="submit" disabled={busy || !ready}>{busy ? "Processing..." : `Save ${ready} Questions`}</button>
         </div>
       </form>
     </dialog>
