@@ -79,8 +79,10 @@ export async function GetBranchAccuracy(staffID) {
   }
 
   const branches = new Map(
-    levels.filter((level) => accuracyBranches.includes(level.branchName))
-      .map((level) => [level.levelID, level.branchName])
+    levels.map((level) => [
+      level.levelID,
+      level.branchName === "Earth" ? "Earth Science" : level.branchName,
+    ]).filter(([, branch]) => accuracyBranches.includes(branch))
   );
   const assessments = [];
   const selectedLevels = new Set();
