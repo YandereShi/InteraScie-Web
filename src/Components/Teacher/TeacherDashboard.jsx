@@ -1,6 +1,7 @@
 import "../../css/TeacherDashboard.css";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useOutletContext } from "react-router";
 import { PiStudentFill } from "react-icons/pi";
 import { TbUsersGroup } from "react-icons/tb";
 import { supabase } from "../../lib/supabase";
@@ -13,6 +14,7 @@ import QuestionAccuracyPopup from "./QuestionAccuracyPopup";
 import DashboardRadar from "./DashboardRadar";
 import DashboardLevelProgress from "./DashboardLevelProgress";
 import RadarGraphPopup from "./RadarGraphPopup";
+import ExportDataPopup from "./ExportDataPopup";
 
 const emptyDashboard = {
   staffID: null,
@@ -74,12 +76,14 @@ function GetCharts(levels, tests, scores) {
 }
 
 function TeacherDashboard() {
+  const { teacher } = useOutletContext();
   const queryClient = useQueryClient();
   const [branch, setBranch] = useState("Chemistry");
   const [active, setActive] = useState(null);
   const [section, setSection] = useState("all");
   const [accuracyOpen, setAccuracyOpen] = useState(false);
   const [radarOpen, setRadarOpen] = useState(false);
+  const [exportOpen, setExportOpen] = useState(false);
   const OpenRadar = useCallback(() => setRadarOpen(true), []);
   const CloseRadar = useCallback(() => setRadarOpen(false), []);
 
@@ -242,17 +246,20 @@ function TeacherDashboard() {
           <div className="performancehead">
             <h2>Performance Overview</h2>
 
-            <select
-              value={branch}
-              onChange={(event) => setBranch(event.target.value)}
-              aria-label="Select graph branch"
-              disabled={loading}
-            >
-              <option value="Chemistry">Chemistry</option>
-              <option value="Biology">Biology</option>
-              <option value="Physics">Physics</option>
-              <option value="Earth">Earth</option>
-            </select>
+            <div className="performanceactions">
+              <button type="button" className="dashboardexportbutton" disabled={loading || !staffID} onClick={() => setExportOpen(true)}>Export Data</button>
+              <select
+                value={branch}
+                onChange={(event) => setBranch(event.target.value)}
+                aria-label="Select graph branch"
+                disabled={loading}
+              >
+                <option value="Chemistry">Chemistry</option>
+                <option value="Biology">Biology</option>
+                <option value="Physics">Physics</option>
+                <option value="Earth">Earth</option>
+              </select>
+            </div>
           </div>
 
           <div className="charts">
@@ -319,6 +326,7 @@ function TeacherDashboard() {
         {radarOpen && (
           <RadarGraphPopup levels={radarQuery.data ?? []} sections={sections} loading={radarLoading} error={radarError} onClose={CloseRadar} />
         )}
+        {exportOpen && <ExportDataPopup teacherName={[teacher.firstName, teacher.lastName].filter(Boolean).join(" ")} onClose={() => setExportOpen(false)} />}
       </section>
     </TeacherPage>
   );

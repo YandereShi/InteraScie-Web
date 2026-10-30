@@ -1,0 +1,166 @@
+[
+  {
+    "title": "",
+    "body": [
+      "InteraScie: A 3D Interactive Science Game",
+      "with Progress Tracking for Grade 7 Students",
+      "of Probex School",
+      "",
+      "Justine B. Alentajan",
+      "Christian Jiff A. Cruz",
+      "Jan Edmar Z. Domondon",
+      "Atkinson L. Estrada",
+      "",
+      "STI College Caloocan",
+      "October 31, 2026"
+    ],
+    "notes": "Present the project and introduce the proponents. Adviser: RJ Anuel Louis Canlas. Bachelor of Science in Information Technology.\nSource: manuscript title page.\n\nSource document: https://docs.google.com/document/d/1BDoYcTpU6J9mMpsyQLBLkI5xKE4HnG0jA-X6dnOEf_4/edit"
+  },
+  {
+    "title": "PROJECT CONTEXT",
+    "body": [
+      "Grade 7 students at Probex School struggle to visualize abstract science concepts.",
+      "Textbooks and presentation slides offer limited views of processes in Biology and Earth Science.",
+      "Student attention decreases during prolonged lectures.",
+      "Manual score recording makes it difficult for teachers to identify learning gaps promptly."
+    ],
+    "notes": "The project responds to an interview with Ma’am Velle Painaga Ong and a preliminary student survey. The school already uses physical laboratories for basic experiments. The gap concerns abstract or large-scale concepts that are difficult to demonstrate with existing materials.\nSource: Introduction, Project Context.\n\nSource document: https://docs.google.com/document/d/1BDoYcTpU6J9mMpsyQLBLkI5xKE4HnG0jA-X6dnOEf_4/edit"
+  },
+  {
+    "title": "PURPOSE AND DESCRIPTION",
+    "body": [
+      "Supplement classroom instruction through an interactive science game and a teacher web portal.",
+      "Combine 3D environments with 2D interfaces, simulations, puzzles, and guided exploration.",
+      "Use SAGE, the guide robot, to explain activities and provide instructions.",
+      "Record lesson progress and assessment results for teacher monitoring."
+    ],
+    "notes": "InteraScie means Interactive Science. The application reinforces lessons after classroom discussions. Teachers remain responsible for instruction. The hybrid use of 2D and 3D elements supports clear navigation and device performance.\nSource: Purpose and Description.\n\nSource document: https://docs.google.com/document/d/1BDoYcTpU6J9mMpsyQLBLkI5xKE4HnG0jA-X6dnOEf_4/edit"
+  },
+  {
+    "title": "PROBLEMS",
+    "label": "General Problem",
+    "body": [
+      "Limited understanding of Grade 7 science concepts due to insufficient interactive visual materials and inefficient student progress tracking."
+    ],
+    "notes": "The teacher reported that static 2D materials make some scientific processes difficult to visualize. Manual record keeping also takes time and delays identification of learning gaps.\nSource: General Problem.\n\nSource document: https://docs.google.com/document/d/1BDoYcTpU6J9mMpsyQLBLkI5xKE4HnG0jA-X6dnOEf_4/edit"
+  },
+  {
+    "title": "PROBLEMS",
+    "label": "Specific Problems",
+    "body": [
+      "Decreasing student attention during long science lectures that rely on traditional teaching methods.",
+      "Inefficient recording and tracking of Grade 7 students’ academic progress through manual methods.",
+      "Difficulty presenting complex science concepts with limited interactive and 3D visual materials."
+    ],
+    "notes": "These are the three specific problems stated in the manuscript. They correspond to the three specific objectives: varied gameplay, progress tracking, and interactive 3D representations.\nSource: Specific Problems.\n\nSource document: https://docs.google.com/document/d/1BDoYcTpU6J9mMpsyQLBLkI5xKE4HnG0jA-X6dnOEf_4/edit"
+  },
+  {
+    "title": "OBJECTIVES",
+    "label": "General Objective",
+    "body": [
+      "Develop InteraScie, a 3D interactive science game with progress tracking for Grade 7 students of Probex School."
+    ],
+    "notes": "The project combines a student game and a teacher web portal to support science learning and the monitoring of in-game performance.\nSource: General Objective.\n\nSource document: https://docs.google.com/document/d/1BDoYcTpU6J9mMpsyQLBLkI5xKE4HnG0jA-X6dnOEf_4/edit"
+  },
+  {
+    "title": "OBJECTIVES",
+    "label": "Specific Objectives",
+    "body": [
+      "Develop a game with multiple modes aligned with the Grade 7 Science curriculum to maintain student interest.",
+      "Develop progress tracking to help teachers monitor learning progress and record assessment scores.",
+      "Implement 3D visuals and interactive representations of scientific concepts to support understanding."
+    ],
+    "notes": "The modes include guided exploration, simulations, and puzzles. Tracking covers in-game activities, saved checkpoints, lesson completion, and assessments.\nSource: Specific Objectives.\n\nSource document: https://docs.google.com/document/d/1BDoYcTpU6J9mMpsyQLBLkI5xKE4HnG0jA-X6dnOEf_4/edit"
+  },
+  {
+    "title": "SCOPE AND LIMITATIONS",
+    "columns": [
+      {
+        "label": "Scope",
+        "body": [
+          "Grade 7 Science at Probex School, aligned with its MATATAG-based textbook.",
+          "11 game levels across Chemistry, Biology, Physics, and Earth Science.",
+          "Student gameplay, SAGE guidance, and teacher-prepared assessments.",
+          "Web portal for accounts, sections, access controls, and progress monitoring."
+        ]
+      },
+      {
+        "label": "Limitations",
+        "body": [
+          "Grade 7 content only. Curriculum changes may require updates.",
+          "Internet required for login, access checks, progress saving, and assessment submission.",
+          "Game supports Android and Windows. No iOS, macOS, or browser gameplay.",
+          "Single-player experience. Device specifications affect performance."
+        ]
+      }
+    ],
+    "notes": "The manuscript describes three Chemistry levels, three Biology levels, three Physics levels, and two Earth Science levels. It uses both 'lessons' and 'levels' for this count, while the conclusion clarifies that a game level can cover multiple lessons. The slide uses 11 game levels to avoid implying only 11 individual lesson topics.\nThe teacher/super admin portal runs in a compatible modern web browser. Students can resume from the last successfully saved checkpoint. An interrupted connection can leave later activity unsaved.\nSource: Scope and Limitations, Conclusion.\n\nSource document: https://docs.google.com/document/d/1BDoYcTpU6J9mMpsyQLBLkI5xKE4HnG0jA-X6dnOEf_4/edit"
+  },
+  {
+    "title": "TECHNICAL BACKGROUND",
+    "body": [
+      "Game: Unity and C# for Android and Windows.",
+      "Web portal: React, JavaScript, HTML, and CSS, built with Vite.",
+      "Shared backend: Supabase Authentication and PostgreSQL for accounts, progress, and assessments.",
+      "Design and assets: Blender, Figma, Canva, and Piper TTS for SAGE’s narration.",
+      "Delivery: Vercel hosts the portal. GitHub Releases distributes game builds."
+    ],
+    "notes": "Supporting tools include Visual Studio Code, Node.js/npm, the Unity Asset Store, Recharts and Chart.js for performance charts, and Brevo for account-related email through Supabase Authentication.\nSource: Technical Background, Development.\n\nSource document: https://docs.google.com/document/d/1BDoYcTpU6J9mMpsyQLBLkI5xKE4HnG0jA-X6dnOEf_4/edit"
+  },
+  {
+    "title": "REQUIREMENT ANALYSIS",
+    "body": [
+      "Users: Grade 7 students, science teachers, and the science coordinator or department head.",
+      "Evidence: Teacher interview and preliminary student survey.",
+      "Needs: Clear science visualizations, engaging activities, and organized progress records.",
+      "Use: Classroom reinforcement and self-paced study on supported devices.",
+      "Development approach: Agile cycles of requirements, design, development, testing, deployment, and review."
+    ],
+    "notes": "The interviewee was Ma’am Velle Painaga Ong of Probex School in Malabon. Students use accounts created by teachers or administrators. Teachers prepare assessments and monitor performance. The super admin manages teacher accounts, section assignments, and overall account organization.\nThe interview and preliminary survey informed the system requirements. Agile provided the development process.\nSource: Requirements Analysis, Interview Insights, Development Methodology.\n\nSource document: https://docs.google.com/document/d/1BDoYcTpU6J9mMpsyQLBLkI5xKE4HnG0jA-X6dnOEf_4/edit"
+  },
+  {
+    "title": "REQUIREMENT DOCUMENTATION",
+    "columns": [
+      {
+        "label": "Functional requirements",
+        "body": [
+          "Student login, initial password change, lesson activities, and saved progress.",
+          "Assessments unlock after lesson completion and teacher approval.",
+          "Teachers manage students, sections, questions, and performance records.",
+          "Super admin manages teacher accounts and section assignments."
+        ]
+      },
+      {
+        "label": "Non-functional requirements",
+        "body": [
+          "Authenticated access and secure storage of user data.",
+          "Clear controls and instructions suitable for Grade 7 students.",
+          "Target scene and web page loading within 10 seconds.",
+          "Stable operation on supported Android, Windows, and modern browsers."
+        ]
+      }
+    ],
+    "notes": "An assessment must contain fifteen questions before teachers can open it. Teachers can separately control lesson access and assessment access. The requirements also cover reliable saving, low input delay, minimizing crashes, and maintainability of assessment content.\nThe 10-second loading threshold is a stated performance requirement, not a measured result on this slide.\nSource: Requirements Documentation, Functional Requirements, Non-Functional Requirements.\n\nSource document: https://docs.google.com/document/d/1BDoYcTpU6J9mMpsyQLBLkI5xKE4HnG0jA-X6dnOEf_4/edit"
+  },
+  {
+    "title": "DESIGN OF SOFTWARE, SYSTEM,\nPRODUCT, AND/OR PROCESSES",
+    "body": [
+      "System structure: Student game and staff web portal share a Supabase backend.",
+      "Learning flow: Login, lesson selection, guided activity, and checkpoint saving.",
+      "Assessment flow: Lesson completion, teacher approval, 15-item assessment, and recorded results.",
+      "Design models: Storyboard, DFD Levels 0 and 1, ERD, use case diagram, and HIPO.",
+      "Interface designs: Game screens and web wireframes for accounts, sections, assessments, and progress."
+    ],
+    "notes": "The manuscript provides a storyboard, context diagram, Level 1 DFD, ERD, use case diagram, HIPO, and game/web wireframes. The game and portal communicate through shared backend services. Teachers monitor completion, checkpoints, assessment scores, and answer accuracy.\nNormal assessment access requires both completion of the corresponding lesson and teacher approval. The implementation temporarily disabled lesson completion gating for the two test lessons so the instruction-only groups could take the same assessments.\nSource: Design of Software, System, Product, and/or Processes, Scope and Limitations, Implementation Results.\n\nSource document: https://docs.google.com/document/d/1BDoYcTpU6J9mMpsyQLBLkI5xKE4HnG0jA-X6dnOEf_4/edit"
+  },
+  {
+    "title": "SYSTEM DEMONSTRATION",
+    "body": [
+      "Teacher portal: Student account, section, and assessment setup.",
+      "Student game: Login, SAGE guidance, and a science activity.",
+      "Assessment: Lesson completion, teacher approval, and submission.",
+      "Teacher dashboard: Saved progress, scores, and answer accuracy."
+    ],
+    "notes": "Suggested demonstration sequence:\n1. Open the teacher portal and show an existing section and student account without exposing passwords or personal student records.\n2. Show a prepared 15-question assessment and the teacher’s open/close control.\n3. Log in to the game with a demonstration account. Show a selected lesson, SAGE’s guidance, an interaction, and a saved checkpoint.\n4. Complete the lesson, confirm teacher approval, submit the assessment, then show the recorded results on the portal.\n5. If relevant during questions, explain the manuscript’s classroom comparison: Chemistry with gameplay averaged 11.33/15 versus 8.48/15 for instruction only. After switching conditions, Biology with gameplay averaged 9.43/15 versus 7.29/15 for instruction only. These are descriptive comparisons for two selected lessons and do not establish a causal effect.\nSource: Scope and Limitations, Requirements Documentation, Implementation Results.\n\nSource document: https://docs.google.com/document/d/1BDoYcTpU6J9mMpsyQLBLkI5xKE4HnG0jA-X6dnOEf_4/edit"
+  }
+]

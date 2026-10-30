@@ -1,0 +1,145 @@
+.exportdatapopup {
+  width: min(520px, calc(100% - 32px));
+  max-height: calc(100dvh - 32px);
+  margin: auto;
+  padding: 26px;
+  overflow-y: auto;
+  box-sizing: border-box;
+  border: 1px solid #d2d9d4;
+  border-radius: 16px;
+  background: #ffffff;
+  color: #17251d;
+  box-shadow: 0 14px 40px color-mix(in srgb, #000000 25%, transparent);
+}
+
+.exportdatapopup::backdrop {
+  background: color-mix(in srgb, #000000 55%, transparent);
+}
+
+.exportdataheader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.exportdataheader h2 {
+  margin: 0;
+  color: #006b3c;
+  font-size: clamp(1.3rem, 4vw, 1.7rem);
+}
+
+.exportdataheader button {
+  padding: 0 4px;
+  border: 0;
+  background: transparent;
+  color: #111111;
+  font-size: 2rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.exportdatafilters {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.exportdatachoices {
+  min-width: 0;
+  margin: 0;
+  padding: 12px;
+  border: 1px solid #89988e;
+  border-radius: 7px;
+}
+
+.exportdatachoices legend {
+  padding: 0 5px;
+  font-weight: 700;
+}
+
+.exportdatachoices label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  min-width: 0;
+  padding: 9px 0;
+  font-size: clamp(0.8rem, 3vw, 1rem);
+  cursor: pointer;
+}
+
+.exportdatachoices label span {
+  overflow-wrap: anywhere;
+}
+
+.exportdatachoices input {
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  accent-color: #00bf63;
+  cursor: pointer;
+}
+
+.exportdataselectall {
+  border-bottom: 1px solid #d2d9d4;
+  font-weight: 700;
+}
+
+.exportdatalist {
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.exportdatainfo {
+  margin: 20px 0;
+  color: #52675a;
+  line-height: 1.5;
+}
+
+.exportdataactions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 24px;
+}
+
+.exportdataactions button,
+.exportdataretry {
+  min-height: 42px;
+  padding: 10px 14px;
+  border: 0;
+  border-radius: 7px;
+  font: inherit;
+  font-size: clamp(0.8rem, 3vw, 1rem);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.exportdatadownload,
+.exportdataretry {
+  background: #00bf63;
+  color: #ffffff;
+}
+
+.exportdatacancel {
+  background: #dddddd;
+  color: #111111;
+}
+
+.exportdataerror {
+  color: #b42318;
+}
+
+.exportdatapopup button:disabled,
+.exportdatachoices:disabled {
+  opacity: .65;
+  cursor: wait;
+}
+
+@media (max-width: 480px) {
+  .exportdatapopup { padding: 20px; }
+  .exportdatafilters { grid-template-columns: 1fr; }
+}
