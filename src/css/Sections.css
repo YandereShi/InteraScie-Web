@@ -23,63 +23,92 @@
 }
 
 .sectiontools {
-  min-height: 68px;
   flex-shrink: 0;
-  display: grid;
-  grid-template-columns: minmax(190px, 28%) minmax(220px, 1fr) auto auto;
-  align-items: center;
-  border-bottom: 1px solid #454545;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px 16px 8px;
+}
+
+.sectionheading,
+.sectionsearch {
+  min-width: 0;
+}
+
+.sectionheading {
+  flex: 0 1 220px;
+}
+
+.sectionsearch {
+  flex: 0 1 280px;
 }
 
 .sectionpick {
   width: 100%;
-  height: 100%;
-  padding: 0 20px;
+  min-width: 0;
+  height: 44px;
+  padding: 0 12px;
   background-color: #ffffff;
-  border: none;
-  border-right: 1px solid #454545;
-  font-size: 1.8rem;
+  border: 1px solid #d5d5d5;
+  border-radius: 8px;
+  color: #222222;
+  font-size: clamp(1rem, 1.3vw, 1.2rem);
+  font-weight: 600;
+  text-overflow: ellipsis;
   cursor: pointer;
 }
 
-.sectionsearch {
-  padding: 0 20px;
+.sectionstudentcount {
+  margin: 0;
+  color: #666666;
+  font-size: clamp(0.75rem, 1vw, 0.85rem);
 }
 
 .sectionsearch input {
-  width: min(100%, 320px);
+  width: 100%;
+  min-width: 0;
+  height: 44px;
   padding: 8px 12px;
-  border: 1px solid #454545;
-  border-radius: 4px;
-  font-size: 1rem;
+  background-color: #ffffff;
+  border: 1px solid #d5d5d5;
+  border-radius: 8px;
+  font-size: clamp(0.85rem, 1.2vw, 1rem);
+}
+
+.sectiontoolactions {
+  display: flex;
+  gap: 10px;
+  margin-left: auto;
+}
+
+.sectionpick:focus-visible,
+.sectionsearch input:focus-visible {
+  outline: 2px solid #006b3c;
+  outline-offset: 2px;
 }
 
 .sectiondelete,
 .sectionremove {
-  padding: 8px 12px;
+  min-height: 44px;
+  padding: 8px 14px;
   border: none;
+  border-radius: 8px;
+  background-color: #ff0000;
+  color: #ffffff;
+  font-size: clamp(0.8rem, 1vw, 0.95rem);
   font-weight: bold;
+  white-space: nowrap;
   cursor: pointer;
-}
-
-.sectiondelete {
-  margin-right: 8px;
-  background-color: #ff0000;
-  color: #ffffff;
-}
-
-.sectionremove {
-  margin-right: 10px;
-  background-color: #ff0000;
-  color: #ffffff;
 }
 
 .sectionselectrow {
   flex-shrink: 0;
   display: flex;
-  justify-content: flex-end;
-  padding: 7px 10px;
-  border-bottom: 1px solid #454545;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 0 16px 8px;
 }
 
 .sectiondelete:disabled,
@@ -244,19 +273,6 @@
     padding-right: 20px;
   }
 
-  .sectiontools {
-    grid-template-columns: minmax(150px, 28%) minmax(180px, 1fr) auto auto;
-  }
-
-  .sectionpick {
-    padding: 0 12px;
-    font-size: 1.35rem;
-  }
-
-  .sectionsearch {
-    padding: 0 12px;
-  }
-
   .sectionlist {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -285,52 +301,35 @@
   }
 
   .sectiontools {
-    min-height: 0;
-    grid-template-columns: minmax(0, 1fr) auto;
-    grid-template-areas:
-      "pick pick"
-      "search search"
-      "delete remove";
+    gap: 10px;
+    padding: 12px 12px 8px;
   }
 
-  .sectionpick {
-    grid-area: pick;
-    height: 48px;
-    padding: 0 10px;
-    border-right: 1px solid #454545;
-    border-bottom: 1px solid #454545;
-    font-size: 1.1rem;
-  }
-
+  .sectionheading,
   .sectionsearch {
-    grid-area: search;
-    padding: 8px;
+    flex-basis: 100%;
   }
 
-  .sectionsearch input {
+  .sectiontoolactions {
     width: 100%;
+    gap: 8px;
   }
 
+  .sectiondelete,
   .sectionremove {
-    grid-area: remove;
-    margin: 0 7px 7px 4px;
-    padding: 7px 9px;
-    font-size: 0.85rem;
+    flex: 1;
+    min-width: 0;
+    padding: 8px;
+    font-size: clamp(0.7rem, 2.8vw, 0.85rem);
+    white-space: normal;
   }
 
   .sectionselectrow {
-    padding: 0 7px 7px;
+    padding: 0 12px 6px;
   }
 
   .sectionselectrow .sectioncheck {
     gap: 5px;
-  }
-
-  .sectiondelete {
-    grid-area: delete;
-    margin: 0 4px 7px 7px;
-    padding: 7px 9px;
-    font-size: 0.85rem;
   }
 
   .sectionlist {

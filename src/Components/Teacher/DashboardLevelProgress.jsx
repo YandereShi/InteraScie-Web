@@ -74,11 +74,11 @@ function DashboardLevelProgress({ sections, students, levels, records, loading, 
           <p>All subjects · {studentCount} {studentCount === 1 ? "student" : "students"}</p>
         </div>
         <div className="dashboardprogressactions">
+          <button type="button" className="dashboardtimebutton" onClick={() => setTimeOpen(true)} disabled={loading || Boolean(error) || !currentBranch}>Time Taken</button>
           <select value={selectedSection} onChange={(event) => setSection(event.target.value)} aria-label="Progress section">
             <option value="all">All sections</option>
             {sections.map((item) => <option key={item.sectionID} value={String(item.sectionID)}>{item.sectionName}</option>)}
           </select>
-          <button type="button" className="dashboardtimebutton" onClick={() => setTimeOpen(true)} disabled={loading || Boolean(error) || !currentBranch}>Time Taken</button>
         </div>
       </div>
 

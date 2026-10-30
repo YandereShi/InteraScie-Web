@@ -344,52 +344,60 @@ function Sections({ PageComponent = TeacherPage }) {
       <section className="sectionspanel">
         <div className="sectionbox">
           <div className="sectiontools">
-            <select
-              className="sectionpick"
-              value={section}
-              onChange={PickSection}
-              aria-label="Active section"
-              disabled={deleting || moving || choices.length === 0}
-            >
-              {choices.length === 0 && <option value="">No sections</option>}
+            <div className="sectionheading">
+              <select
+                className="sectionpick"
+                value={section}
+                onChange={PickSection}
+                aria-label="Active section"
+                disabled={deleting || moving || choices.length === 0}
+              >
+                {choices.length === 0 && <option value="">No sections</option>}
 
-              {choices.map((item) => (
-                <option key={item.sectionID} value={item.sectionID}>
-                  {item.displayName ?? item.sectionName}
-                </option>
-              ))}
-            </select>
+                {choices.map((item) => (
+                  <option key={item.sectionID} value={item.sectionID}>
+                    {item.displayName ?? item.sectionName}
+                  </option>
+                ))}
+              </select>
+            </div>
 
             <div className="sectionsearch">
               <input
                 type="text"
                 placeholder="Search students..."
+                aria-label="Search students"
                 maxLength={limits.search}
                 value={search}
                 onChange={ChangeSearch}
               />
             </div>
 
-            <button
-              type="button"
-              className="sectiondelete"
-              disabled={!section || isNoSection || loading || deleting || moving}
-              onClick={DeleteActiveSection}
-            >
-              {deleting ? "Deleting..." : "Delete Section"}
-            </button>
+            <div className="sectiontoolactions">
+              <button
+                type="button"
+                className="sectiondelete"
+                disabled={!section || isNoSection || loading || deleting || moving}
+                onClick={DeleteActiveSection}
+              >
+                {deleting ? "Deleting..." : "Delete Section"}
+              </button>
 
-            <button
-              type="button"
-              className="sectionremove"
-              disabled={deleting || moving || selected.length === 0 || isNoSection}
-              onClick={RemoveStudents}
-            >
-              {moving ? "Moving..." : "Remove Selected"}
-            </button>
+              <button
+                type="button"
+                className="sectionremove"
+                disabled={deleting || moving || selected.length === 0 || isNoSection}
+                onClick={RemoveStudents}
+              >
+                {moving ? "Moving..." : "Remove Selected"}
+              </button>
+            </div>
           </div>
 
           <div className="sectionselectrow">
+            <p className="sectionstudentcount">
+              {loading ? "Loading..." : error ? "—" : `${students.length} ${students.length === 1 ? "student" : "students"}`}
+            </p>
             <div className="sectioncheck">
               <label htmlFor="sectionall">Select All</label>
 
