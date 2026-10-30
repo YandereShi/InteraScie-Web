@@ -210,7 +210,19 @@ input{
         2px 2px 0 #111111;
 }
 
+.loginhomelink {
+    display: block;
+    width: min(100%, 31rem);
+    border-radius: 4px;
+}
+
+.loginhomelink:focus-visible {
+    outline: 3px solid #ffffff;
+    outline-offset: 5px;
+}
+
 .gameicon {
+    display: block;
     width: min(100%, 31rem);
     height: auto;
     max-height: clamp(3.5rem, 12vh, 7rem);

@@ -1,10 +1,9 @@
 import "../../css/TeacherDashboard.css";
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useCallback, useMemo, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { useOutletContext } from "react-router";
 import { PiStudentFill } from "react-icons/pi";
 import { TbUsersGroup } from "react-icons/tb";
-import { supabase } from "../../lib/supabase";
 import { GetTeacherDashboard, GetTeacherLevelProgress, GetTeacherRadarData, teacherDashboardQueryKey } from "../../lib/dashboardQueries";
 import { GetBranchAccuracy, GetBranchAccuracyQueryKey, accuracyBranches } from "../../lib/questionAccuracyQueries";
 import TeacherPage from "./TeacherPage";
@@ -77,7 +76,6 @@ function GetCharts(levels, tests, scores) {
 
 function TeacherDashboard() {
   const { teacher } = useOutletContext();
-  const queryClient = useQueryClient();
   const [branch, setBranch] = useState("Chemistry");
   const [active, setActive] = useState(null);
   const [section, setSection] = useState("all");
@@ -88,8 +86,8 @@ function TeacherDashboard() {
   const CloseRadar = useCallback(() => setRadarOpen(false), []);
 
   const dashboardQuery = useQuery({
-    queryKey: [...teacherDashboardQueryKey, branch],
-    queryFn: () => GetTeacherDashboard(branch),
+    queryKey: [...teacherDashboardQueryKey, teacher.staffID, branch],
+    queryFn: () => GetTeacherDashboard(teacher.staffID, branch),
     staleTime: 2 * 60 * 1000,
   });
 
@@ -109,7 +107,7 @@ function TeacherDashboard() {
   });
   const progressQuery = useQuery({
     queryKey: ["TeacherLevelProgress", staffID, studentIDs],
-    queryFn: () => GetTeacherLevelProgress(studentIDs),
+    queryFn: () => GetTeacherLevelProgress(staffID, studentIDs),
     enabled: Boolean(staffID),
     staleTime: 2 * 60 * 1000,
   });
@@ -128,35 +126,6 @@ function TeacherDashboard() {
     () => GetCharts(levels, tests, scores),
     [levels, scores, tests]
   );
-
-  useEffect(() => {
-    const channel = supabase
-      .channel("chartChanges")
-      .on(
-        "postgres_changes",
-        {
-          event: "*",
-          schema: "public",
-          table: "StudentAssessment",
-        },
-        () => {
-          queryClient.invalidateQueries({
-            queryKey: teacherDashboardQueryKey,
-          });
-          queryClient.invalidateQueries({ queryKey: ["TeacherRadar"] });
-        }
-      )
-      .on(
-        "postgres_changes",
-        { event: "*", schema: "public", table: "Progress" },
-        () => queryClient.invalidateQueries({ queryKey: ["TeacherLevelProgress"] })
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, [queryClient]);
 
   function GetScores(index) {
     const level = levels[index];

@@ -1,9 +1,9 @@
 import "../../css/Assessments.css";
-import { useEffect, useState } from "react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { useOutletContext } from "react-router";
 import { GetAssessmentOptions, assessmentOptionsQueryKey, GetAssessmentHistorySources, GetHistoricalAssessmentScores } from "../../lib/assessmentQueries";
-import { GetAssessmentScoresOptions, PrefetchAssessments, assessmentLessonCount } from "../../lib/assessmentCache";
+import { GetAssessmentScoresOptions, assessmentLessonCount } from "../../lib/assessmentCache";
 import { GetStudentPhotoPath } from "../../lib/profilePhotos";
 import studentImage from "../../assets/pfp.png";
 import ProfilePhoto from "../ProfilePhoto";
@@ -26,7 +26,6 @@ const emptyScores = {
 function Assessments() {
   const { teacher } = useOutletContext();
   const authUserID = teacher.authUserID;
-  const queryClient = useQueryClient();
   const [view, setView] = useState("scores");
   const [selectedSection, setSelectedSection] = useState(() => GetPageSelection(authUserID, "Assessments", "Section"));
   const [selectedBranch, setSelectedBranch] = useState(() => GetPageSelection(authUserID, "Assessments", "Branch"));
@@ -36,8 +35,8 @@ function Assessments() {
   const [selectedSource, setSelectedSource] = useState("current");
 
   const optionsQuery = useQuery({
-    queryKey: assessmentOptionsQueryKey,
-    queryFn: GetAssessmentOptions,
+    queryKey: [...assessmentOptionsQueryKey, teacher.staffID],
+    queryFn: () => GetAssessmentOptions(teacher.staffID),
     staleTime: 5 * 60 * 1000,
   });
 
@@ -82,21 +81,6 @@ function Assessments() {
       Boolean(staffID) &&
       lessonIDs.length > 0,
   });
-
-  const canPrefetch = optionsQuery.isSuccess && scoresQuery.isSuccess;
-
-  useEffect(() => {
-    if (!canPrefetch || view !== "scores" || historical) {
-      return;
-    }
-
-    let cancelled = false;
-    void PrefetchAssessments(queryClient, staffID, sections, levels, () => cancelled);
-
-    return () => {
-      cancelled = true;
-    };
-  }, [canPrefetch, historical, levels, queryClient, sections, staffID, view]);
 
   const scoreData = scoresQuery.data ?? emptyScores;
   const students = scoreData.students;

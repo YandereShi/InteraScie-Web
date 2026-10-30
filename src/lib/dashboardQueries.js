@@ -1,46 +1,17 @@
 import { supabase } from "./supabase";
+import { GetLevels, GetTeacherSections } from "./teacherData";
 
 export const teacherDashboardQueryKey = ["TeacherDashboard"];
 export const superAdminDashboardQueryKey = ["SuperAdminDashboard"];
 
-export async function GetTeacherDashboard(branch) {
-  const { data: userData, error: userError } =
-    await supabase.auth.getUser();
-  const user = userData.user;
-
-  if (userError || !user) {
-    throw new Error("Failed to fetch user information");
-  }
-
-  const { data: staff, error: staffError } = await supabase
-    .from("SchoolStaff")
-    .select("staffID")
-    .eq("authUserID", user.id)
-    .eq("role", "teacher")
-    .single();
-
-  if (staffError || !staff) {
-    throw new Error("Failed to fetch staff information");
-  }
-
-  const { data: sectionData, error: sectionError } =
-    await supabase
-      .from("Section")
-      .select("sectionID, sectionName")
-      .is("archivedAt", null)
-      .eq("staffID", staff.staffID)
-      .eq("isShared", false);
-
-  if (sectionError) {
-    throw new Error("Failed to fetch sections");
-  }
-
-  const sections = sectionData ?? [];
+export async function GetTeacherDashboard(staffID, branch) {
+  const sections = (await GetTeacherSections(staffID))
+    .filter((section) => section.isShared === false);
   const sectionIDs = sections.map((section) => section.sectionID);
 
   if (sectionIDs.length === 0) {
     return {
-      staffID: staff.staffID,
+      staffID,
       sections,
       students: [],
       levels: [],
@@ -61,19 +32,9 @@ export async function GetTeacherDashboard(branch) {
   }
 
   const students = studentData ?? [];
-  const { data: levelData, error: levelError } =
-    await supabase
-      .from("Level")
-      .select("levelID, levelName")
-      .eq("branchName", branch)
-      .order("levelID", { ascending: true })
-      .limit(3);
-
-  if (levelError) {
-    throw new Error(`Failed to fetch ${branch} lessons`);
-  }
-
-  const levels = levelData ?? [];
+  const levels = (await GetLevels(staffID))
+    .filter((level) => level.branchName === branch)
+    .slice(0, 3);
   const levelIDs = levels.map((level) => level.levelID);
 
   if (levelIDs.length === 0) {
@@ -84,7 +45,7 @@ export async function GetTeacherDashboard(branch) {
     await supabase
       .from("Assessment")
       .select("assessmentID, levelID")
-      .eq("staffID", staff.staffID)
+      .eq("staffID", staffID)
       .in("levelID", levelIDs)
       .order("assessmentID", { ascending: true });
 
@@ -113,7 +74,7 @@ export async function GetTeacherDashboard(branch) {
   }
 
   return {
-    staffID: staff.staffID,
+    staffID,
     sections,
     students,
     levels,
@@ -123,16 +84,7 @@ export async function GetTeacherDashboard(branch) {
 }
 
 export async function GetTeacherRadarData(staffID, students) {
-  const { data: levels, error: levelError } = await supabase
-    .from("Level")
-    .select("levelID, levelName, branchName")
-    .order("levelID", { ascending: true });
-
-  if (levelError) {
-    throw new Error("Unable to load radar levels.");
-  }
-
-  const levelList = levels ?? [];
+  const levelList = await GetLevels(staffID);
 
   const studentIDs = students.map((student) => student.studentID);
   if (!staffID || studentIDs.length === 0 || levelList.length === 0) {
@@ -219,17 +171,8 @@ export async function GetTeacherRadarData(staffID, students) {
   });
 }
 
-export async function GetTeacherLevelProgress(studentIDs) {
-  const { data: levels, error: levelError } = await supabase
-    .from("Level")
-    .select("levelID, levelName, branchName")
-    .order("levelID", { ascending: true });
-
-  if (levelError) {
-    throw new Error("Unable to load dashboard levels.");
-  }
-
-  const levelList = levels ?? [];
+export async function GetTeacherLevelProgress(staffID, studentIDs) {
+  const levelList = await GetLevels(staffID);
 
   if (studentIDs.length === 0 || levelList.length === 0) {
     return { levels: levelList, records: [] };

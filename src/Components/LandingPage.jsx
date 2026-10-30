@@ -55,17 +55,19 @@ function LandingPage() {
       </header>
 
       <main id="landing-content" tabIndex={-1}>
-        <section className="landingwrap landinghero" aria-labelledby="landing-title">
-          <div className="landingherocopy">
-            <p className="landingeyebrow">Learn · Play · Discover</p>
-            <h1 id="landing-title">Explore Science <span>Through Play</span></h1>
-            <p className="landingintro">Discover science through interactive lessons, challenges, and assessments.</p>
-            <Link className="landingbutton" to="/login">Get Started <FaArrowRight aria-hidden="true" /></Link>
+        <section className="landingherosection" aria-labelledby="landing-title">
+          <div className="landingwrap landinghero">
+            <div className="landingherocopy">
+              <p className="landingeyebrow">Learn · Play · Discover</p>
+              <h1 id="landing-title">Explore Science <span>Through Play</span></h1>
+              <p className="landingintro">Discover science through interactive lessons, challenges, and assessments.</p>
+              <Link className="landingbutton" to="/login">Get Started <FaArrowRight aria-hidden="true" /></Link>
+            </div>
+            <figure className="landingheroimage">
+              <img src={gameLogo} alt="InteraScie science game logo" width="1080" height="1080" fetchPriority="high" />
+              <figcaption>A world of science waiting to be explored.</figcaption>
+            </figure>
           </div>
-          <figure className="landingheroimage">
-            <img src={gameLogo} alt="InteraScie science game logo" width="1080" height="1080" fetchPriority="high" />
-            <figcaption>A world of science waiting to be explored.</figcaption>
-          </figure>
         </section>
 
         <section className="landingsection landingabout" id="landing-about" aria-labelledby="landing-about-title">
@@ -151,6 +153,7 @@ function LandingPage() {
           <div className="landingfooterlinks">
             <button type="button" aria-haspopup="dialog" onClick={() => SetPolicy("privacy")}>Privacy Policy</button>
             <button type="button" aria-haspopup="dialog" onClick={() => SetPolicy("terms")}>Terms and Conditions</button>
+            <a href="https://www.facebook.com/probexschool.ph" target="_blank" rel="noopener noreferrer">Contact</a>
           </div>
         </div>
       </footer>

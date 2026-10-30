@@ -1,6 +1,7 @@
 import "../../css/Questions.css";
 import { useContext, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useOutletContext } from "react-router";
 import { FaLock, FaLockOpen } from "react-icons/fa";
 import { supabase } from "../../lib/supabase";
 import { CreateAssessment, GetAssessmentAccess, GetAssessmentAccessQueryKey, GetAssessmentOptions, GetAssessmentQuestions, GetAssessmentQuestionsQueryKey, UpdateAssessmentAccess, assessmentOptionsQueryKey } from "../../lib/assessmentQueries";
@@ -21,6 +22,7 @@ const emptyQuestions = {
 };
 
 function Questions({ sectionID, sectionName, onBack }) {
+  const { teacher } = useOutletContext();
   const { ShowConfirmation } = useContext(PopupContext);
   const queryClient = useQueryClient();
   const [selectedBranch, setSelectedBranch] = useState("");
@@ -36,8 +38,8 @@ function Questions({ sectionID, sectionName, onBack }) {
   useActionPending(deleting);
 
   const optionsQuery = useQuery({
-    queryKey: assessmentOptionsQueryKey,
-    queryFn: GetAssessmentOptions,
+    queryKey: [...assessmentOptionsQueryKey, teacher.staffID],
+    queryFn: () => GetAssessmentOptions(teacher.staffID),
     staleTime: 5 * 60 * 1000,
   });
 

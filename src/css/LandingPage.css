@@ -93,13 +93,13 @@ html:has(.landingpage) {
 }
 
 .landingnavlinks a:hover,
-.landingfooterlinks button:hover {
+.landingfooterlinks :is(a, button):hover {
   text-decoration: underline;
   text-underline-offset: 0.3em;
 }
 
-.landingfooterlinks button:hover {
-  color: #006b3d;
+.landingfooterlinks :is(a, button):hover {
+  color: #d8efdf;
 }
 
 .landingbutton {
@@ -134,6 +134,11 @@ html:has(.landingpage) {
 .landinglogin {
   padding: 0.65rem 1.5rem;
   flex-shrink: 0;
+}
+
+.landingherosection,
+.landinggameplay {
+  background: #eaf6ff;
 }
 
 .landinghero {
@@ -367,8 +372,13 @@ html:has(.landingpage) {
 }
 
 .landingfooter {
-  border-top: 1px solid #e2e8e5;
+  background: #006b3d;
+  border-top: 1px solid #006b3d;
   padding-block: 2rem;
+}
+
+.landingfooter :is(a, button):focus-visible {
+  outline-color: #ffffff;
 }
 
 .landingfooterinner {
@@ -384,7 +394,7 @@ html:has(.landingpage) {
 
 .landingfooterbrand p {
   margin-top: 0.5rem;
-  color: #647168;
+  color: #ffffff;
   font-size: 0.85em;
 }
 
@@ -394,12 +404,14 @@ html:has(.landingpage) {
   gap: 1rem 1.5rem;
 }
 
-.landingfooterlinks button {
+.landingfooterlinks :is(a, button) {
   padding-block: 0.5rem;
   border: 0;
   background: transparent;
-  color: #526058;
+  color: #ffffff;
   font-size: 0.9em;
+  line-height: inherit;
+  text-decoration: none;
   cursor: pointer;
 }
 

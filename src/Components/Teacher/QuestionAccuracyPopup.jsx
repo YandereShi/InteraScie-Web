@@ -1,17 +1,19 @@
 import "../../css/QuestionAccuracyPopup.css";
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { useOutletContext } from "react-router";
 import { GetAssessmentOptions, assessmentOptionsQueryKey } from "../../lib/assessmentQueries";
 import { GetQuestionAccuracy, GetQuestionAccuracyQueryKey } from "../../lib/questionAccuracyQueries";
 import { GetBranches } from "../../lib/branches";
 
 function QuestionAccuracyPopup({ initialBranch, onClose: OnClose }) {
+  const { teacher } = useOutletContext();
   const [branch, setBranch] = useState(initialBranch);
   const [section, setSection] = useState("all");
   const [lesson, setLesson] = useState(0);
   const optionsQuery = useQuery({
-    queryKey: assessmentOptionsQueryKey,
-    queryFn: GetAssessmentOptions,
+    queryKey: [...assessmentOptionsQueryKey, teacher.staffID],
+    queryFn: () => GetAssessmentOptions(teacher.staffID),
     staleTime: 2 * 60 * 1000,
   });
 

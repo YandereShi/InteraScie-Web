@@ -8,7 +8,7 @@ import { limits } from "../lib/inputLimits";
 import { emailPattern, GetEmailError, NormalizeEmail } from "../lib/emailValidation";
 import { supabase } from "../lib/supabase";
 import { GetRememberMe, SaveRememberMe } from "../lib/authStorage";
-import { useLocation, useNavigate } from "react-router";
+import { Link, useLocation, useNavigate } from "react-router";
 import { CheckStaffSession } from "../lib/staffQueries";
 import interascie from "../assets/InteraScie.png";
 import interalogo from "../assets/interalogo.png";
@@ -177,7 +177,9 @@ function Login() {
                 <div className={`gameside ${ShowGame ? "mobilevisible" : ""}`}>
                   <div className="gameheader">
                     <h1>Welcome to</h1>
-                    <img className="gameicon" src={interascie} alt="Game background" />
+                    <Link className="loginhomelink" to="/" aria-label="Back to landing page">
+                      <img className="gameicon" src={interascie} alt="InteraScie" />
+                    </Link>
                   </div>
 
                   <div className="gamesidelogo">

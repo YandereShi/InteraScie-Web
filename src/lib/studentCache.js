@@ -5,7 +5,7 @@ export const studentQueryNames = new Set([
 ]);
 
 export const sectionQueryNames = new Set([
-  ...studentQueryNames, "Sections", "Teachers", "ProgressOptions",
+  ...studentQueryNames, "Sections", "TeacherSections", "Teachers", "ProgressOptions",
   "AssessmentOptions", "LessonAccess", "AssessmentAccess",
 ]);
 

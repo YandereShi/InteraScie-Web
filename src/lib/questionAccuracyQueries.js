@@ -1,4 +1,5 @@
 import { supabase } from "./supabase";
+import { GetLevels } from "./teacherData";
 
 export const accuracyBranches = ["Chemistry", "Biology", "Physics", "Earth Science"];
 
@@ -68,17 +69,18 @@ export async function GetBranchAccuracy(staffID) {
     return summary;
   }
 
-  const [levelResult, assessmentResult] = await Promise.all([
-    supabase.from("Level").select("levelID, branchName").in("branchName", accuracyBranches),
+  const [levels, assessmentResult] = await Promise.all([
+    GetLevels(staffID),
     supabase.from("Assessment").select("assessmentID, levelID").eq("staffID", staffID).order("assessmentID", { ascending: true }),
   ]);
 
-  if (levelResult.error || assessmentResult.error) {
+  if (assessmentResult.error) {
     throw new Error("Unable to load branch accuracy.");
   }
 
   const branches = new Map(
-    (levelResult.data ?? []).map((level) => [level.levelID, level.branchName])
+    levels.filter((level) => accuracyBranches.includes(level.branchName))
+      .map((level) => [level.levelID, level.branchName])
   );
   const assessments = [];
   const selectedLevels = new Set();

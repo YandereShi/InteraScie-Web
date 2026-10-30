@@ -2,41 +2,10 @@ import {
   InvokeStudentManagement,
   supabase,
 } from "./supabase";
+import { GetAssessmentOptions } from "./assessmentQueries";
 
 export async function GetProgressOptions(staffID) {
-  const [sectionResult, levelResult] =
-    await Promise.all([
-      supabase
-        .from("Section")
-        .select("sectionID, sectionName, isShared")
-        .is("archivedAt", null)
-        .eq("staffID", staffID)
-        .order("sectionName", { ascending: true }),
-      supabase
-        .from("Level")
-        .select("levelID, branchName")
-        .order("branchName", { ascending: true })
-        .order("levelID", { ascending: true }),
-    ]);
-
-  if (sectionResult.error) {
-    throw new Error(
-      "Unable to load teacher sections."
-    );
-  }
-
-  if (levelResult.error) {
-    throw new Error(
-      "Unable to load subjects and lessons."
-    );
-  }
-
-  return {
-    sections: (sectionResult.data ?? []).filter(
-      (item) => item.isShared !== true
-    ),
-    levels: levelResult.data ?? [],
-  };
+  return GetAssessmentOptions(staffID);
 }
 
 export async function GetLessonAccess(sectionID) {

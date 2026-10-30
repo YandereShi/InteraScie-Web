@@ -26,7 +26,6 @@ function TeacherLayout() {
     queryKey: ["TeacherProfile"],
     queryFn: GetTeacherProfile,
     staleTime: 30 * 60 * 1000,
-    refetchInterval: (query) => query.state.error?.code === "AUTH_REQUIRED" ? false : 60 * 1000,
     refetchOnMount: "always",
     refetchOnWindowFocus: "always",
     refetchOnReconnect: "always",

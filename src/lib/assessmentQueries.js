@@ -1,4 +1,5 @@
 import { InvokeStudentManagement, supabase } from "./supabase";
+import { GetLevels, GetTeacherSections } from "./teacherData";
 
 export const assessmentOptionsQueryKey = ["AssessmentOptions"];
 
@@ -57,51 +58,17 @@ export async function CreateAssessment(staffID, levelID) {
   throw new Error("Unable to create the lesson assessment.");
 }
 
-export async function GetAssessmentOptions() {
-  const { data: userData, error: userError } =
-    await supabase.auth.getUser();
-  const user = userData.user;
-
-  if (userError || !user) {
-    throw new Error("Your login session was not found.");
-  }
-
-  const { data: staffData, error: staffError } =
-    await supabase
-      .from("SchoolStaff")
-      .select("staffID")
-      .eq("authUserID", user.id)
-      .eq("role", "teacher")
-      .single();
-
-  if (staffError || !staffData) {
-    throw new Error("Your teacher account was not found.");
-  }
-
-  const [sectionResult, levelResult] = await Promise.all([
-    supabase
-      .from("Section")
-      .select("sectionID, sectionName, isShared")
-      .is("archivedAt", null)
-      .eq("staffID", staffData.staffID)
-      .order("sectionName", { ascending: true }),
-    supabase
-      .from("Level")
-      .select("levelID, levelName, branchName")
-      .order("branchName", { ascending: true })
-      .order("levelID", { ascending: true }),
+export async function GetAssessmentOptions(staffID) {
+  const [sections, levels] = await Promise.all([
+    GetTeacherSections(staffID),
+    GetLevels(staffID),
   ]);
 
-  if (sectionResult.error || levelResult.error) {
-    throw new Error("Unable to load assessment options.");
-  }
-
   return {
-    staffID: staffData.staffID,
-    sections: (sectionResult.data ?? []).filter(
-      (item) => !item.isShared
-    ),
-    levels: levelResult.data ?? [],
+    staffID,
+    sections,
+    levels: [...levels].sort((first, second) =>
+      (first.branchName ?? "").localeCompare(second.branchName ?? "") || first.levelID - second.levelID),
   };
 }
 

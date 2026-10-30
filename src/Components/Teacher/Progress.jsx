@@ -1,11 +1,11 @@
 import "../../css/Progress.css";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useOutletContext } from "react-router";
 import { FaCheck, FaLock, FaLockOpen } from "react-icons/fa";
 import { TbProgress } from "react-icons/tb";
 import { GetProgressOptions, UpdateLessonAccess } from "../../lib/progressQueries";
-import { GetLessonAccessOptions, GetSectionProgressOptions, PrefetchProgress, progressLessonCount } from "../../lib/progressCache";
+import { GetLessonAccessOptions, GetSectionProgressOptions, progressLessonCount } from "../../lib/progressCache";
 import { GetPageSelection, SavePageSelection } from "../../lib/pageSelection";
 import { GetStudentPhotoPath } from "../../lib/profilePhotos";
 import { GetBranches } from "../../lib/branches";
@@ -132,22 +132,6 @@ function Progress() {
       sectionID > 0 &&
       lessonIDs.length > 0,
   });
-
-  const canPrefetch = optionsQuery.isSuccess &&
-    lessonAccessQuery.isSuccess && progressQuery.isSuccess;
-
-  useEffect(() => {
-    if (!canPrefetch) {
-      return;
-    }
-
-    let cancelled = false;
-    void PrefetchProgress(queryClient, sections, levels, () => cancelled);
-
-    return () => {
-      cancelled = true;
-    };
-  }, [canPrefetch, levels, queryClient, sections]);
 
   const lessonAccess = useMemo(() => {
     const accessMap = {};

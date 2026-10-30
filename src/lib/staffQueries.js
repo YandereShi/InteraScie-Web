@@ -27,8 +27,8 @@ export async function CheckStaffSession() {
 export const staffSessionOptions = {
   queryKey: ["StaffSession"],
   queryFn: CheckStaffSession,
-  staleTime: 15 * 1000,
-  refetchInterval: (query) => query.state.error?.code === "AUTH_REQUIRED" ? false : 15 * 1000,
+  staleTime: 30 * 1000,
+  refetchInterval: (query) => query.state.error?.code === "AUTH_REQUIRED" ? false : 30 * 1000,
   refetchOnMount: "always",
   refetchOnWindowFocus: "always",
   refetchOnReconnect: "always",

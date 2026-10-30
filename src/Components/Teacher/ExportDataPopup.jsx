@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { useOutletContext } from "react-router";
 import { GetAssessmentOptions, assessmentOptionsQueryKey } from "../../lib/assessmentQueries";
 import { GetBranches } from "../../lib/branches";
 import { GetSectionReportData } from "../../lib/sectionReportQueries";
@@ -34,6 +35,7 @@ function ExportChoices({ title, options, selected, disabled, onChange }) {
 }
 
 function ExportDataPopup({ teacherName, onClose }) {
+  const { teacher } = useOutletContext();
   const dialog = useRef(null);
   const pending = useRef(false);
   const [sectionIDs, setSectionIDs] = useState(null);
@@ -42,7 +44,8 @@ function ExportDataPopup({ teacherName, onClose }) {
   const [error, setError] = useState("");
   useActionPending(busy);
   const optionsQuery = useQuery({
-    queryKey: assessmentOptionsQueryKey, queryFn: GetAssessmentOptions,
+    queryKey: [...assessmentOptionsQueryKey, teacher.staffID],
+    queryFn: () => GetAssessmentOptions(teacher.staffID),
     staleTime: 0, refetchOnMount: "always",
   });
   const sections = optionsQuery.data?.sections ?? [];
