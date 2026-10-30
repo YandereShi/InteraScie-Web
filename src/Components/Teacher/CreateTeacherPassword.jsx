@@ -159,7 +159,7 @@ function CreateTeacherPassword() {
         )}
         {stage === "invalid" && <p className="recoveryerror" role="alert">{message}</p>}
         {stage === "success" && <p role="status">Your teacher password has been created. You can now log in.</p>}
-        {!loading && <Link className="recoveryback" to="/">Back to login</Link>}
+        {!loading && <Link className="recoveryback" to="/login">Back to login</Link>}
       </section>
       {policy && <TeacherPolicyPopup policy={policy} onClose={() => SetPolicy(null)} />}
     </main>

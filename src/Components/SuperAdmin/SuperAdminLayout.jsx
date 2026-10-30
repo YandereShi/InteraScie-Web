@@ -29,7 +29,7 @@ function SuperAdminLayout() {
             redirecting.current = true;
             await supabase.auth.signOut({ scope: "local" }).catch(() => null);
             queryClient.clear();
-            navigate("/", { replace: true, state: { loginMessage: loginError.message } });
+            navigate("/login", { replace: true, state: { loginMessage: loginError.message } });
         }
 
         void RedirectInvalidAdmin();

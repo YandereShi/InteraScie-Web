@@ -125,7 +125,7 @@ function ResetPassword() {
         </form>}
         {stage === "invalid" && <p className="recoveryerror" role="alert">{message}</p>}
         {stage === "success" && <p role="status">Your password has been updated. Log in with your new password.</p>}
-        {!loading && <Link className="recoveryback" to="/">Back to login</Link>}
+        {!loading && <Link className="recoveryback" to="/login">Back to login</Link>}
       </section>
     </main>
   );

@@ -1,5 +1,6 @@
 import './App.css'
 import Login from './Components/Login';
+import LandingPage from './Components/LandingPage';
 import { createBrowserRouter, createRoutesFromElements, Navigate, Outlet, Route, RouterProvider, useBeforeUnload, useBlocker } from "react-router";
 import { useCallback, useContext, useEffect } from "react";
 import { PopupContext } from "./lib/PopupContext";
@@ -37,7 +38,8 @@ function NavigationGuard() {
 
 const router = createBrowserRouter(createRoutesFromElements(
       <Route element={<NavigationGuard />}>
-        <Route path="/" element={<Login />} />
+        <Route path="/" element={<LandingPage />} />
+        <Route path="/login" element={<Login />} />
         <Route path="/resetpassword" element={<ResetPassword />} />
         <Route path="/teacherpassword" element={<CreateTeacherPassword />} />
         <Route path="download" element={<Downloadpage />} />

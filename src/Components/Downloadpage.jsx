@@ -26,7 +26,7 @@ function Downloadpage() {
             <section className="downloadpanel">
                 <button 
                         className="backtologin"
-                        onClick={() => navigate("/")}
+                        onClick={() => navigate("/login")}
                      >
                         <span className="backarrow">←</span> Back
                 </button>

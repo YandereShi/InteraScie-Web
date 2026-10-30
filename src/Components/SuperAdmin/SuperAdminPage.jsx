@@ -20,7 +20,7 @@ function SuperAdminPage({ title, children }) {
         }
 
         queryClient.clear();
-        navigate("/", { replace: true });
+        navigate("/login", { replace: true });
     }
 
     return (
