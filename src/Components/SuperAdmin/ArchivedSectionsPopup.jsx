@@ -15,16 +15,18 @@ function ArchivedSectionsPopup({ sections, teachers, onClose }) {
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const [owners, setOwners] = useState({});
-  const [restoring, setRestoring] = useState(null);
-  const [confirming, setConfirming] = useState(null);
+  const [restoring, setRestoring] = useState(false);
+  const [rowErrors, setRowErrors] = useState({});
   const [error, setError] = useState("");
   const [status, setStatus] = useState("");
-  useActionPending(restoring !== null);
+  useActionPending(restoring);
   const filtered = sections.filter((section) => section.sectionName.toLowerCase().includes(search.trim().toLowerCase()));
   const pages = Math.max(1, Math.ceil(filtered.length / pageSize));
   const activePage = Math.min(page, pages);
   if (page > pages) setPage(pages);
   const shown = filtered.slice((activePage - 1) * pageSize, activePage * pageSize);
+  const teacherChoices = teachers.filter((teacher) => !teacher.archivedAt);
+  const selected = sections.filter((section) => teacherChoices.some((teacher) => teacher.staffID === owners[section.sectionID]));
 
   useEffect(() => {
     const element = dialog.current;
@@ -37,27 +39,48 @@ function ArchivedSectionsPopup({ sections, teachers, onClose }) {
     };
   }, []);
 
-  async function Restore(section) {
+  function ChangeOwner(id, value) {
     if (pending.current) return;
-    const owner = owners[section.sectionID] ?? (teachers.some((teacher) => teacher.staffID === section.staffID) ? section.staffID : "");
-    if (!owner) {
-      setError("Choose an active teacher before restoring the section.");
-      return;
-    }
-    pending.current = true;
-    setRestoring(section.sectionID);
+    setOwners((current) => ({ ...current, [id]: value }));
+    setRowErrors((current) => {
+      const next = { ...current };
+      delete next[id];
+      return next;
+    });
     setError("");
     setStatus("");
+  }
+
+  async function Restore() {
+    if (pending.current || selected.length === 0) return;
+    pending.current = true;
+    setRestoring(true);
+    setError("");
+    setStatus("");
+    setRowErrors({});
+    const restored = new Set();
+    const failures = {};
+    let students = 0;
     try {
-      const result = await SetSectionArchived(section.sectionID, false, owner);
+      for (const section of selected) {
+        try {
+          const result = await SetSectionArchived(section.sectionID, false, owners[section.sectionID]);
+          restored.add(String(section.sectionID));
+          students += result.students;
+        } catch (restoreError) {
+          failures[section.sectionID] = restoreError.message || "Unable to restore the section.";
+        }
+      }
+      setOwners((current) => Object.fromEntries(Object.entries(current).filter(([id]) => !restored.has(id))));
+      setRowErrors(failures);
+      if (restored.size > 0) setStatus(`${restored.size} section(s) restored. ${students} student(s) restored with them.`);
+      if (Object.keys(failures).length > 0) setError("Some sections could not be restored. Review the marked rows and try again.");
       await InvalidateSectionQueries(queryClient);
-      setConfirming(null);
-      setStatus(`Section restored. ${result.students} student(s) restored with it.`);
     } catch (restoreError) {
-      setError(restoreError.message || "Unable to restore the section.");
+      setError(restoreError.message || "Unable to refresh archived sections. Close this popup and try again.");
     } finally {
       pending.current = false;
-      setRestoring(null);
+      setRestoring(false);
     }
   }
 
@@ -68,15 +91,16 @@ function ArchivedSectionsPopup({ sections, teachers, onClose }) {
     }}>
       <div className="archivedsectionsheader">
         <h2 id="archivedsectionstitle">Archived Sections</h2>
-        <button type="button" aria-label="Close archived sections" disabled={restoring !== null} onClick={onClose}>&times;</button>
+        <button type="button" aria-label="Close archived sections" disabled={restoring} onClick={() => { if (!pending.current) onClose(); }}>&times;</button>
       </div>
-      <input className="archivedsectionssearch" type="search" aria-label="Search archived sections" placeholder="Search sections..." maxLength={limits.search} value={search} disabled={restoring !== null} onChange={(event) => { setSearch(event.target.value); setPage(1); }} />
+      <p>Choose an active teacher for each section you want to restore. Selections are kept across pages and search. Students archived with those sections will also be restored; previously archived students stay archived.</p>
+      <input className="archivedsectionssearch" type="search" aria-label="Search archived sections" placeholder="Search sections..." maxLength={limits.search} value={search} disabled={restoring} onChange={(event) => { setSearch(event.target.value); setPage(1); }} />
       {error && <p className="archivedsectionserror" role="alert">{error}</p>}
       {status && <p className="archivedsectionsstatus" role="status">{status}</p>}
-      <div className="archivedsectionslist" aria-busy={restoring !== null}>
+      <div className="archivedsectionslist" aria-busy={restoring}>
         {shown.length === 0 && <p>No archived sections found.</p>}
         {shown.map((section) => (
-          <article className="archivedsectionsitem" key={section.sectionID}>
+          <article className={`archivedsectionsitem${rowErrors[section.sectionID] ? " archivedsectionsitemerror" : ""}`} key={section.sectionID}>
             <div>
               <h3>{section.sectionName}</h3>
               <p>{section.students.length} student(s) · Archived {new Date(section.archivedAt).toLocaleDateString()}</p>
@@ -86,28 +110,23 @@ function ArchivedSectionsPopup({ sections, teachers, onClose }) {
               </details>
             </div>
             <div className="archivedsectionsactions">
-              <select aria-label={`Teacher for ${section.sectionName}`} value={owners[section.sectionID] ?? (teachers.some((teacher) => teacher.staffID === section.staffID) ? section.staffID : "")} disabled={restoring !== null} onChange={(event) => setOwners((current) => ({ ...current, [section.sectionID]: event.target.value }))}>
+              <select aria-label={`Teacher for ${section.sectionName}`} value={teacherChoices.some((teacher) => teacher.staffID === owners[section.sectionID]) ? owners[section.sectionID] : ""} aria-invalid={Boolean(rowErrors[section.sectionID])} aria-describedby={rowErrors[section.sectionID] ? `archivedsectionerror-${section.sectionID}` : undefined} disabled={restoring || teacherChoices.length === 0} onChange={(event) => ChangeOwner(section.sectionID, event.target.value)}>
                 <option value="">Choose a teacher</option>
-                {teachers.map((teacher) => <option key={teacher.staffID} value={teacher.staffID}>{teacher.lastName}, {teacher.firstName}</option>)}
+                {teacherChoices.map((teacher) => <option key={teacher.staffID} value={teacher.staffID}>{teacher.lastName}, {teacher.firstName}</option>)}
               </select>
-              {confirming === section.sectionID ? (
-                <>
-                  <p>Restore this section and the students archived with it? Previously archived students will stay archived.</p>
-                  <button type="button" disabled={restoring !== null} onClick={() => Restore(section)}>{restoring === section.sectionID ? "Restoring..." : "Confirm Restore"}</button>
-                  <button type="button" className="archivedsectionscancel" disabled={restoring !== null} onClick={() => setConfirming(null)}>Cancel</button>
-                </>
-              ) : (
-                <button type="button" disabled={restoring !== null || teachers.length === 0} onClick={() => { setConfirming(section.sectionID); setError(""); }}>Restore Section</button>
-              )}
+              {rowErrors[section.sectionID] && <p id={`archivedsectionerror-${section.sectionID}`} className="archivedsectionserror">{rowErrors[section.sectionID]}</p>}
             </div>
           </article>
         ))}
       </div>
       <nav className="sectionpager archivedsectionspager" aria-label="Archived sections pages">
-        <button type="button" aria-label="Previous archived sections" disabled={activePage === 1 || restoring !== null} onClick={() => setPage(activePage - 1)}>&lt;</button>
+        <button type="button" aria-label="Previous archived sections" disabled={activePage === 1 || restoring} onClick={() => setPage(activePage - 1)}>&lt;</button>
         <span>{activePage} of {pages}</span>
-        <button type="button" aria-label="Next archived sections" disabled={activePage === pages || restoring !== null} onClick={() => setPage(activePage + 1)}>&gt;</button>
+        <button type="button" aria-label="Next archived sections" disabled={activePage === pages || restoring} onClick={() => setPage(activePage + 1)}>&gt;</button>
       </nav>
+      <div className="archivedsectionsactions archiveteachersfooter">
+        <button type="button" disabled={restoring || selected.length === 0} onClick={Restore}>{restoring ? "Restoring..." : "Restore"}</button>
+      </div>
     </dialog>
   );
 }

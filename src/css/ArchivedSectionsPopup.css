@@ -78,6 +78,18 @@
   color: #666666;
 }
 
+.archivedsectionsitemerror {
+  border-bottom-color: #b42318;
+}
+
+.archivedsectionsitem .archivedsectionserror {
+  color: #b42318;
+}
+
+.archivedsectionsactions select[aria-invalid="true"] {
+  border-color: #b42318;
+}
+
 .archivedsectionsitem details {
   margin-top: 8px;
 }
@@ -107,11 +119,6 @@
   background-color: #00bf63;
   font-size: inherit;
   cursor: pointer;
-}
-
-.archivedsectionsactions .archivedsectionscancel {
-  color: #222222;
-  background-color: #dddddd;
 }
 
 .archivedsectionspopup button:disabled {

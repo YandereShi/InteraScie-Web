@@ -105,7 +105,6 @@ function ExportDataPopup({ teacherName, onClose }) {
         {(error || optionsQuery.isError) && <p className="exportdataerror" role="alert">{error || "Unable to load export options."}</p>}
         {optionsQuery.isError && <button className="exportdataretry" type="button" disabled={optionsQuery.isFetching} onClick={() => optionsQuery.refetch()}>Try again</button>}
         <div className="exportdataactions">
-          <button type="button" className="exportdatacancel" disabled={busy} onClick={onClose}>Cancel</button>
           <button type="submit" className="exportdatadownload" disabled={busy || optionsQuery.isFetching || optionsQuery.isError || !selectedSections.length || !selectedBranches.length}>
             {busy ? "Preparing Excel..." : "Download Excel"}
           </button>

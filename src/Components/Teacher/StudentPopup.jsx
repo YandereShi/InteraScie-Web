@@ -241,14 +241,7 @@ function StudentPopup({
               )}
             </div>
 
-            {isEditing ? <button
-              type="button"
-              className="cancelstudent"
-              onClick={onClose}
-              disabled={saving || resetting || photoSaving}
-            >
-              Cancel
-            </button> : <button
+            {!isEditing && <button
               type="button"
               className="batchstudent"
               onClick={() => onOpenBatch(sectionID)}

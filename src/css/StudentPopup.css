@@ -166,15 +166,12 @@
   cursor: pointer;
 }
 
-.cancelstudent {
-  background-color: #dddddd;
-}
-
 .resetstudent {
   background-color: #dddddd;
 }
 
 .savestudent {
+  grid-column: -2 / -1;
   background-color: #00bf63;
   color: #ffffff;
 }

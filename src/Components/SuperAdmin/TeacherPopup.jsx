@@ -213,15 +213,6 @@ function TeacherPopup({ sections, onClose, onSave }) {
 
                     <div className="studentpopupactions">
                         <button
-                            type="button"
-                            className="cancelstudent"
-                            onClick={ClosePopup}
-                            disabled={saving}
-                        >
-                            Cancel
-                        </button>
-
-                        <button
                             type="submit"
                             className="savestudent"
                             disabled={saving}

@@ -151,11 +151,7 @@
     cursor: pointer;
 }
 
-.batchactions button:first-child {
-    background-color: #dddddd;
-}
-
-.batchactions button:last-child {
+.batchactions button[type="submit"] {
     background-color: #00bf63;
     color: #ffffff;
 }
@@ -184,11 +180,6 @@
     .batchfileactions label {
         width: 100%;
         text-align: center;
-    }
-
-    .batchactions {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
     }
 
     .batchactions button {

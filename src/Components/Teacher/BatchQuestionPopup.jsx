@@ -102,7 +102,6 @@ function BatchQuestionPopup({ questions, maximum, onClose, onSave }) {
           </div>
         </>}
         <div className="batchactions">
-          <button type="button" disabled={busy} onClick={onClose}>Cancel</button>
           <button type="submit" disabled={busy || !ready}>{busy ? "Processing..." : `Save ${ready} Questions`}</button>
         </div>
       </form>

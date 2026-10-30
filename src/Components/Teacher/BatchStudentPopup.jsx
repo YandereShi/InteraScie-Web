@@ -268,14 +268,6 @@ function BatchStudentPopup({
 
           <div className="batchactions">
             <button
-              type="button"
-              onClick={OnClose}
-              disabled={IsUploading}
-            >
-              Cancel
-            </button>
-
-            <button
               type="submit"
               disabled={
                 IsUploading ||

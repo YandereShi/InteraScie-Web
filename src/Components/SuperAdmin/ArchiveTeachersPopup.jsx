@@ -67,7 +67,6 @@ function ArchiveTeachersPopup({ selectedTeachers, teachers, onSave, onClose }) {
         ))}
       </div>
       <div className="archivedsectionsactions archiveteachersfooter">
-        <button type="button" className="archivedsectionscancel" disabled={saving} onClick={onClose}>Cancel</button>
         <button type="button" disabled={saving || (sections.length > 0 && choices.length === 0)} onClick={Save}>{saving ? "Archiving..." : "Archive Teachers"}</button>
       </div>
     </dialog>
