@@ -82,6 +82,7 @@ export async function GetAssessmentOptions() {
     supabase
       .from("Section")
       .select("sectionID, sectionName, isShared")
+      .is("archivedAt", null)
       .eq("staffID", staffData.staffID)
       .order("sectionName", { ascending: true }),
     supabase
@@ -117,6 +118,7 @@ export async function GetAssessmentScores(sectionID, staffID, levelIDs) {
     supabase
       .from("Student")
       .select("studentID, firstName, lastName")
+      .is("archivedAt", null)
       .eq("sectionID", sectionID)
       .order("lastName", { ascending: true })
       .order("firstName", { ascending: true }),
@@ -209,7 +211,20 @@ export async function GetAssessmentQuestions(staffID, levelID) {
   };
 }
 
-export async function GetStudentAnswers(assessmentID, studentAssessmentID) {
+export async function GetAssessmentHistorySources(sectionID) {
+  const data = await InvokeStudentManagement("loadassessmenthistory", { sectionID });
+  return data.sources ?? [];
+}
+
+export async function GetHistoricalAssessmentScores(sectionID, staffID, levelIDs) {
+  return InvokeStudentManagement("loadassessmenthistory", { sectionID, staffID, levelIDs });
+}
+
+export async function GetStudentAnswers(assessmentID, studentAssessmentID, historySectionID = null) {
+  if (historySectionID) {
+    const data = await InvokeStudentManagement("loadassessmenthistory", { sectionID: historySectionID, studentAssessmentID });
+    return BuildStudentAnswers(data.questions ?? [], data.answers ?? []);
+  }
   const [questionResult, answerResult] = await Promise.all([
     supabase
       .from("Question")
@@ -226,13 +241,15 @@ export async function GetStudentAnswers(assessmentID, studentAssessmentID) {
     throw new Error("Unable to load the student's answers.");
   }
 
-  const answers = new Map(
-    (answerResult.data ?? []).map((answer) => [answer.questionID, answer])
-  );
+  return BuildStudentAnswers(questionResult.data ?? [], answerResult.data ?? []);
+}
+
+function BuildStudentAnswers(questions, answerRows) {
+  const answers = new Map(answerRows.map((answer) => [answer.questionID, answer]));
 
   if (answers.size === 0) return [];
 
-  return (questionResult.data ?? []).map((question, index) => {
+  return questions.map((question, index) => {
     const answer = answers.get(question.questionID);
 
     return {

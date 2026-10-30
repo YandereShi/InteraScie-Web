@@ -5,7 +5,7 @@ import { Outlet, useNavigate } from "react-router";
 import { supabase } from "../../lib/supabase";
 import RealtimeSync from "../RealtimeSync";
 import SuperAdminSidebar from "./SuperAdminSidebar";
-import { GetStaffProfile } from "../../lib/staffQueries";
+import { GetStaffProfile, staffSessionOptions } from "../../lib/staffQueries";
 import { PopupContext } from "../../lib/PopupContext";
 import AccountCheckError from "../AccountCheckError";
 
@@ -20,25 +20,22 @@ function SuperAdminLayout() {
         staleTime: 30 * 60 * 1000,
         retry: (failureCount, queryError) => queryError.code !== "AUTH_REQUIRED" && failureCount < 1,
     });
+    const sessionQuery = useQuery({ ...staffSessionOptions, enabled: Boolean(superadmin) });
+    const loginError = sessionQuery.error?.code === "AUTH_REQUIRED" ? sessionQuery.error : error;
 
     useEffect(() => {
-        if (error?.code !== "AUTH_REQUIRED" || actionPending || redirecting.current) return;
+        if (loginError?.code !== "AUTH_REQUIRED" || actionPending || redirecting.current) return;
         async function RedirectInvalidAdmin() {
             redirecting.current = true;
-            try {
-                await supabase.auth.signOut({ scope: "local" });
-            } catch {
-                // A failed sign-out request must not keep an invalid account on this page.
-            } finally {
-                queryClient.clear();
-                navigate("/", { replace: true });
-            }
+            await supabase.auth.signOut({ scope: "local" }).catch(() => null);
+            queryClient.clear();
+            navigate("/", { replace: true, state: { loginMessage: loginError.message } });
         }
 
         void RedirectInvalidAdmin();
-    }, [actionPending, error, navigate, queryClient]);
+    }, [actionPending, loginError, navigate, queryClient]);
 
-    if (error?.code === "AUTH_REQUIRED") {
+    if (loginError?.code === "AUTH_REQUIRED") {
         return <p role="status">Returning to login...</p>;
     }
 
@@ -50,9 +47,16 @@ function SuperAdminLayout() {
         return <p role="status">Checking your account...</p>;
     }
 
+    if (!sessionQuery.data) {
+        return sessionQuery.error || sessionQuery.isPaused
+            ? <AccountCheckError onRetry={() => sessionQuery.refetch()} retrying={sessionQuery.isFetching} />
+            : <p role="status">Checking your session...</p>;
+    }
+
     return (
         <>
             {(error || isPaused) && <AccountCheckError onRetry={() => refetch()} retrying={isFetching} inline />}
+            {(sessionQuery.error || sessionQuery.isPaused) && <AccountCheckError onRetry={() => sessionQuery.refetch()} retrying={sessionQuery.isFetching} inline />}
             <div className="superadminlayout">
                 <RealtimeSync />
                 <SuperAdminSidebar superadmin={superadmin} />

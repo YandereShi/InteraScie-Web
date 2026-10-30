@@ -89,7 +89,8 @@
 }
 
 .sectiondelete,
-.sectionremove {
+.sectionremove,
+.sectionarchive {
   min-height: 44px;
   padding: 8px 14px;
   border: none;
@@ -102,6 +103,10 @@
   cursor: pointer;
 }
 
+.sectionarchive {
+  background-color: #00bf63;
+}
+
 .sectionselectrow {
   flex-shrink: 0;
   display: flex;
@@ -112,7 +117,8 @@
 }
 
 .sectiondelete:disabled,
-.sectionremove:disabled {
+.sectionremove:disabled,
+.sectionarchive:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
@@ -312,11 +318,13 @@
 
   .sectiontoolactions {
     width: 100%;
+    flex-wrap: wrap;
     gap: 8px;
   }
 
   .sectiondelete,
-  .sectionremove {
+  .sectionremove,
+  .sectionarchive {
     flex: 1;
     min-width: 0;
     padding: 8px;

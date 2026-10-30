@@ -1,4 +1,4 @@
-import { InvokeStudentManagement } from "./supabase";
+import { InvokeStudentManagement, supabase } from "./supabase";
 import { NormalizeName } from "./nameValidation";
 
 export const sectionsQueryKey = ["Sections"];
@@ -40,4 +40,18 @@ export async function DeleteSection(sectionID) {
   return InvokeStudentManagement("deletesection", {
     sectionID,
   });
+}
+
+export async function SetSectionArchived(sectionID, archived, staffID = null) {
+  const { data, error } = await supabase.rpc("SetSectionArchived", {
+    p_section_id: sectionID,
+    p_archived: archived,
+    p_staff_id: staffID,
+  });
+
+  if (error) {
+    throw new Error(error.message || "Unable to update the section archive.");
+  }
+
+  return data;
 }

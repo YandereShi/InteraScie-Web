@@ -9,7 +9,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useOutletContext } from "react-router";
 import { limits } from "../../lib/inputLimits";
 import { InvokeStudentManagement } from "../../lib/supabase";
-import { DeleteSection, GetNoSectionStudents, GetSections, GetSectionStudents, GetSectionStudentsQueryKey, IsReservedSectionName, noSectionStudentsQueryKey, sectionsQueryKey } from "../../lib/sectionQueries";
+import { DeleteSection, GetNoSectionStudents, GetSections, GetSectionStudents, GetSectionStudentsQueryKey, IsReservedSectionName, noSectionStudentsQueryKey, sectionsQueryKey, SetSectionArchived } from "../../lib/sectionQueries";
 import { InvalidateSectionQueries, InvalidateStudentQueries } from "../../lib/studentCache";
 import { PopupContext } from "../../lib/PopupContext";
 import { GetStudents, studentQueryKey } from "../../lib/studentQueries";
@@ -34,8 +34,9 @@ function Sections({ PageComponent = TeacherPage }) {
   const [createOpen, setCreateOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [moving, setMoving] = useState(false);
+  const [archiving, setArchiving] = useState(false);
   const actionPending = useRef(false);
-  useActionPending(deleting || moving);
+  useActionPending(deleting || moving || archiving);
 
   const sectionsQuery = useQuery({
     queryKey: sectionsQueryKey,
@@ -235,6 +236,35 @@ function Sections({ PageComponent = TeacherPage }) {
     }
   }
 
+  async function ArchiveActiveSection() {
+    if (role !== "superadmin" || !activeSection || isNoSection || actionPending.current) return;
+    actionPending.current = true;
+    setArchiving(true);
+
+    try {
+      const confirmed = await ShowConfirmation(
+        `Archive "${activeSection.sectionName}" and all its active students? Their access will be disabled and all saved data will be preserved.`,
+        false,
+        students.map((student) => `${student.lastName}, ${student.firstName}`)
+      );
+      if (!confirmed) return;
+
+      const result = await SetSectionArchived(sectionID, true);
+      setSelectedSection("");
+      SavePageSelection(authUserID, "Sections", "Section", "");
+      setSelected([]);
+      setSearch("");
+      setPage(1);
+      await InvalidateSectionQueries(queryClient);
+      await ShowConfirmation(`Section archived. ${result.students} student(s) archived with it.`);
+    } catch (archiveError) {
+      await ShowConfirmation(archiveError.message || "Unable to archive the section.");
+    } finally {
+      actionPending.current = false;
+      setArchiving(false);
+    }
+  }
+
   function OpenAdd() {
     setAddOpen(true);
   }
@@ -350,7 +380,7 @@ function Sections({ PageComponent = TeacherPage }) {
                 value={section}
                 onChange={PickSection}
                 aria-label="Active section"
-                disabled={deleting || moving || choices.length === 0}
+                disabled={deleting || moving || archiving || choices.length === 0}
               >
                 {choices.length === 0 && <option value="">No sections</option>}
 
@@ -374,10 +404,20 @@ function Sections({ PageComponent = TeacherPage }) {
             </div>
 
             <div className="sectiontoolactions">
+              {role === "superadmin" && (
+                <button
+                  type="button"
+                  className="sectionarchive"
+                  disabled={!section || isNoSection || loading || deleting || moving || archiving}
+                  onClick={ArchiveActiveSection}
+                >
+                  {archiving ? "Archiving..." : "Archive Section"}
+                </button>
+              )}
               <button
                 type="button"
                 className="sectiondelete"
-                disabled={!section || isNoSection || loading || deleting || moving}
+                disabled={!section || isNoSection || loading || deleting || moving || archiving}
                 onClick={DeleteActiveSection}
               >
                 {deleting ? "Deleting..." : "Delete Section"}
@@ -386,7 +426,7 @@ function Sections({ PageComponent = TeacherPage }) {
               <button
                 type="button"
                 className="sectionremove"
-                disabled={deleting || moving || selected.length === 0 || isNoSection}
+                disabled={deleting || moving || archiving || selected.length === 0 || isNoSection}
                 onClick={RemoveStudents}
               >
                 {moving ? "Moving..." : "Remove Selected"}
@@ -459,12 +499,12 @@ function Sections({ PageComponent = TeacherPage }) {
         </div>
 
         <div className="sectionactions">
-          <button type="button" onClick={OpenCreate} disabled={deleting || moving}>
+          <button type="button" onClick={OpenCreate} disabled={deleting || moving || archiving}>
             Create Section
           </button>
           <button
             type="button"
-            disabled={deleting || moving || !section || isNoSection}
+            disabled={deleting || moving || archiving || !section || isNoSection}
             onClick={OpenAdd}
           >
             Add Student

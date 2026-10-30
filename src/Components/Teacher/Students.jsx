@@ -13,6 +13,8 @@ import { InvalidateStudentQueries } from "../../lib/studentCache";
 import { PopupContext } from "../../lib/PopupContext";
 import { GetProfilePhotoQueryKey, GetStudentPhotoPath, SaveProfilePhoto } from "../../lib/profilePhotos";
 import { useActionPending } from "../../lib/useActionPending";
+import ArchivedAccountsPopup from "../ArchivedAccountsPopup";
+import { archivedStudentsQueryKey, GetArchivedStudents, SetAccountsArchived } from "../../lib/archiveQueries";
 
 const maxCards = 12;
 
@@ -23,12 +25,15 @@ function Students({ PageComponent = TeacherPage }) {
   const [selectedStudent, setSelectedStudent] = useState(null);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [isBatchPopupOpen, setIsBatchPopupOpen] = useState(false);
+  const [batchSectionID, setBatchSectionID] = useState("");
   const [selectedStudentIDs, setSelectedStudentIDs] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [search, setSearch] = useState("");
   const [deleting, setDeleting] = useState(false);
+  const [archiving, setArchiving] = useState(false);
+  const [archiveOpen, setArchiveOpen] = useState(false);
   const deletePending = useRef(false);
-  useActionPending(deleting);
+  useActionPending(deleting || archiving);
 
   const studentsQuery = useQuery({
     queryKey: studentQueryKey,
@@ -37,6 +42,12 @@ function Students({ PageComponent = TeacherPage }) {
   });
 
   const students = studentsQuery.data?.students ?? [];
+  const archivedQuery = useQuery({
+    queryKey: archivedStudentsQueryKey,
+    queryFn: GetArchivedStudents,
+    enabled: archiveOpen,
+    staleTime: 2 * 60 * 1000,
+  });
   const sections = studentsQuery.data?.sections ?? [];
   const loadingStudents = studentsQuery.isPending;
   const queryError =
@@ -68,7 +79,9 @@ function Students({ PageComponent = TeacherPage }) {
     setIsPopupOpen(false);
   }
 
-  function OpenBatchPopup() {
+  function OpenBatchPopup(sectionID) {
+    ClosePopup();
+    setBatchSectionID(sectionID);
     setIsBatchPopupOpen(true);
   }
 
@@ -233,6 +246,27 @@ function Students({ PageComponent = TeacherPage }) {
     }
   }
 
+  async function ArchiveSelectedStudents() {
+    if (deletePending.current || selectedStudentIDs.length === 0) return;
+    const studentIDs = [...selectedStudentIDs];
+    const names = students.filter((student) => studentIDs.includes(student.studentID)).map((student) => `${student.lastName}, ${student.firstName}`);
+    deletePending.current = true;
+    setArchiving(true);
+    try {
+      const confirmed = await ShowConfirmation("Archive the selected students? Their access will be disabled and their saved data will be preserved.", false, names);
+      if (!confirmed) return;
+      const result = await SetAccountsArchived("students", studentIDs, true);
+      setSelectedStudentIDs([]);
+      await RefreshStudents();
+      await ShowConfirmation(`${result.accounts} student(s) archived.`);
+    } catch (archiveError) {
+      await ShowConfirmation(archiveError.message || "Unable to archive the students.");
+    } finally {
+      deletePending.current = false;
+      setArchiving(false);
+    }
+  }
+
   const searchterm = search.trim().toLowerCase();
 
   const filteredStudents = students.filter((student) => {
@@ -272,43 +306,41 @@ function Students({ PageComponent = TeacherPage }) {
       <section className="studentspanel">
         <div className="studentbox">
           <div className="tools">
-            <div className="searchbar">
-              <input
-                type="text"
-                placeholder="Search students..."
-                maxLength={limits.search}
-                value={search}
-                onChange={(event) => {
-                  setSearch(event.target.value);
-                  setCurrentPage(1);
-                }}
-              />
+            <div className="studentsearchtools">
+              <div className="searchbar">
+                <input
+                  type="text"
+                  placeholder="Search students..."
+                  maxLength={limits.search}
+                  value={search}
+                  onChange={(event) => {
+                    setSearch(event.target.value);
+                    setCurrentPage(1);
+                  }}
+                />
+              </div>
+              <button type="button" className="studentarchivebutton" aria-label="View archived students" aria-haspopup="dialog" disabled={deleting || archiving} onClick={() => setArchiveOpen(true)}>Archived</button>
             </div>
 
             <div className="buttons">
               <button
                 type="button"
-                id="batch"
-                onClick={OpenBatchPopup}
-                disabled={deleting || loadingStudents || sections.length === 0}
-              >
-                Batch Upload
-              </button>
-
-              <button
-                type="button"
                 className="studentadd"
                 onClick={OpenAddPopup}
-                disabled={deleting || loadingStudents || sections.length === 0}
+                disabled={deleting || archiving || loadingStudents || sections.length === 0}
               >
                 Add Student
+              </button>
+
+              <button type="button" className="studentadd" disabled={deleting || archiving || selectedStudentIDs.length === 0} onClick={ArchiveSelectedStudents}>
+                {archiving ? "Archiving..." : "Archive Selected"}
               </button>
 
               <button
                 type="button"
                 id="remove"
                 onClick={HandleRemoveSelected}
-                disabled={deleting || selectedStudentIDs.length === 0}
+                disabled={deleting || archiving || selectedStudentIDs.length === 0}
               >
                 {deleting ? "Deleting..." : "Remove Selected"}
               </button>
@@ -376,7 +408,6 @@ function Students({ PageComponent = TeacherPage }) {
             </div>
           </div>
         </div>
-
       </section>
 
       {isPopupOpen && (
@@ -386,15 +417,27 @@ function Students({ PageComponent = TeacherPage }) {
           onClose={ClosePopup}
           onSave={HandleSaveStudent}
           onReset={ResetPassword}
+          onOpenBatch={OpenBatchPopup}
         />
       )}
 
       {isBatchPopupOpen && (
         <BatchStudentPopup
           Sections={sections}
+          initialSectionID={batchSectionID}
           students={students}
           OnClose={CloseBatchPopup}
           OnUpload={HandleBatchUpload}
+        />
+      )}
+      {archiveOpen && (
+        <ArchivedAccountsPopup
+          kind="students"
+          records={archivedQuery.data?.students ?? []}
+          sections={archivedQuery.data?.sections ?? []}
+          loading={archivedQuery.isPending}
+          error={archivedQuery.error}
+          onClose={() => setArchiveOpen(false)}
         />
       )}
     </PageComponent>

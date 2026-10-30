@@ -9,6 +9,7 @@ export async function GetProgressOptions(staffID) {
       supabase
         .from("Section")
         .select("sectionID, sectionName, isShared")
+        .is("archivedAt", null)
         .eq("staffID", staffID)
         .order("sectionName", { ascending: true }),
       supabase
@@ -66,6 +67,7 @@ export async function GetSectionProgress(
   } = await supabase
     .from("Student")
     .select("studentID, firstName, lastName")
+    .is("archivedAt", null)
     .eq("sectionID", sectionID)
     .order("lastName", { ascending: true })
     .order("firstName", { ascending: true });

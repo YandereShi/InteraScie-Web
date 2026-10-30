@@ -27,6 +27,7 @@ export async function GetTeacherDashboard(branch) {
     await supabase
       .from("Section")
       .select("sectionID, sectionName")
+      .is("archivedAt", null)
       .eq("staffID", staff.staffID)
       .eq("isShared", false);
 
@@ -52,6 +53,7 @@ export async function GetTeacherDashboard(branch) {
     await supabase
       .from("Student")
       .select("studentID, sectionID, firstName, lastName")
+      .is("archivedAt", null)
       .in("sectionID", sectionIDs);
 
   if (studentError) {
@@ -264,5 +266,8 @@ export async function GetSuperAdminDashboard() {
     sections: data.sections ?? [],
     levels: data.levels ?? [],
     records: data.records ?? [],
+    archivedSections: data.archivedSections ?? [],
+    archivedStudents: data.archivedStudents ?? [],
+    archivedTeachers: data.archivedTeachers ?? [],
   };
 }

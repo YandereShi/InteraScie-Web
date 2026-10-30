@@ -3,11 +3,11 @@ import { useQuery } from "@tanstack/react-query";
 import { GetStudentAnswers } from "../../lib/assessmentQueries";
 import "../../css/StudentAnswersPopup.css";
 
-function StudentAnswersPopup({ student, assessmentID, studentAssessmentID, lesson, onClose }) {
+function StudentAnswersPopup({ student, assessmentID, studentAssessmentID, lesson, historySectionID = null, onClose }) {
   const dialog = useRef(null);
   const answersQuery = useQuery({
-    queryKey: ["StudentAnswers", assessmentID, studentAssessmentID],
-    queryFn: () => GetStudentAnswers(assessmentID, studentAssessmentID),
+    queryKey: ["StudentAnswers", assessmentID, studentAssessmentID, historySectionID],
+    queryFn: () => GetStudentAnswers(assessmentID, studentAssessmentID, historySectionID),
     refetchOnMount: "always",
   });
   const answers = answersQuery.data ?? [];

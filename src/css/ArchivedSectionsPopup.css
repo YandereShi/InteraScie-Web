@@ -1,0 +1,154 @@
+.archivedsectionspopup {
+  position: fixed;
+  inset: 0;
+  margin: auto;
+  width: min(760px, calc(100vw - 32px));
+  max-height: min(740px, calc(100dvh - 40px));
+  padding: 22px;
+  border: 0;
+  border-radius: 16px;
+  color: #222222;
+  background-color: #ffffff;
+}
+
+.archivedsectionspopup[open] {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.archivedsectionspopup::backdrop {
+  background-color: #00000080;
+}
+
+.archivedsectionsheader,
+.archivedsectionsitem {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.archivedsectionsheader h2 {
+  color: #006b3c;
+  font-size: clamp(1.2rem, 3vw, 1.8rem);
+}
+
+.archivedsectionsheader button {
+  border: 0;
+  background-color: transparent;
+  color: #222222;
+  font-size: 1.8rem;
+  cursor: pointer;
+}
+
+.archivedsectionssearch,
+.archivedsectionsactions select {
+  width: 100%;
+  min-width: 0;
+  padding: 10px;
+  border: 1px solid #d5d5d5;
+  border-radius: 6px;
+  font-size: clamp(0.85rem, 2.5vw, 1rem);
+}
+
+.archivedsectionslist {
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.archivedsectionsitem {
+  padding: 14px 0;
+  border-bottom: 1px solid #e5e5e5;
+  font-size: clamp(0.85rem, 2.5vw, 1rem);
+}
+
+.archivedsectionsitem > div {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.archivedsectionsitem h3 {
+  margin-bottom: 6px;
+  font-size: clamp(1rem, 2.5vw, 1.15rem);
+}
+
+.archivedsectionsitem p {
+  color: #666666;
+}
+
+.archivedsectionsitem details {
+  margin-top: 8px;
+}
+
+.archivedsectionsitem summary {
+  cursor: pointer;
+}
+
+.archivedsectionsitem ul {
+  max-height: 140px;
+  overflow-y: auto;
+  padding: 8px 0 0 20px;
+}
+
+.archivedsectionsactions {
+  display: flex;
+  flex: 0 0 210px;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.archivedsectionsactions button {
+  padding: 10px;
+  border: 0;
+  border-radius: 6px;
+  color: #ffffff;
+  background-color: #00bf63;
+  font-size: inherit;
+  cursor: pointer;
+}
+
+.archivedsectionsactions .archivedsectionscancel {
+  color: #222222;
+  background-color: #dddddd;
+}
+
+.archivedsectionspopup button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.archivedsectionserror {
+  color: #b42318;
+}
+
+.archivedsectionsstatus {
+  color: #006b3c;
+}
+
+.archivedsectionspager {
+  justify-content: center;
+}
+
+.archivedsectionsactions.archiveteachersfooter {
+  flex: none;
+  flex-direction: row;
+  justify-content: flex-end;
+}
+
+@media (max-width: 600px) {
+  .archivedsectionspopup {
+    padding: 16px;
+    max-height: 75dvh;
+  }
+
+  .archivedsectionsitem {
+    flex-direction: column;
+  }
+
+  .archivedsectionsactions {
+    flex: auto;
+    width: 100%;
+  }
+}

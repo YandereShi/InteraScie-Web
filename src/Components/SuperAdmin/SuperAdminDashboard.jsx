@@ -9,6 +9,8 @@ import { GetSuperAdminDashboard, superAdminDashboardQueryKey } from "../../lib/d
 import DashboardLevelProgress from "../Teacher/DashboardLevelProgress";
 import SuperAdminPage from "./SuperAdminPage";
 import ImportantPopup from "./ImportantPopup";
+import ArchivedSectionsPopup from "./ArchivedSectionsPopup";
+import ArchivedAccountsPopup from "../ArchivedAccountsPopup";
 
 const maxTeachers = 5;
 const emptyList = [];
@@ -16,6 +18,7 @@ const emptyList = [];
 function SuperAdminDashboard() {
   const [page, setPage] = useState(0);
   const [important, setImportant] = useState(null);
+  const [archiveOpen, setArchiveOpen] = useState(null);
   const dashboardQuery = useQuery({
     queryKey: superAdminDashboardQueryKey,
     queryFn: GetSuperAdminDashboard,
@@ -166,7 +169,39 @@ function SuperAdminDashboard() {
               </>
             )}
         </section>
+
+        <section className="superadminarchive dashboardtile" aria-labelledby="superadminarchivetitle">
+          <h2 id="superadminarchivetitle">Archive</h2>
+          <button type="button" disabled={loading || Boolean(error)} onClick={() => setArchiveOpen("students")} aria-haspopup="dialog">
+            <strong>{loading ? "..." : error ? "—" : dashboard?.archivedStudents?.length ?? 0}</strong>
+            <span>Archived Students</span>
+          </button>
+          <button type="button" disabled={loading || Boolean(error)} onClick={() => setArchiveOpen("teachers")} aria-haspopup="dialog">
+            <strong>{loading ? "..." : error ? "—" : dashboard?.archivedTeachers?.length ?? 0}</strong>
+            <span>Archived Teachers</span>
+          </button>
+          <button type="button" disabled={loading || Boolean(error)} onClick={() => setArchiveOpen("sections")} aria-haspopup="dialog">
+            <strong>{loading ? "..." : error ? "—" : dashboard?.archivedSections?.length ?? 0}</strong>
+            <span>Archived Sections</span>
+          </button>
+        </section>
       </section>
+      {archiveOpen === "sections" && (
+        <ArchivedSectionsPopup
+          sections={dashboard?.archivedSections ?? emptyList}
+          teachers={teachers}
+          onClose={() => setArchiveOpen(null)}
+        />
+      )}
+      {(archiveOpen === "students" || archiveOpen === "teachers") && (
+        <ArchivedAccountsPopup
+          key={archiveOpen}
+          kind={archiveOpen}
+          records={archiveOpen === "students" ? dashboard?.archivedStudents ?? emptyList : dashboard?.archivedTeachers ?? emptyList}
+          sections={sections}
+          onClose={() => setArchiveOpen(null)}
+        />
+      )}
       {important && (
         <ImportantPopup
           category={important}

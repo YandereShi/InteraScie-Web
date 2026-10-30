@@ -8,17 +8,19 @@ import { limits } from "../lib/inputLimits";
 import { emailPattern, GetEmailError, NormalizeEmail } from "../lib/emailValidation";
 import { supabase } from "../lib/supabase";
 import { GetRememberMe, SaveRememberMe } from "../lib/authStorage";
-import { useNavigate } from "react-router";
+import { useLocation, useNavigate } from "react-router";
+import { CheckStaffSession } from "../lib/staffQueries";
 import interascie from "../assets/InteraScie.png";
 import interalogo from "../assets/interalogo.png";
 import PlayImage from "../assets/play.png";
 
 function Login() {
   const navigate = useNavigate();
+  const location = useLocation();
   const queryClient = useQueryClient();
   const [ShowPassword, SetShowPassword] = useState(false);
   const [IsLoading, SetIsLoading] = useState(false);
-  const [LoginMessage, SetLoginMessage] = useState("");
+  const [LoginMessage, SetLoginMessage] = useState(location.state?.loginMessage ?? "");
   const [LockedSeconds, SetLockedSeconds] = useState(0);
   const [ShowGame, SetShowGame] = useState(false);
   const [forgotpassword, SetForgotPassword] = useState(false);
@@ -36,6 +38,8 @@ function Login() {
           return;
         }
 
+        await CheckStaffSession();
+
         const { data: staff, error: staffError } = await supabase
           .from("SchoolStaff")
           .select("role")
@@ -45,8 +49,12 @@ function Login() {
         if (!cancelled && !staffError && ["teacher", "superadmin"].includes(staff?.role)) {
           navigate(staff.role === "superadmin" ? "/superadmin" : "/teacher", { replace: true });
         }
-      } catch {
-        return;
+      } catch (error) {
+        if (!cancelled && error?.code === "AUTH_REQUIRED") {
+          SetLoginMessage(error.message);
+          await supabase.auth.signOut({ scope: "local" }).catch(() => null);
+          queryClient.clear();
+        }
       } finally {
         if (!cancelled) {
           SetCheckingSession(false);
@@ -59,7 +67,7 @@ function Login() {
     return () => {
       cancelled = true;
     };
-  }, [navigate]);
+  }, [navigate, queryClient]);
 
   useEffect(() => {
     if (LockedSeconds <= 0) {

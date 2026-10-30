@@ -23,6 +23,7 @@ function StudentPopup({
   onClose,
   onSave,
   onReset,
+  onOpenBatch,
 }) {
   const isEditing = Boolean(student);
 
@@ -221,7 +222,7 @@ function StudentPopup({
             </p>
           )}
 
-          <div className="studentpopupactions">
+          <div className={`studentpopupactions${isEditing ? "" : " studentaddactions"}`}>
             <div className="studentpopupactionsleft">
               <p className="studentpasswordhint">
                 Default Password is <strong>{defaultPassword}</strong>
@@ -240,14 +241,21 @@ function StudentPopup({
               )}
             </div>
 
-            <button
+            {isEditing ? <button
               type="button"
               className="cancelstudent"
               onClick={onClose}
               disabled={saving || resetting || photoSaving}
             >
               Cancel
-            </button>
+            </button> : <button
+              type="button"
+              className="batchstudent"
+              onClick={() => onOpenBatch(sectionID)}
+              disabled={saving || resetting || photoSaving}
+            >
+              Batch Upload
+            </button>}
 
             <button
               type="submit"

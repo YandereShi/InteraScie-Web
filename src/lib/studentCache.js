@@ -1,17 +1,16 @@
-const studentQueryNames = new Set([
+export const studentQueryNames = new Set([
   "Students", "SectionStudents", "NoSectionStudents", "SectionProgress",
   "AssessmentScores", "TeacherDashboard", "SuperAdminDashboard", "TeacherRadar",
-  "TeacherLevelProgress", "QuestionAccuracy", "BranchAccuracy", "StudentAnswers",
+  "TeacherLevelProgress", "QuestionAccuracy", "BranchAccuracy", "StudentAnswers", "ArchivedStudents", "AssessmentHistorySources",
 ]);
 
-const sectionQueryNames = new Set([
+export const sectionQueryNames = new Set([
   ...studentQueryNames, "Sections", "Teachers", "ProgressOptions",
   "AssessmentOptions", "LessonAccess", "AssessmentAccess",
 ]);
 
 async function InvalidateQueries(queryClient, queryNames) {
   const filters = { predicate: (query) => queryNames.has(query.queryKey[0]) };
-  // Stop older reads from restoring outdated rosters after a successful change.
   await queryClient.cancelQueries(filters);
   await queryClient.invalidateQueries(filters);
 }

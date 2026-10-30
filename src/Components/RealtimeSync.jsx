@@ -3,7 +3,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { supabase } from "../lib/supabase";
 import { InvalidateProgressQueries } from "../lib/progressCache";
 import { InvalidateAssessmentScoresQueries } from "../lib/assessmentCache";
-import { InvalidateSectionQueries, InvalidateStudentQueries } from "../lib/studentCache";
+import { studentQueryNames, sectionQueryNames } from "../lib/studentCache";
 
 const schoolStaffQueryNames = new Set([
   "TeacherProfile",
@@ -14,6 +14,8 @@ const schoolStaffQueryNames = new Set([
   "SuperAdminDashboard",
   "ProgressOptions",
   "AssessmentOptions",
+  "ArchivedStudents",
+  "AssessmentHistorySources",
 ]);
 
 const accuracyQueryNames = new Set([
@@ -32,6 +34,33 @@ function RealtimeSync() {
   const queryClient = useQueryClient();
 
   useEffect(() => {
+    const pendingQueries = new Set();
+    let refreshTimer;
+    let refreshing = false;
+    let disposed = false;
+
+    function ScheduleRefresh(queryNames) {
+      for (const name of queryNames) pendingQueries.add(name);
+      if (disposed || refreshing || refreshTimer) return;
+      refreshTimer = setTimeout(FlushRefresh, 250);
+    }
+
+    async function FlushRefresh() {
+      refreshTimer = undefined;
+      if (disposed) return;
+      const queryNames = new Set(pendingQueries);
+      pendingQueries.clear();
+      refreshing = true;
+      const filters = { predicate: (query) => queryNames.has(query.queryKey[0]) };
+      try {
+        await queryClient.cancelQueries(filters);
+        if (!disposed) await queryClient.invalidateQueries(filters);
+      } finally {
+        refreshing = false;
+        if (!disposed && pendingQueries.size > 0) ScheduleRefresh([]);
+      }
+    }
+
     const channel = supabase
       .channel("realtimesync")
       .on(
@@ -41,9 +70,7 @@ function RealtimeSync() {
           schema: "public",
           table: "Student",
         },
-        async () => {
-          await InvalidateStudentQueries(queryClient);
-        }
+        () => ScheduleRefresh(studentQueryNames)
       )
       .on(
         "postgres_changes",
@@ -52,9 +79,7 @@ function RealtimeSync() {
           schema: "public",
           table: "Section",
         },
-        async () => {
-          await InvalidateSectionQueries(queryClient);
-        }
+        () => ScheduleRefresh(sectionQueryNames)
       )
       .on(
         "postgres_changes",
@@ -63,9 +88,7 @@ function RealtimeSync() {
           schema: "public",
           table: "SchoolStaff",
         },
-        async () => {
-          await InvalidateQueries(queryClient, schoolStaffQueryNames);
-        }
+        () => ScheduleRefresh(schoolStaffQueryNames)
       )
       .on(
         "postgres_changes",
@@ -102,11 +125,14 @@ function RealtimeSync() {
       )
       .subscribe((status) => {
         if (status === "SUBSCRIBED") {
-          void InvalidateSectionQueries(queryClient);
+          ScheduleRefresh(sectionQueryNames);
         }
       });
 
     return () => {
+      disposed = true;
+      clearTimeout(refreshTimer);
+      pendingQueries.clear();
       supabase.removeChannel(channel);
     };
   }, [queryClient]);

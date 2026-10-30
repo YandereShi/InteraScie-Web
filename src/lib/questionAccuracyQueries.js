@@ -20,9 +20,8 @@ async function GetAnswerCounts(questionIDs, sectionID = "all") {
   for (let offset = 0; ; offset += pageSize) {
     let query = supabase
       .from("StudentAnswer")
-      .select(sectionID === "all"
-        ? "studentAssessmentID, questionID, isCorrect"
-        : "studentAssessmentID, questionID, isCorrect, studentAssessment:StudentAssessment!inner(student:Student!inner(sectionID))")
+      .select("studentAssessmentID, questionID, isCorrect, studentAssessment:StudentAssessment!inner(student:Student!inner(sectionID))")
+      .is("studentAssessment.student.archivedAt", null)
       .in("questionID", questionIDs)
       .order("studentAnswerID", { ascending: false });
 

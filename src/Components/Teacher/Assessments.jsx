@@ -2,7 +2,7 @@ import "../../css/Assessments.css";
 import { useEffect, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useOutletContext } from "react-router";
-import { GetAssessmentOptions, assessmentOptionsQueryKey } from "../../lib/assessmentQueries";
+import { GetAssessmentOptions, assessmentOptionsQueryKey, GetAssessmentHistorySources, GetHistoricalAssessmentScores } from "../../lib/assessmentQueries";
 import { GetAssessmentScoresOptions, PrefetchAssessments, assessmentLessonCount } from "../../lib/assessmentCache";
 import { GetStudentPhotoPath } from "../../lib/profilePhotos";
 import studentImage from "../../assets/pfp.png";
@@ -33,6 +33,7 @@ function Assessments() {
   const [page, setPage] = useState(1);
   const [sort, setSort] = useState({ key: null, order: "asc" });
   const [selectedAnswers, setSelectedAnswers] = useState(null);
+  const [selectedSource, setSelectedSource] = useState("current");
 
   const optionsQuery = useQuery({
     queryKey: assessmentOptionsQueryKey,
@@ -61,8 +62,21 @@ function Assessments() {
     .filter((item) => item.branchName === branch)
     .slice(0, lessonCount);
   const lessonIDs = lessons.map((item) => item.levelID);
+  const sourcesQuery = useQuery({
+    queryKey: ["AssessmentHistorySources", sectionID],
+    queryFn: () => GetAssessmentHistorySources(sectionID),
+    enabled: sectionID > 0,
+    staleTime: 2 * 60 * 1000,
+  });
+  const previousSources = (sourcesQuery.data ?? emptyList).filter((source) => source.staffID !== staffID);
+  const source = previousSources.some((item) => item.staffID === selectedSource) ? selectedSource : "current";
+  const historical = source !== "current";
   const scoresQuery = useQuery({
-    ...GetAssessmentScoresOptions(sectionID, staffID, branch, lessonIDs),
+    ...(historical ? {
+      queryKey: ["AssessmentScores", sectionID, source, branch, "history"],
+      queryFn: () => GetHistoricalAssessmentScores(sectionID, source, lessonIDs),
+      staleTime: 2 * 60 * 1000,
+    } : GetAssessmentScoresOptions(sectionID, staffID, branch, lessonIDs)),
     enabled:
       sectionID > 0 &&
       Boolean(staffID) &&
@@ -72,7 +86,7 @@ function Assessments() {
   const canPrefetch = optionsQuery.isSuccess && scoresQuery.isSuccess;
 
   useEffect(() => {
-    if (!canPrefetch || view !== "scores") {
+    if (!canPrefetch || view !== "scores" || historical) {
       return;
     }
 
@@ -82,7 +96,7 @@ function Assessments() {
     return () => {
       cancelled = true;
     };
-  }, [canPrefetch, levels, queryClient, sections, staffID, view]);
+  }, [canPrefetch, historical, levels, queryClient, sections, staffID, view]);
 
   const scoreData = scoresQuery.data ?? emptyScores;
   const students = scoreData.students;
@@ -106,6 +120,8 @@ function Assessments() {
     const value = event.target.value;
     setSelectedSection(value);
     SavePageSelection(authUserID, "Assessments", "Section", value);
+    setSelectedSource("current");
+    setSelectedAnswers(null);
     setPage(1);
   }
 
@@ -255,13 +271,23 @@ function Assessments() {
       {view === "scores" ? (
         <section className="assessmentspanel">
           <div className="assessmentmanage">
-            <button
+            {previousSources.length > 0 && (
+              <label className="assessmenthistorysource">
+                Assessment Source
+                <select aria-label="Assessment source" value={source} onChange={(event) => { setSelectedSource(event.target.value); setPage(1); setSelectedAnswers(null); }}>
+                  <option value="current">{teacher.firstName} {teacher.lastName} — Current teacher</option>
+                  {previousSources.map((item) => <option key={item.staffID} value={item.staffID}>{item.firstName} {item.lastName} — Previous assessments</option>)}
+                </select>
+              </label>
+            )}
+            {historical ? <span className="assessmenthistorynotice">Read only</span> : <button
               type="button"
               onClick={() => setView("questions")}
             >
               Manage Questions &rarr;
-            </button>
+            </button>}
           </div>
+          {sourcesQuery.isError && <p className="assessmenthistoryerror" role="alert">Unable to load previous assessment sources.</p>}
 
           <div className="assessmentbox">
             <table className="assessmenttable" style={{ "--assessment-lesson-count": lessonCount }}>
@@ -442,6 +468,7 @@ function Assessments() {
                                     student,
                                     assessmentID: test.assessmentID,
                                     studentAssessmentID: result.studentAssessmentID,
+                                    historySectionID: historical ? sectionID : null,
                                     lesson: `${branch} · ${lesson.levelName || `Lesson ${index + 1}`}`,
                                   })}
                                 >

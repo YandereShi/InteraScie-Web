@@ -11,6 +11,9 @@ import { PopupContext } from "../../lib/PopupContext";
 import { limits } from "../../lib/inputLimits";
 import { GetNameError } from "../../lib/nameValidation";
 import { useActionPending } from "../../lib/useActionPending";
+import ArchiveTeachersPopup from "./ArchiveTeachersPopup";
+import { SetAccountsArchived } from "../../lib/archiveQueries";
+import { InvalidateSectionQueries } from "../../lib/studentCache";
 
 const maxCards = 12;
 
@@ -24,6 +27,7 @@ function SuperAdminTeachers() {
     const [selectedTeacher, setSelectedTeacher] = useState(null);
     const [actionError, setActionError] = useState("");
     const [deleting, setDeleting] = useState(false);
+    const [archiveTeachers, setArchiveTeachers] = useState(null);
     const deletePending = useRef(false);
     useActionPending(deleting);
 
@@ -220,6 +224,13 @@ function SuperAdminTeachers() {
         }
     }
 
+    async function ArchiveTeachers(staffIDs, assignments) {
+        await SetAccountsArchived("teachers", staffIDs, true, assignments);
+        setSelectedTeacherIDs([]);
+        await InvalidateSectionQueries(queryClient);
+        setArchiveTeachers(null);
+    }
+
     return (
         <SuperAdminPage title="Teachers">
             <section className="studentspanel">
@@ -239,6 +250,9 @@ function SuperAdminTeachers() {
                         </div>
 
                         <div className="buttons">
+                            <button type="button" className="studentadd" disabled={deleting || loading || selectedTeacherIDs.length === 0} onClick={() => setArchiveTeachers(teachers.filter((teacher) => selectedTeacherIDs.includes(teacher.staffID)))}>
+                                Archive Selected
+                            </button>
                             <button
                                 type="button"
                                 className="studentadd"
@@ -341,6 +355,9 @@ function SuperAdminTeachers() {
                     onClose={CloseSectionPopup}
                     onSave={HandleUpdateTeacher}
                 />
+            )}
+            {archiveTeachers && (
+                <ArchiveTeachersPopup selectedTeachers={archiveTeachers.map((selected) => teachers.find((teacher) => teacher.staffID === selected.staffID) ?? selected)} teachers={teachers} onSave={ArchiveTeachers} onClose={() => setArchiveTeachers(null)} />
             )}
         </SuperAdminPage>
     );

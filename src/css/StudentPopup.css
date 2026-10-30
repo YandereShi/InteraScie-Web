@@ -138,6 +138,20 @@
   gap: 8px;
 }
 
+.studentaddactions {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.studentaddactions .studentpopupactionsleft {
+  grid-column: 1 / -1;
+  margin-right: 0;
+}
+
+.studentaddactions .studentpasswordhint {
+  overflow-wrap: anywhere;
+}
+
 .studentpasswordhint {
   margin: 0;
   color: #444444;
@@ -161,6 +175,12 @@
 }
 
 .savestudent {
+  background-color: #00bf63;
+  color: #ffffff;
+}
+
+.batchstudent {
+  justify-self: start;
   background-color: #00bf63;
   color: #ffffff;
 }

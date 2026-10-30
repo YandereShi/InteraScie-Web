@@ -1,11 +1,12 @@
 import { useEffect, useRef, useState } from "react";
-import { createClient } from "@supabase/supabase-js";
 import { useQueryClient } from "@tanstack/react-query";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 import "../css/StaffProfilePopup.css";
 import { supabase } from "../lib/supabase";
 import { GetProfilePhotoQueryKey, GetStaffPhotoPath, SaveProfilePhoto } from "../lib/profilePhotos";
 import profileImage from "../assets/pfp.png";
 import ProfilePhotoEditor from "./ProfilePhotoEditor";
+import { GetPasswordError } from "../lib/passwordValidation";
 
 function StaffProfilePopup({ staff, onclose }) {
   const dialog = useRef(null);
@@ -17,6 +18,9 @@ function StaffProfilePopup({ staff, onclose }) {
   const [photoSaving, SetPhotoSaving] = useState(false);
   const [photoPreparing, SetPhotoPreparing] = useState(false);
   const [photo, SetPhoto] = useState(null);
+  const [currentVisible, SetCurrentVisible] = useState(false);
+  const [newVisible, SetNewVisible] = useState(false);
+  const [confirmVisible, SetConfirmVisible] = useState(false);
   const photoBusy = photoSaving || photoPreparing;
 
   useEffect(() => {
@@ -29,6 +33,9 @@ function StaffProfilePopup({ staff, onclose }) {
     if (photoBusy || loading) return;
     SetMessage("");
     SetStatus("");
+    SetCurrentVisible(false);
+    SetNewVisible(false);
+    SetConfirmVisible(false);
     SetView("password");
   }
 
@@ -71,12 +78,9 @@ function StaffProfilePopup({ staff, onclose }) {
     const newPassword = String(values.get("newPassword"));
     const confirmPassword = String(values.get("confirmPassword"));
 
-    if (!newPassword.trim()) {
-      SetMessage("Password cannot contain only spaces.");
-      return;
-    }
-    if (newPassword.length < 8 || newPassword.length > 16) {
-      SetMessage("Use 8–16 characters for your new password.");
+    const passwordError = GetPasswordError(newPassword);
+    if (passwordError) {
+      SetMessage(passwordError);
       return;
     }
     if (newPassword !== confirmPassword) {
@@ -85,37 +89,18 @@ function StaffProfilePopup({ staff, onclose }) {
     }
     SetLoading(true);
     SetMessage("");
-    let passwordClient;
-
     try {
-      const { data: currentUser, error: userError } = await supabase.auth.getUser();
-      if (userError || !currentUser.user?.email) {
-        throw new Error("Your session has expired. Please log in again.");
-      }
+      const { data: sessionStatus, error: sessionError } = await supabase.rpc("StaffSessionStatus");
+      if (sessionError) throw new Error("Unable to verify your session. Please try again.");
+      if (sessionStatus?.status !== "active") throw new Error("Your session has expired. Please log in again.");
 
-      passwordClient = createClient(
-        import.meta.env.VITE_SUPABASE_URL,
-        import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
-        { auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false, storageKey: "staffpasswordchange" } }
-      );
-
-      const { data: verification, error: verificationError } = await passwordClient.auth.signInWithPassword({
-        email: currentUser.user.email,
-        password: currentPassword,
+      const { error: updateError } = await supabase.auth.updateUser({
+        password: newPassword,
+        current_password: currentPassword,
       });
-
-      if (verificationError) {
-        throw new Error(verificationError.code === "invalid_credentials" ? "Current password is incorrect." : "Unable to verify your current password. Please try again.");
-      }
-      if (verification.user?.id !== currentUser.user.id) {
-        throw new Error("Unable to verify your account. Please log in again.");
-      }
-      if (currentPassword === newPassword) {
-        throw new Error("Choose a new password that is different from your current password.");
-      }
-
-      const { error: updateError } = await passwordClient.auth.updateUser({ password: newPassword });
       if (updateError) {
+        if (updateError.code === "current_password_mismatch") throw new Error("Current password is incorrect.");
+        if (updateError.code === "same_password") throw new Error("Choose a new password that is different from your current password.");
         throw new Error(updateError.message || "Unable to change your password. Please try again.");
       }
 
@@ -124,9 +109,6 @@ function StaffProfilePopup({ staff, onclose }) {
     } catch (error) {
       SetMessage(error.message || "Unable to change your password. Please try again.");
     } finally {
-      if (passwordClient) {
-        await passwordClient.auth.signOut({ scope: "local" });
-      }
       SetLoading(false);
     }
   }
@@ -156,12 +138,27 @@ function StaffProfilePopup({ staff, onclose }) {
           <h2 id="staffprofiletitle">Change Password</h2>
           <form onSubmit={SavePassword}>
             <label htmlFor="staffcurrentpassword">Current Password</label>
-            <input id="staffcurrentpassword" name="currentPassword" type="password" autoComplete="current-password" required disabled={loading} />
+            <div className="staffpasswordfield">
+              <input id="staffcurrentpassword" name="currentPassword" type={currentVisible ? "text" : "password"} autoComplete="current-password" required disabled={loading} />
+              <button className="staffpasswordeye" type="button" disabled={loading} aria-label={currentVisible ? "Hide current password" : "Show current password"} aria-pressed={currentVisible} onClick={() => SetCurrentVisible(!currentVisible)}>
+                {currentVisible ? <FaEye /> : <FaEyeSlash />}
+              </button>
+            </div>
             <label htmlFor="staffnewpassword">New Password</label>
-            <input id="staffnewpassword" name="newPassword" type="password" autoComplete="new-password" minLength={8} maxLength={16} required disabled={loading} aria-describedby="staffpasswordrequirements" />
-            <p id="staffpasswordrequirements">Use 8–16 characters.</p>
+            <div className="staffpasswordfield">
+              <input id="staffnewpassword" name="newPassword" type={newVisible ? "text" : "password"} autoComplete="new-password" minLength={8} maxLength={16} required disabled={loading} aria-describedby="staffpasswordrequirements" />
+              <button className="staffpasswordeye" type="button" disabled={loading} aria-label={newVisible ? "Hide new password" : "Show new password"} aria-pressed={newVisible} onClick={() => SetNewVisible(!newVisible)}>
+                {newVisible ? <FaEye /> : <FaEyeSlash />}
+              </button>
+            </div>
+            <p id="staffpasswordrequirements">Use 8–16 characters with no spaces.</p>
             <label htmlFor="staffconfirmpassword">Confirm Password</label>
-            <input id="staffconfirmpassword" name="confirmPassword" type="password" autoComplete="new-password" minLength={8} maxLength={16} required disabled={loading} />
+            <div className="staffpasswordfield">
+              <input id="staffconfirmpassword" name="confirmPassword" type={confirmVisible ? "text" : "password"} autoComplete="new-password" minLength={8} maxLength={16} required disabled={loading} />
+              <button className="staffpasswordeye" type="button" disabled={loading} aria-label={confirmVisible ? "Hide confirm password" : "Show confirm password"} aria-pressed={confirmVisible} onClick={() => SetConfirmVisible(!confirmVisible)}>
+                {confirmVisible ? <FaEye /> : <FaEyeSlash />}
+              </button>
+            </div>
             {message && <p className="staffprofileerror" role="alert">{message}</p>}
             <div className="staffprofileactions">
               <button type="button" className="staffprofilesecondary" onClick={CancelPassword} disabled={loading}>Cancel</button>

@@ -3,6 +3,7 @@ import { Link } from "react-router";
 import { createClient } from "@supabase/supabase-js";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import "../css/PasswordRecovery.css";
+import { GetPasswordError } from "../lib/passwordValidation";
 
 const client = createClient(
   import.meta.env.VITE_SUPABASE_URL,
@@ -33,11 +34,7 @@ function ResetPassword() {
         throw new Error("Your reset session has expired. Please request a new link.");
       }
 
-      const { data: staff, error: stafferror } = await client
-        .from("SchoolStaff")
-        .select("role")
-        .eq("authUserID", data.user.id)
-        .single();
+      const { data: staff, error: stafferror } = await client.rpc("StaffSessionStatus");
 
       if (
         stafferror ||
@@ -78,12 +75,9 @@ function ResetPassword() {
     const values = new FormData(event.currentTarget);
     const password = String(values.get("password"));
     const confirmation = String(values.get("confirmation"));
-    if (!password.trim()) {
-      SetMessage("Password cannot contain only spaces.");
-      return;
-    }
-    if (password.length < 8 || password.length > 16) {
-      SetMessage("Use 8–16 characters for your new password.");
+    const passwordError = GetPasswordError(password);
+    if (passwordError) {
+      SetMessage(passwordError);
       return;
     }
     if (password !== confirmation) {
@@ -118,7 +112,7 @@ function ResetPassword() {
               {visible ? <FaEye /> : <FaEyeSlash />}
             </button>
           </div>
-          <p id="passwordrequirements">Use 8–16 characters.</p>
+          <p id="passwordrequirements">Use 8–16 characters with no spaces.</p>
           <label htmlFor="confirmpassword">Confirm New Password</label>
           <div className="recoverypasswordfield">
             <input id="confirmpassword" name="confirmation" type={confirmvisible ? "text" : "password"} autoComplete="new-password" minLength={8} maxLength={16} required disabled={loading} />

@@ -24,6 +24,8 @@
 
 .tools{
   display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
   justify-content: space-between;
   padding: 15px 40px;
 }
@@ -34,6 +36,8 @@
 
 .buttons{
   display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
   gap: 10px;
 }
 
@@ -122,6 +126,31 @@
   cursor: not-allowed;
 }
 
+.studentsearchtools {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.studentsearchtools .searchbar {
+  min-width: 0;
+}
+
+.studentspanel .studentarchivebutton {
+  flex-shrink: 0;
+  padding: 5px 10px;
+  border: 1px solid #006b3c;
+  background-color: #ffffff;
+  color: #006b3c;
+  font-size: clamp(0.8rem, 2.5vw, 1rem);
+}
+
+.studentarchivebutton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 .check {
   display: flex;
   align-items: center;
@@ -138,16 +167,6 @@
 
 .check label {
   font-size: 1.2rem;
-  cursor: pointer;
-}
-
-#batch {
-  background-color: #00bf63;
-  color: #ffffff;
-  border: none;
-  font-weight: bold;
-  border-radius: 5px;
-  padding: 5px 10px;
   cursor: pointer;
 }
 
@@ -211,6 +230,14 @@
   .searchbar,
   .searchbar input {
     width: 100%;
+  }
+
+  .studentsearchtools {
+    width: 100%;
+  }
+
+  .studentsearchtools .searchbar {
+    flex: 1;
   }
 
   .buttons {
