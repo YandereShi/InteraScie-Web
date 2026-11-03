@@ -139,7 +139,6 @@ function TeacherPolicyPopup({ policy, onClose }) {
         <button type="button" className="teacherpolicyclose" onClick={onClose} aria-label={`Close ${content.title}`} autoFocus>&times;</button>
       </header>
       <div className="teacherpolicycontent" tabIndex={0} role="region" aria-label={content.title}>
-        <p className="teacherpolicydraft">Draft — review before publication.</p>
         <p>{content.introduction}</p>
         
 {content.sections.map((section) => (

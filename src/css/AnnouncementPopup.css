@@ -1,0 +1,69 @@
+.announcementpopup {
+  width: min(520px, calc(100% - 32px));
+  max-height: calc(100dvh - 32px);
+  margin: auto;
+  padding: 26px;
+  overflow-y: auto;
+  box-sizing: border-box;
+  border: 1px solid #d2d9d4;
+  border-radius: 16px;
+  background: #ffffff;
+  color: #17251d;
+  box-shadow: 0 14px 40px #00000040;
+}
+
+.announcementpopup::backdrop { background: #0000008c; }
+
+.announcementheader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.announcementheader h2 { margin: 0; color: #006b3c; font-size: 1.6rem; }
+.announcementheader button {
+  padding: 0 4px;
+  border: 0;
+  background: transparent;
+  color: #17251d;
+  font-size: 2rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.announcementintro { margin: 12px 0 24px; color: #52675a; line-height: 1.5; }
+.announcementfield { display: flex; flex-direction: column; gap: 8px; margin-top: 18px; font-weight: 600; }
+.announcementfield select,
+.announcementfield textarea {
+  width: 100%;
+  min-width: 0;
+  padding: 12px;
+  box-sizing: border-box;
+  border: 1px solid #89988e;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #153d2b;
+  font: inherit;
+  font-weight: 400;
+}
+
+.announcementfield textarea { resize: vertical; min-height: 132px; line-height: 1.5; }
+.announcementfield select:focus-visible,
+.announcementfield textarea:focus-visible,
+.announcementpopup button:focus-visible { outline: 2px solid #006b3c; outline-offset: 3px; }
+.announcementcount { margin: 8px 0 0; color: #52675a; font-size: 0.85rem; text-align: right; }
+.announcementerror { color: #b42318; }
+.announcementsuccess { color: #006b3c; overflow-wrap: anywhere; }
+.announcementactions { display: flex; justify-content: flex-end; flex-wrap: wrap; gap: 10px; margin-top: 24px; }
+.announcementactions button,
+.announcementretry { min-height: 42px; padding: 10px 14px; border: 0; border-radius: 7px; font: inherit; font-weight: 700; cursor: pointer; }
+.announcementsave,
+.announcementretry { background: #006b3c; color: #ffffff; }
+.announcementpopup button:disabled,
+.announcementpopup select:disabled,
+.announcementpopup textarea:disabled { opacity: 0.65; cursor: not-allowed; }
+
+@media (max-width: 480px) {
+  .announcementpopup { padding: 20px; }
+}

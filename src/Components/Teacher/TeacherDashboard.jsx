@@ -4,12 +4,13 @@ import { useQuery } from "@tanstack/react-query";
 import { useOutletContext } from "react-router";
 import { PiStudentFill } from "react-icons/pi";
 import { TbUsersGroup } from "react-icons/tb";
+import { HiOutlineSpeakerphone } from "react-icons/hi";
+import { announcementCharacterLimit } from "../../lib/announcementQueries";
 import { GetTeacherDashboard, GetTeacherLevelProgress, GetTeacherRadarData, teacherDashboardQueryKey } from "../../lib/dashboardQueries";
-import { GetBranchAccuracy, GetBranchAccuracyQueryKey, accuracyBranches } from "../../lib/questionAccuracyQueries";
 import TeacherPage from "./TeacherPage";
 import ScoreGraph from "./ScoreGraph";
 import GraphPopup from "./GraphPopup";
-import QuestionAccuracyPopup from "./QuestionAccuracyPopup";
+import AnnouncementPopup from "./AnnouncementPopup";
 import DashboardRadar from "./DashboardRadar";
 import DashboardLevelProgress from "./DashboardLevelProgress";
 import RadarGraphPopup from "./RadarGraphPopup";
@@ -79,7 +80,7 @@ function TeacherDashboard() {
   const [branch, setBranch] = useState("Chemistry");
   const [active, setActive] = useState(null);
   const [section, setSection] = useState("all");
-  const [accuracyOpen, setAccuracyOpen] = useState(false);
+  const [announcementOpen, setAnnouncementOpen] = useState(false);
   const [radarOpen, setRadarOpen] = useState(false);
   const [exportOpen, setExportOpen] = useState(false);
   const OpenRadar = useCallback(() => setRadarOpen(true), []);
@@ -94,11 +95,6 @@ function TeacherDashboard() {
   const dashboard = dashboardQuery.data ?? emptyDashboard;
   const { staffID, sections, students, levels, tests, scores } = dashboard;
   const studentIDs = useMemo(() => students.map((item) => item.studentID), [students]);
-  const accuracyQuery = useQuery({
-    queryKey: GetBranchAccuracyQueryKey(staffID),
-    queryFn: () => GetBranchAccuracy(staffID),
-    enabled: Boolean(staffID),
-  });
   const radarQuery = useQuery({
     queryKey: ["TeacherRadar", staffID, students.map((student) => [student.studentID, student.sectionID])],
     queryFn: () => GetTeacherRadarData(staffID, students),
@@ -238,39 +234,14 @@ function TeacherDashboard() {
           </div>
         </div>
 
-        <button type="button" className="accuracycard" onClick={() => setAccuracyOpen(true)}>
-          <span className="accuracycardtitle">Question Accuracy</span>
-          <span className="accuracycardcontent">
-            {accuracyBranches.map((item) => {
-              const summary = accuracyQuery.data?.[item];
-              const percentage = summary?.total > 0
-                ? Math.round((summary.correct / summary.total) * 100)
-                : null;
-              const pending = loading || (Boolean(staffID) && accuracyQuery.isPending);
-              const value = pending ? "…" : percentage === null ? "—" : `${percentage}%`;
-
-              return (
-                <span className="accuracycardbranch" key={item}>
-                  <span
-                    className={percentage === null || pending ? "accuracycardring empty" : "accuracycardring"}
-                    style={percentage === null || pending ? undefined : {
-                      background: `conic-gradient(#77d75b 0 ${percentage}%, #ff343c ${percentage}% 100%)`,
-                    }}
-                    role="img"
-                    aria-label={pending
-                      ? `${item}: loading accuracy`
-                      : percentage === null
-                        ? `${item}: no answers yet`
-                        : `${item}: ${percentage}% correct`}
-                  >
-                    <span>{value}</span>
-                  </span>
-                  <span className="accuracycardbranchname">{item}</span>
-                </span>
-              );
-            })}
+        <button type="button" className="announcementcard" onClick={() => setAnnouncementOpen(true)} aria-haspopup="dialog">
+          <span className="announcementcardtitle">Announcement</span>
+          <span className="announcementcardcontent">
+            <HiOutlineSpeakerphone className="announcementcardicon" aria-hidden="true" />
+            <span>Share a reminder or update with your section.</span>
+            <small>Up to {announcementCharacterLimit} characters</small>
           </span>
-          {accuracyQuery.isError && <span className="accuracycarderror">Unable to load accuracy.</span>}
+          <span className="announcementcardaction">Write announcement</span>
         </button>
 
         {active !== null && (
@@ -285,10 +256,10 @@ function TeacherDashboard() {
           />
         )}
 
-        {accuracyOpen && (
-          <QuestionAccuracyPopup
-            initialBranch={branch}
-            onClose={() => setAccuracyOpen(false)}
+        {announcementOpen && (
+          <AnnouncementPopup
+            staffID={teacher.staffID}
+            onClose={() => setAnnouncementOpen(false)}
           />
         )}
 

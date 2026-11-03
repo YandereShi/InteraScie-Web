@@ -6,10 +6,10 @@ import { GetAssessmentOptions, assessmentOptionsQueryKey } from "../../lib/asses
 import { GetQuestionAccuracy, GetQuestionAccuracyQueryKey } from "../../lib/questionAccuracyQueries";
 import { GetBranches } from "../../lib/branches";
 
-function QuestionAccuracyPopup({ initialBranch, onClose: OnClose }) {
+function QuestionAccuracyPopup({ initialBranch, initialSection = "all", onClose: OnClose }) {
   const { teacher } = useOutletContext();
   const [branch, setBranch] = useState(initialBranch);
-  const [section, setSection] = useState("all");
+  const [section, setSection] = useState(() => String(initialSection));
   const [lesson, setLesson] = useState(0);
   const optionsQuery = useQuery({
     queryKey: [...assessmentOptionsQueryKey, teacher.staffID],

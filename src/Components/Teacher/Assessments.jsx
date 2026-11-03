@@ -4,11 +4,13 @@ import { useQuery } from "@tanstack/react-query";
 import { useOutletContext } from "react-router";
 import { GetAssessmentOptions, assessmentOptionsQueryKey, GetAssessmentHistorySources, GetHistoricalAssessmentScores } from "../../lib/assessmentQueries";
 import { GetAssessmentScoresOptions, assessmentLessonCount } from "../../lib/assessmentCache";
+import { GetBranchAccuracy, GetBranchAccuracyQueryKey, accuracyBranches } from "../../lib/questionAccuracyQueries";
 import { GetStudentPhotoPath } from "../../lib/profilePhotos";
 import studentImage from "../../assets/pfp.png";
 import ProfilePhoto from "../ProfilePhoto";
 import Questions from "./Questions";
 import StudentAnswersPopup from "./StudentAnswersPopup";
+import QuestionAccuracyPopup from "./QuestionAccuracyPopup";
 import TeacherPage from "./TeacherPage";
 import { GetPageSelection, SavePageSelection } from "../../lib/pageSelection";
 import { GetBranches } from "../../lib/branches";
@@ -32,6 +34,7 @@ function Assessments() {
   const [page, setPage] = useState(1);
   const [sort, setSort] = useState({ key: null, order: "asc" });
   const [selectedAnswers, setSelectedAnswers] = useState(null);
+  const [accuracyOpen, setAccuracyOpen] = useState(false);
   const [selectedSource, setSelectedSource] = useState("current");
 
   const optionsQuery = useQuery({
@@ -70,6 +73,13 @@ function Assessments() {
   const previousSources = (sourcesQuery.data ?? emptyList).filter((source) => source.staffID !== staffID);
   const source = previousSources.some((item) => item.staffID === selectedSource) ? selectedSource : "current";
   const historical = source !== "current";
+  const accuracyQuery = useQuery({
+    queryKey: GetBranchAccuracyQueryKey(staffID, section),
+    queryFn: () => GetBranchAccuracy(staffID, section),
+    enabled: Boolean(staffID) && sectionID > 0 && !historical,
+    staleTime: 2 * 60 * 1000,
+  });
+  const accuracyLoading = optionsQuery.isPending || (Boolean(staffID) && sectionID > 0 && accuracyQuery.isPending);
   const scoresQuery = useQuery({
     ...(historical ? {
       queryKey: ["AssessmentScores", sectionID, source, branch, "history"],
@@ -255,6 +265,29 @@ function Assessments() {
       {view === "scores" ? (
         <section className="assessmentspanel">
           <div className="assessmentmanage">
+            {!historical && (
+              <button type="button" className="assessmentaccuracypanel" aria-label={`View question accuracy for ${sectionName || "the selected section"}`} aria-haspopup="dialog" onClick={() => setAccuracyOpen(true)}>
+                <strong>Accuracy:</strong>
+                <span className="assessmentaccuracybranches">
+                  {accuracyBranches.map((item) => {
+                    const summary = accuracyQuery.data?.[item];
+                    const percentage = summary?.total > 0 ? Math.round((summary.correct / summary.total) * 100) : null;
+                    const empty = accuracyLoading || percentage === null;
+                    return (
+                      <span className="assessmentaccuracybranch" key={item}>
+                        <span className={empty ? "assessmentaccuracyring empty" : "assessmentaccuracyring"} style={empty ? undefined : {
+                          background: `conic-gradient(#77d75b 0 ${percentage}%, #ff343c ${percentage}% 100%)`,
+                        }} role="img" aria-label={accuracyLoading ? `${item}: loading accuracy` : percentage === null ? `${item}: no answers yet` : `${item}: ${percentage}% correct`}>
+                          <span>{accuracyLoading ? "…" : percentage === null ? "—" : `${percentage}%`}</span>
+                        </span>
+                        <span>{item === "Earth Science" ? "Earth" : item}</span>
+                      </span>
+                    );
+                  })}
+                </span>
+                {accuracyQuery.isError && <span className="assessmentaccuracyerror">Unable to load accuracy.</span>}
+              </button>
+            )}
             {previousSources.length > 0 && (
               <label className="assessmenthistorysource">
                 Assessment Source
@@ -264,12 +297,13 @@ function Assessments() {
                 </select>
               </label>
             )}
-            {historical ? <span className="assessmenthistorynotice">Read only</span> : <button
-              type="button"
-              onClick={() => setView("questions")}
-            >
-              Manage Questions &rarr;
-            </button>}
+            {historical ? <span className="assessmenthistorynotice">Read only</span> : (
+              <div className="assessmentmanageactions">
+                <button type="button" onClick={() => setView("questions")}>
+                  Manage Questions &rarr;
+                </button>
+              </div>
+            )}
           </div>
           {sourcesQuery.isError && <p className="assessmenthistoryerror" role="alert">Unable to load previous assessment sources.</p>}
 
@@ -524,6 +558,13 @@ function Assessments() {
           key={selectedAnswers.studentAssessmentID}
           {...selectedAnswers}
           onClose={() => setSelectedAnswers(null)}
+        />
+      )}
+      {accuracyOpen && (
+        <QuestionAccuracyPopup
+          initialBranch={branch}
+          initialSection={section}
+          onClose={() => setAccuracyOpen(false)}
         />
       )}
     </TeacherPage>

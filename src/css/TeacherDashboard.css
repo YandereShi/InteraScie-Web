@@ -4,7 +4,7 @@
   grid-template-columns: minmax(175px, 1.1fr) minmax(0, 2.5fr) minmax(200px, 1.2fr);
   grid-template-areas:
     "totals progress radar"
-    "performance performance accuracy";
+    "performance performance announcement";
   gap: 22px;
   width: 100%;
   padding-right: 30px;
@@ -18,7 +18,7 @@
 
 .dashboardtile,
 .dashboardpanel .performance,
-.dashboardpanel .accuracycard {
+.dashboardpanel .announcementcard {
   border: 3px solid #e1e8e4;
   border-radius: 18px;
   background-color: #FFFFFF;
@@ -87,8 +87,8 @@
   line-height: 1;
 }
 
-.accuracycard {
-  grid-area: accuracy;
+.announcementcard {
+  grid-area: announcement;
   container-type: inline-size;
   display: flex;
   flex-direction: column;
@@ -97,85 +97,61 @@
   min-height: 310px;
   padding: 16px;
   color: #153D2B;
+  font: inherit;
   text-align: left;
   cursor: pointer;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.accuracycard:hover,
-.accuracycard:focus-visible {
+.announcementcard:hover,
+.announcementcard:focus-visible {
   transform: translateY(-3px);
   box-shadow: 0 5px 12px color-mix(in srgb, #000000 20%, transparent);
 }
 
-.accuracycard:focus-visible {
+.announcementcard:focus-visible {
   outline: 3px solid #00BF63;
   outline-offset: 3px;
 }
 
-.accuracycardtitle {
+.announcementcardtitle {
   font-size: clamp(1rem, 6cqw, 1.5rem);
   font-weight: 800;
   color: #006B3C;
 }
 
-.accuracycardcontent {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  align-items: center;
-  gap: 7px;
-  margin-block: auto;
-  padding: 10px 8px;
-  border-radius: 14px;
-  background-color: #F2F7F4;
-}
-
-.accuracycardbranch {
+.announcementcardcontent {
   display: flex;
-  min-width: 0;
   flex-direction: column;
   align-items: center;
-  gap: 5px;
-}
-
-.accuracycardring {
-  display: grid;
-  place-items: center;
-  width: clamp(44px, 25cqw, 64px);
-  aspect-ratio: 1;
-  border-radius: 50%;
-  background-color: #FF343C;
-}
-
-.accuracycardring.empty {
-  background-color: #CBD0D6;
-}
-
-.accuracycardring span {
-  display: grid;
-  place-items: center;
-  width: 72%;
-  height: 72%;
-  border-radius: 50%;
-  background-color: #FFFFFF;
-  color: #111111;
-  font-size: clamp(0.68rem, 2.6cqw, 0.92rem);
-  font-weight: 800;
-}
-
-.accuracycardbranchname {
-  max-width: 100%;
-  color: #25382C;
-  font-size: clamp(0.7rem, 4cqw, 0.9rem);
-  font-weight: 700;
-  line-height: 1.15;
-  overflow-wrap: anywhere;
+  gap: 14px;
+  margin-block: auto;
+  padding: 24px 14px;
+  border-radius: 14px;
+  background-color: #F2F7F4;
+  line-height: 1.5;
   text-align: center;
 }
 
-.accuracycarderror {
-  color: #C8202C;
-  font-size: 0.85rem;
+.announcementcardicon {
+  width: 48px;
+  height: 48px;
+  color: #087DE0;
+}
+
+.announcementcardcontent small {
+  color: #526A5C;
+  font-size: 0.8rem;
+}
+
+.announcementcardaction {
+  padding: 10px 14px;
+  border-radius: 8px;
+  background-color: #006B3C;
+  color: #FFFFFF;
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-align: center;
 }
 
 .dashboardradar {
@@ -547,7 +523,7 @@
     grid-template-columns: minmax(180px, 1fr) minmax(0, 2fr);
     grid-template-areas:
       "totals progress"
-      "radar accuracy"
+      "radar announcement"
       "performance performance";
     gap: 16px;
     padding-right: 20px;
@@ -576,7 +552,7 @@
       "progress"
       "radar"
       "performance"
-      "accuracy";
+      "announcement";
     gap: 14px;
     padding-right: 0;
   }
@@ -589,7 +565,7 @@
     min-height: 90px;
   }
 
-  .accuracycard {
+  .announcementcard {
     min-height: 280px;
     padding: 16px;
   }

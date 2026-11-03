@@ -1,3 +1,7 @@
+.mainpanel:has(.assessmentaccuracypanel) {
+  padding-top: 0;
+}
+
 .assessmentspanel {
   width: calc(100% - 30px);
   min-width: 0;
@@ -17,14 +21,97 @@
   padding-bottom: 8px;
 }
 
-.assessmentmanage button {
+.assessmentmanageactions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 16px;
   margin-left: auto;
+  max-width: 100%;
+}
+
+.assessmentmanageactions button {
   padding: 8px 0;
   background-color: transparent;
   border: none;
   color: #333333;
   font-size: 1rem;
   cursor: pointer;
+}
+
+.assessmentaccuracypanel {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px 18px;
+  max-width: 100%;
+  margin-right: auto;
+  padding: 10px 16px;
+  border: 1px solid #dce5df;
+  border-radius: 12px;
+  background-color: #f2f7f3;
+  color: #006b3c;
+  font-size: clamp(0.8rem, 1.2vw, 1rem);
+  cursor: pointer;
+}
+
+.assessmentaccuracypanel:hover {
+  box-shadow: 0 4px 12px #dddddd;
+}
+
+.assessmentaccuracypanel:focus-visible {
+  outline: 2px solid #006b3c;
+  outline-offset: 3px;
+}
+
+.assessmentaccuracybranches {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  align-items: start;
+  gap: clamp(8px, 1.5vw, 20px);
+  min-width: 0;
+  max-width: 100%;
+}
+
+.assessmentaccuracybranch {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  color: #171717;
+  font-size: clamp(0.65rem, 1vw, 0.85rem);
+  font-weight: 600;
+}
+
+.assessmentaccuracyring {
+  display: grid;
+  place-items: center;
+  width: clamp(40px, 4.5vw, 58px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+}
+
+.assessmentaccuracyring.empty {
+  background: #cbd0d6;
+}
+
+.assessmentaccuracyring > span {
+  display: grid;
+  place-items: center;
+  width: 74%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: #ffffff;
+  color: #171717;
+  font-size: clamp(0.7rem, 1vw, 0.9rem);
+  font-weight: 700;
+}
+
+.assessmentaccuracyerror {
+  flex-basis: 100%;
+  color: #b42318;
+  font-size: 0.8rem;
 }
 
 .assessmenthistorysource {
@@ -318,7 +405,7 @@
     flex-shrink: 0;
   }
 
-  .assessmentmanage button {
+  .assessmentmanageactions button {
     padding: 6px 0;
     font-size: clamp(0.78rem, 2.8vw, 0.9rem);
   }

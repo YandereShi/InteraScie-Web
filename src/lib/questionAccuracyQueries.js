@@ -7,8 +7,8 @@ export function GetQuestionAccuracyQueryKey(staffID, levelID, sectionID = "all")
   return ["QuestionAccuracy", staffID, levelID, sectionID];
 }
 
-export function GetBranchAccuracyQueryKey(staffID) {
-  return ["BranchAccuracy", staffID];
+export function GetBranchAccuracyQueryKey(staffID, sectionID = "all") {
+  return sectionID === "all" ? ["BranchAccuracy", staffID] : ["BranchAccuracy", staffID, String(sectionID)];
 }
 
 async function GetAnswerCounts(questionIDs, sectionID = "all") {
@@ -60,7 +60,7 @@ async function GetAnswerCounts(questionIDs, sectionID = "all") {
   return counts;
 }
 
-export async function GetBranchAccuracy(staffID) {
+export async function GetBranchAccuracy(staffID, sectionID = "all") {
   const summary = Object.fromEntries(
     accuracyBranches.map((branch) => [branch, { correct: 0, total: 0 }])
   );
@@ -116,7 +116,7 @@ export async function GetBranchAccuracy(staffID) {
     return summary;
   }
 
-  const counts = await GetAnswerCounts(questionList.map((question) => question.questionID));
+  const counts = await GetAnswerCounts(questionList.map((question) => question.questionID), sectionID);
 
   questionList.forEach((question) => {
     const branch = branches.get(assessmentLevels.get(question.assessmentID));

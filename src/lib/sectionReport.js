@@ -1,3 +1,5 @@
+import { AddSectionReportCharts } from "./sectionReportCharts.js";
+
 const missing = "—";
 const daySeconds = 86400;
 const colors = { green: "FF70AD47", blue: "FFBDD7EE", metadata: "FF9DC3E6", yellow: "FFFFFF00", branch: "FFFFC000", pale: "FFFFF2CC" };
@@ -63,6 +65,8 @@ export async function CreateSectionWorkbook(data, teacherName, exportedAt = new 
     };
   };
   const names = new Set();
+  const charts = [];
+  workbook.calcProperties.fullCalcOnLoad = true;
   for (const section of sections) {
     const students = data.students.filter((student) => String(student.sectionID) === String(section.sectionID))
       .sort((a, b) => Name(a).localeCompare(Name(b)));
@@ -71,7 +75,7 @@ export async function CreateSectionWorkbook(data, teacherName, exportedAt = new 
       pageSetup: { orientation: "landscape", paperSize: 9, fitToPage: true, fitToWidth: 1, fitToHeight: 0, printTitlesRow: "1:6" },
       properties: { defaultRowHeight: 22 },
     });
-    sheet.columns = Array.from({ length: 21 }, (_, index) => ({ width: index === 11 ? 3 : 9 }));
+    sheet.columns = Array.from({ length: 41 }, (_, index) => ({ width: index === 11 || index === 21 || index === 36 ? 3 : 9, hidden: index >= 37 }));
     sheet.mergeCells("A1:D2");
     const title = sheet.getCell("A1");
     title.value = "DATA REPORT";
@@ -91,6 +95,7 @@ export async function CreateSectionWorkbook(data, teacherName, exportedAt = new 
     Cell(sheet, 6, 7, 8, "Branch/es:", colors.metadata);
     Cell(sheet, 6, 9, 12, branches.join(", "), colors.metadata);
     const allScores = [];
+    const allScoreRanges = [];
     const allTimes = [];
     let finished = 0;
     let start = 9;
@@ -98,6 +103,13 @@ export async function CreateSectionWorkbook(data, teacherName, exportedAt = new 
       const levels = data.levels.filter((level) => level.branchName === branch);
       const assessmentEnd = 3 + levels.length * 2;
       const progressEnd = 15 + levels.length * 2;
+      const firstRow = start + 6;
+      const lastRow = firstRow + Math.max(1, students.length) - 1;
+      const scoreRanges = [];
+      const branchScores = [];
+      const chart = { sheetID: sheet.id, sheetName: sheet.name, branch, row: start, categories: `$AL$${start + 1}:$AL$${start + 16}`, series: [] };
+      sheet.getCell(start, 38).value = "Score";
+      for (let score = 0; score <= 15; score += 1) sheet.getCell(start + 1 + score, 38).value = String(score);
       sheet.getRow(start).height = levels.length < 3 ? 38 : 30;
       Cell(sheet, start, 4, assessmentEnd, "ASSESSMENT RECORD", colors.green, { bold: true, size: 18 });
       Cell(sheet, start, 16, progressEnd, "PROGRESS RECORD", colors.green, { bold: true, size: 18 });
@@ -112,13 +124,28 @@ export async function CreateSectionWorkbook(data, teacherName, exportedAt = new 
         const scoreColumn = 4 + index * 2;
         const progressColumn = 16 + index * 2;
         const levelScores = students.map((student) => getScore(student, level)).filter((value) => value !== null);
+        const scoreRange = `${sheet.getColumn(scoreColumn).letter}${firstRow}:${sheet.getColumn(scoreColumn).letter}${lastRow}`;
+        scoreRanges.push(scoreRange);
+        allScoreRanges.push(scoreRange);
+        branchScores.push(...levelScores);
+        const helperColumn = 39 + index;
+        sheet.getCell(start, helperColumn).value = `Level ${level.lesson}`;
+        const counts = Array.from({ length: 16 }, () => 0);
+        levelScores.forEach((score) => { counts[score] += 1; });
+        counts.forEach((count, score) => {
+          sheet.getCell(start + 1 + score, helperColumn).value = { formula: `COUNTIFS(${scoreRange},AL${start + 1 + score})`, result: count };
+        });
+        chart.series.push({ name: `Level ${level.lesson}`, counts, range: `$${sheet.getColumn(helperColumn).letter}$${start + 1}:$${sheet.getColumn(helperColumn).letter}$${start + 16}` });
         const records = students.map((student) => getProgress(student, level));
         const levelTimes = records.filter((record) => record.finished && record.seconds !== null).map((record) => record.seconds);
         allScores.push(...levelScores);
         allTimes.push(...levelTimes);
         finished += records.filter((record) => record.finished).length;
         Cell(sheet, start + 4, scoreColumn, scoreColumn, "Avg:", colors.yellow);
-        Cell(sheet, start + 4, scoreColumn + 1, scoreColumn + 1, Mean(levelScores) ?? missing, colors.yellow, { format: "0.00" });
+        const average = { formula: `IF(COUNT(${scoreRange})=0,"${missing}",AVERAGE(${scoreRange}))`, result: Mean(levelScores) ?? missing };
+        Cell(sheet, start + 4, scoreColumn + 1, scoreColumn + 1, average, colors.yellow, { format: "0.00" });
+        Cell(sheet, start + 16, 23 + index * 4, 24 + index * 4, `Level ${level.lesson} avg:`, colors.yellow);
+        Cell(sheet, start + 16, 25 + index * 4, 26 + index * 4, { formula: `${sheet.getColumn(scoreColumn + 1).letter}${start + 4}`, result: Mean(levelScores) ?? missing }, colors.blue, { format: "0.00" });
         Cell(sheet, start + 5, scoreColumn, scoreColumn + 1, `Level ${level.lesson}`, colors.green, { bold: true });
         Cell(sheet, start + 3, progressColumn, progressColumn, "Avg time:", colors.yellow);
         Cell(sheet, start + 3, progressColumn + 1, progressColumn + 1, TimeValue(Mean(levelTimes)), colors.yellow, { format: "[mm]:ss" });
@@ -142,18 +169,23 @@ export async function CreateSectionWorkbook(data, teacherName, exportedAt = new 
           Cell(sheet, row, progressColumn, progressColumn, record.status, colors.blue);
           Cell(sheet, row, progressColumn + 1, progressColumn + 1, TimeValue(record.seconds), colors.blue, { format: "[mm]:ss" });
         }
-        Cell(sheet, row, assessmentEnd + 1, assessmentEnd + 2, recorded.length ? recorded.reduce((sum, value) => sum + value, 0) : missing, colors.blue, { format: "0" });
+        const totalRange = `D${row}:${sheet.getColumn(assessmentEnd).letter}${row}`;
+        Cell(sheet, row, assessmentEnd + 1, assessmentEnd + 2, { formula: `IF(COUNT(${totalRange})=0,"${missing}",SUM(${totalRange}))`, result: recorded.length ? recorded.reduce((sum, value) => sum + value, 0) : missing }, colors.blue, { format: "0" });
       }
       if (!students.length) {
         Cell(sheet, start + 6, 1, 3, "No active students", colors.blue);
         Cell(sheet, start + 6, 13, 15, "No active students", colors.blue);
       }
-      start += 6 + Math.max(1, students.length) + 3;
+      Cell(sheet, start + 17, 23, 26, "Branch average (/15)", colors.yellow);
+      Cell(sheet, start + 17, 27, 30, { formula: `IF(COUNT(${scoreRanges.join(",")})=0,"${missing}",AVERAGE(${scoreRanges.join(",")}))`, result: Mean(branchScores) ?? missing }, colors.blue, { format: "0.00" });
+      Cell(sheet, start + 17, 31, 36, { formula: `IF(COUNT(${scoreRanges.join(",")})=0,"No recorded scores","Recorded scores only")`, result: branchScores.length ? "Recorded scores only" : "No recorded scores" }, colors.pale);
+      charts.push(chart);
+      start += Math.max(18, 6 + Math.max(1, students.length)) + 3;
     }
     Cell(sheet, start, 1, 21, "SECTION STATISTICS", colors.green, { bold: true });
     sheet.getRow(start + 1).height = 32;
     Cell(sheet, start + 1, 1, 3, "Average score (/15)", colors.yellow);
-    Cell(sheet, start + 1, 4, 6, Mean(allScores) ?? missing, colors.blue, { format: "0.00" });
+    Cell(sheet, start + 1, 4, 6, { formula: `IF(COUNT(${allScoreRanges.join(",")})=0,"${missing}",AVERAGE(${allScoreRanges.join(",")}))`, result: Mean(allScores) ?? missing }, colors.blue, { format: "0.00" });
     Cell(sheet, start + 1, 8, 10, "Average time", colors.yellow);
     Cell(sheet, start + 1, 11, 13, TimeValue(Mean(allTimes)), colors.blue, { format: "[mm]:ss" });
     Cell(sheet, start + 1, 15, 17, "Progress", colors.yellow);
@@ -165,15 +197,19 @@ export async function CreateSectionWorkbook(data, teacherName, exportedAt = new 
     note.font = { name: "Calibri", size: 10 };
     note.alignment = { wrapText: true };
     sheet.getRow(start + 3).height = 30;
-    sheet.pageSetup.printArea = `A1:U${start + 3}`;
+    sheet.pageSetup.printArea = `A1:AJ${start + 3}`;
   }
-  return workbook;
+  return { workbook, charts };
+}
+
+export async function CreateSectionReport(data, teacherName, exportedAt = new Date()) {
+  const { workbook, charts } = await CreateSectionWorkbook(data, teacherName, exportedAt);
+  return AddSectionReportCharts(await workbook.xlsx.writeBuffer(), charts);
 }
 
 export async function DownloadSectionReport(data, teacherName) {
   const date = new Date();
-  const workbook = await CreateSectionWorkbook(data, teacherName, date);
-  const buffer = await workbook.xlsx.writeBuffer();
+  const buffer = await CreateSectionReport(data, teacherName, date);
   const branches = [...new Set(data.levels.map((level) => level.branchName))];
   const dateLabel = [date.getFullYear(), String(date.getMonth() + 1).padStart(2, "0"), String(date.getDate()).padStart(2, "0")].join("-");
   const name = [data.sections.length === 1 ? data.sections[0].sectionName : `${data.sections.length} Sections`,
