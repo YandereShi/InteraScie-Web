@@ -21,3 +21,6 @@ dist-ssr
 *.sln
 *.sw?
 public/files/*.apk
+output/audits/System_Requirements_Review.md
+*.json
+package-lock.json
