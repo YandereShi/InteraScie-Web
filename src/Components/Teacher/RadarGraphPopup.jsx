@@ -1,17 +1,19 @@
+import { GetSectionLabel, MatchesSchoolYear, SortSectionsBySchoolYear } from "../../lib/schoolYear";
 import "../../css/RadarGraphPopup.css";
 import { useEffect, useRef, useState } from "react";
 import RadarChartJS from "./RadarChartJS";
 import { allRadarColor, SectionRadarColor } from "./radarColors";
+import SchoolYearSelect from "../SchoolYearSelect";
 
-function RadarGraphPopup({ levels, sections, loading, error, onClose }) {
+function RadarGraphPopup({ levels, sections, schoolYear, onSchoolYearChange, loading, error, onClose }) {
   const closeButton = useRef(null);
   const [mode, setMode] = useState("all");
   const [hiddenSections, setHiddenSections] = useState(() => new Set());
-  const sectionSeries = [...sections]
-    .sort((first, second) => String(first.sectionName).localeCompare(String(second.sectionName)) || String(first.sectionID).localeCompare(String(second.sectionID)))
+  const yearSections = sections.filter((item) => MatchesSchoolYear(item, schoolYear));
+  const sectionSeries = SortSectionsBySchoolYear(yearSections)
     .map((section, index) => ({
       id: String(section.sectionID),
-      name: section.sectionName,
+      name: GetSectionLabel(section),
       color: SectionRadarColor(index),
       values: levels.map((level) => level.sectionAccuracies?.[section.sectionID] ?? null),
     }));
@@ -53,6 +55,7 @@ function RadarGraphPopup({ levels, sections, loading, error, onClose }) {
         </div>
 
         <div className="radarpopupcontrols" aria-label="Radar graph view">
+          <SchoolYearSelect sections={sections} value={schoolYear} label="Radar popup school year" disabled={loading} onChange={onSchoolYearChange} />
           <button type="button" className={mode === "all" ? "radarpopuptab active" : "radarpopuptab"} aria-pressed={mode === "all"} onClick={() => setMode("all")}>All</button>
           <button type="button" className={mode === "single" ? "radarpopuptab active" : "radarpopuptab"} aria-pressed={mode === "single"} onClick={() => setMode("single")}>Single</button>
         </div>
@@ -67,7 +70,7 @@ function RadarGraphPopup({ levels, sections, loading, error, onClose }) {
           ) : (
             <RadarChartJS key={`${mode}:${series.map((item) => item.id).join(",")}`} levels={levels} series={series} />
           )}
-          {!loading && !error && levels.length > 0 && series.length === 0 && sections.length > 0 && (
+          {!loading && !error && levels.length > 0 && series.length === 0 && yearSections.length > 0 && (
             <p className="radarpopupstate">Choose a section in the legend to show its graph.</p>
           )}
           {!loading && !error && levels.length > 0 && series.length > 0 && !hasScores && (
@@ -76,7 +79,7 @@ function RadarGraphPopup({ levels, sections, loading, error, onClose }) {
           {!loading && !error && levels.length > 0 && hasScores && (
             <p className="radarpopupnote">Select a dot to see its accuracy. Levels without scores are plotted at 0.</p>
           )}
-          {mode === "single" && sections.length > 0 && (
+          {mode === "single" && yearSections.length > 0 && (
             <div className="radarpoplegend" aria-label="Section graph colors">
               {sectionSeries.map((item) => (
                 <button
@@ -98,8 +101,8 @@ function RadarGraphPopup({ levels, sections, loading, error, onClose }) {
               ))}
             </div>
           )}
-          {mode === "single" && sections.length === 0 && !loading && !error && (
-            <p className="radarpopupstate">No sections assigned yet.</p>
+          {mode === "single" && yearSections.length === 0 && !loading && !error && (
+            <p className="radarpopupstate">No sections in the selected school year.</p>
           )}
         </div>
       </div>

@@ -1,3 +1,4 @@
+import { GetSectionLabel } from "../../lib/schoolYear";
 import "../../css/Progress.css";
 import { useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -462,7 +463,7 @@ function Progress() {
                         value={item.sectionID}
                         key={item.sectionID}
                       >
-                        {item.sectionName}
+                        {GetSectionLabel(item)}
                       </option>
                     ))}
                   </select>

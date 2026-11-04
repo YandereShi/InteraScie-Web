@@ -1,0 +1,112 @@
+.sectionselect {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.sectionselectbutton {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+  min-width: 0;
+  min-height: 36px;
+  padding: 8px 10px;
+  border: 1px solid #89988e;
+  border-radius: 7px;
+  background-color: #ffffff;
+  color: #153d2b;
+  font: inherit;
+  font-size: clamp(0.8rem, 1.1vw, 1rem);
+  text-align: left;
+  cursor: pointer;
+}
+
+.sectionselectbutton > span:first-child {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sectionselectbutton > span:last-child {
+  flex-shrink: 0;
+}
+
+.sectionselectbutton:focus-visible,
+.sectionselectpopup select:focus-visible,
+.sectionselectoptions button:focus-visible {
+  outline: 2px solid #006b3c;
+  outline-offset: 2px;
+}
+
+.sectionselectbutton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.sectionselectpopup {
+  position: fixed;
+  z-index: 2000;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  padding: 10px;
+  border: 1px solid #d5d5d5;
+  border-radius: 10px;
+  background-color: #ffffff;
+  color: #222222;
+  box-shadow: 0 6px 20px #00000026;
+  font-family: Arial, sans-serif;
+  font-size: clamp(0.8rem, 2.8vw, 0.95rem);
+}
+
+.sectionselectyear {
+  display: grid;
+  flex-shrink: 0;
+  gap: 6px;
+  padding-bottom: 10px;
+  font-weight: 600;
+}
+
+.sectionselectyear select {
+  width: 100%;
+  min-width: 0;
+  padding: 8px;
+  border: 1px solid #89988e;
+  border-radius: 6px;
+  background-color: #ffffff;
+  color: #222222;
+  font: inherit;
+}
+
+.sectionselectoptions {
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  border-top: 1px solid #e5e5e5;
+  padding: 4px 0;
+}
+
+.sectionselectoptions button {
+  display: block;
+  width: 100%;
+  padding: 10px 8px;
+  border: 0;
+  border-radius: 4px;
+  background-color: #ffffff;
+  color: #222222;
+  font: inherit;
+  text-align: left;
+  overflow-wrap: anywhere;
+  cursor: pointer;
+}
+
+.sectionselectoptions button:hover,
+.sectionselectoptions button[aria-selected="true"] {
+  background-color: #edf6f0;
+}
+
+.sectionselectoptions p {
+  margin: 0;
+  padding: 12px 8px;
+}

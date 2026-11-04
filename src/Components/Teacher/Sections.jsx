@@ -16,6 +16,8 @@ import { GetStudents, studentQueryKey } from "../../lib/studentQueries";
 import { GetPageSelection, SavePageSelection } from "../../lib/pageSelection";
 import { NormalizeName } from "../../lib/nameValidation";
 import { useActionPending } from "../../lib/useActionPending";
+import { IsValidSchoolYear, MatchesSchoolYear, GetSectionLabel } from "../../lib/schoolYear";
+import SectionSelect from "../SectionSelect";
 
 const maxRows = 15;
 
@@ -25,6 +27,7 @@ function Sections({ PageComponent = TeacherPage }) {
   const queryClient = useQueryClient();
   const { ShowConfirmation } = useContext(PopupContext);
   const [selectedSection, setSelectedSection] = useState(() => GetPageSelection(authUserID, "Sections", "Section"));
+  const [schoolYear, setSchoolYear] = useState(() => GetPageSelection(authUserID, "Sections", "SchoolYear") || "all");
   const [selected, setSelected] = useState([]);
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
@@ -46,10 +49,11 @@ function Sections({ PageComponent = TeacherPage }) {
 
   const role = sectionsQuery.data?.role ?? "";
   const sections = sectionsQuery.data?.sections ?? [];
-  const choices =
+  const availableSections =
     role === "superadmin"
       ? sections
       : sections.filter((item) => !item.isShared);
+  const choices = availableSections.filter((item) => MatchesSchoolYear(item, schoolYear));
   const section = choices.some(
     (item) => String(item.sectionID) === selectedSection
   )
@@ -92,8 +96,7 @@ function Sections({ PageComponent = TeacherPage }) {
         ? "Unable to load No Section students."
         : "";
 
-  function PickSection(event) {
-    const value = event.target.value;
+  function PickSection(value) {
     setSelectedSection(value);
     SavePageSelection(authUserID, "Sections", "Section", value);
     setSearch("");
@@ -103,6 +106,16 @@ function Sections({ PageComponent = TeacherPage }) {
 
   function ChangeSearch(event) {
     setSearch(event.target.value);
+    setSelected([]);
+    setPage(1);
+  }
+
+  function PickSchoolYear(value) {
+    setSchoolYear(value);
+    SavePageSelection(authUserID, "Sections", "SchoolYear", value);
+    setSelectedSection("");
+    SavePageSelection(authUserID, "Sections", "Section", "");
+    setSearch("");
     setSelected([]);
     setPage(1);
   }
@@ -207,7 +220,7 @@ function Sections({ PageComponent = TeacherPage }) {
 
     try {
       const confirmed = await ShowConfirmation(
-        `Delete "${activeSection.sectionName}"? Its ${students.length} student(s) will be moved to No Section.`,
+        `Delete "${GetSectionLabel(activeSection)}"? Its ${students.length} student(s) will be moved to No Section.`,
         true
       );
 
@@ -243,7 +256,7 @@ function Sections({ PageComponent = TeacherPage }) {
 
     try {
       const confirmed = await ShowConfirmation(
-        `Archive "${activeSection.sectionName}" and all its active students? Their access will be disabled and all saved data will be preserved.`,
+        `Archive "${GetSectionLabel(activeSection)}" and all its active students? Their access will be disabled and all saved data will be preserved.`,
         false,
         students.map((student) => `${student.lastName}, ${student.firstName}`)
       );
@@ -337,7 +350,8 @@ function Sections({ PageComponent = TeacherPage }) {
     setCreateOpen(false);
   }
 
-  async function CreateSection(name) {
+  async function CreateSection(name, year) {
+    if (!IsValidSchoolYear(year)) throw new Error("Please select a school year.");
     if (!/[\p{L}\p{N}]/u.test(name)) {
       throw new Error("Section name must contain at least one letter or number.");
     }
@@ -351,15 +365,18 @@ function Sections({ PageComponent = TeacherPage }) {
     }
 
     const fresh = await queryClient.fetchQuery({ queryKey: sectionsQueryKey, queryFn: GetSections, staleTime: 0 });
-    if (fresh.sections.some((item) => NormalizeName(item.sectionName) === NormalizeName(name))) {
-      throw new Error("This section name already exists.");
+    if (fresh.sections.some((item) => item.schoolYear === year && NormalizeName(item.sectionName) === NormalizeName(name))) {
+      throw new Error("This section name already exists in the selected school year.");
     }
 
     const data = await InvokeStudentManagement("createsection", {
       sectionName: name,
+      schoolYear: year,
     });
 
     const createdSection = String(data.sectionID ?? "");
+    setSchoolYear(year);
+    SavePageSelection(authUserID, "Sections", "SchoolYear", year);
     setSelectedSection(createdSection);
     SavePageSelection(authUserID, "Sections", "Section", createdSection);
     setSearch("");
@@ -375,21 +392,7 @@ function Sections({ PageComponent = TeacherPage }) {
         <div className="sectionbox">
           <div className="sectiontools">
             <div className="sectionheading">
-              <select
-                className="sectionpick"
-                value={section}
-                onChange={PickSection}
-                aria-label="Active section"
-                disabled={deleting || moving || archiving || choices.length === 0}
-              >
-                {choices.length === 0 && <option value="">No sections</option>}
-
-                {choices.map((item) => (
-                  <option key={item.sectionID} value={item.sectionID}>
-                    {item.displayName ?? item.sectionName}
-                  </option>
-                ))}
-              </select>
+              <SectionSelect sections={availableSections} value={section} onChange={PickSection} schoolYear={schoolYear} onSchoolYearChange={PickSchoolYear} label="Active section" buttonClassName="sectionpick" disabled={deleting || moving || archiving || sectionsQuery.isPending} />
             </div>
 
             <div className="sectionsearch">
@@ -535,7 +538,7 @@ function Sections({ PageComponent = TeacherPage }) {
       )}
 
       {createOpen && (
-        <SectionPopup onClose={CloseCreate} onCreate={CreateSection} />
+        <SectionPopup sections={availableSections} initialSchoolYear={schoolYear} onClose={CloseCreate} onCreate={CreateSection} />
       )}
     </PageComponent>
   );

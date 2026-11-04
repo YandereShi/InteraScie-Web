@@ -1,3 +1,4 @@
+import { GetSectionLabel } from "../../lib/schoolYear";
 import "../../css/StudentCard.css";
 import teacherImage from "../../assets/pfp.png";
 import ProfilePhoto from "../ProfilePhoto";
@@ -5,7 +6,7 @@ import { GetStaffPhotoPath } from "../../lib/profilePhotos";
 
 function TeacherCard({ teacher, isSelected, onSelect, onEdit }) {
     const sectionNames = (teacher.sections ?? [])
-        .map((section) => section.sectionName)
+        .map((section) => GetSectionLabel(section))
         .filter(Boolean);
     const sectionText = sectionNames.length > 0
         ? sectionNames.join(", ")

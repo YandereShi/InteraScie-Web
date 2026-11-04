@@ -1,5 +1,6 @@
 import { InvokeStudentManagement, supabase } from "./supabase";
 import { NormalizeName } from "./nameValidation";
+import { SortSectionsBySchoolYear } from "./schoolYear";
 
 export const sectionsQueryKey = ["Sections"];
 export const noSectionStudentsQueryKey = ["NoSectionStudents"];
@@ -17,7 +18,7 @@ export async function GetSections() {
 
   return {
     role: data.role ?? "",
-    sections: data.sections ?? [],
+    sections: SortSectionsBySchoolYear(data.sections ?? []),
   };
 }
 

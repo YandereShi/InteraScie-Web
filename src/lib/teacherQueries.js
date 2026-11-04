@@ -1,5 +1,6 @@
 import { supabase } from "./supabase";
 import { GetEmailError, NormalizeEmail } from "./emailValidation.js";
+import { SortSectionsBySchoolYear } from "./schoolYear";
 
 export const teachersQueryKey = ["Teachers"];
 
@@ -42,8 +43,8 @@ export async function GetTeachers() {
   const data = await InvokeTeacherManagement("LoadTeachers");
 
   return {
-    teachers: data.teachers ?? [],
-    availableSections: data.availableSections ?? [],
+    teachers: (data.teachers ?? []).map((teacher) => ({ ...teacher, sections: SortSectionsBySchoolYear(teacher.sections ?? []) })),
+    availableSections: SortSectionsBySchoolYear(data.availableSections ?? []),
   };
 }
 

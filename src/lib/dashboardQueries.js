@@ -1,5 +1,6 @@
 import { supabase } from "./supabase";
 import { GetLevels, GetTeacherSections } from "./teacherData";
+import { SortSectionsBySchoolYear } from "./schoolYear";
 
 export const teacherDashboardQueryKey = ["TeacherDashboard"];
 export const superAdminDashboardQueryKey = ["SuperAdminDashboard"];
@@ -159,6 +160,11 @@ export async function GetTeacherRadarData(staffID, students) {
     return {
       ...level,
       accuracy: total ? Math.round((total.correct / total.questions) * 100) : null,
+      sectionTotals: Object.fromEntries(
+        [...new Set(students.map((student) => student.sectionID))].map((sectionID) =>
+          [sectionID, sectionTotals.get(`${sectionID}:${level.levelID}`) ?? { correct: 0, questions: 0 }]
+        )
+      ),
       sectionAccuracies: Object.fromEntries(
         [...new Set(students.map((student) => student.sectionID))].map((sectionID) => {
           const sectionTotal = sectionTotals.get(`${sectionID}:${level.levelID}`);
@@ -206,10 +212,10 @@ export async function GetSuperAdminDashboard() {
     sectionTotal: Number(data.sectionTotal) || 0,
     students: data.students ?? [],
     teachers: data.teachers ?? [],
-    sections: data.sections ?? [],
+    sections: SortSectionsBySchoolYear(data.sections ?? []),
     levels: data.levels ?? [],
     records: data.records ?? [],
-    archivedSections: data.archivedSections ?? [],
+    archivedSections: SortSectionsBySchoolYear(data.archivedSections ?? []),
     archivedStudents: data.archivedStudents ?? [],
     archivedTeachers: data.archivedTeachers ?? [],
   };

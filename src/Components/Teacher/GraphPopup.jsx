@@ -1,8 +1,9 @@
 import "../../css/GraphPopup.css";
 import { useEffect } from "react";
 import ScoreGraph from "./ScoreGraph";
+import SectionSelect from "../SectionSelect";
 
-function GraphPopup({ title, data, averageScore = null, sections, section, onPick: OnPick, onClose: OnClose }) {
+function GraphPopup({ title, data, averageScore = null, sections, schoolYear, onSchoolYearChange, section, onPick: OnPick, onClose: OnClose }) {
   useEffect(() => {
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
@@ -31,14 +32,7 @@ function GraphPopup({ title, data, averageScore = null, sections, section, onPic
         <div className="graphcontrols">
           <label className="graphfilter">
             <span>Section</span>
-            <select value={section} onChange={(event) => OnPick(event.target.value)}>
-              <option value="all">All Sections</option>
-              {sections.map((item) => (
-                <option value={item.sectionID} key={item.sectionID}>
-                  {item.sectionName}
-                </option>
-              ))}
-            </select>
+            <SectionSelect sections={sections} value={section} onChange={OnPick} schoolYear={schoolYear} onSchoolYearChange={onSchoolYearChange} label="Performance section" allowAll />
           </label>
           <p className="graphaverage" role="status">
             <span>Average:</span>

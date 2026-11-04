@@ -1,3 +1,4 @@
+import { GetSectionLabel } from "../../lib/schoolYear";
 import { useEffect, useRef, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { GetTeacherSections } from "../../lib/teacherData";
@@ -98,7 +99,7 @@ function AnnouncementPopup({ staffID, onClose }) {
           }}>
             <option value="">Select a section</option>
             {sections.length > 0 && <option value="all">All sections</option>}
-            {sections.map((item) => <option key={item.sectionID} value={String(item.sectionID)}>{item.sectionName}</option>)}
+            {sections.map((item) => <option key={item.sectionID} value={String(item.sectionID)}>{GetSectionLabel(item)}</option>)}
           </select>
         </div>
         <div className="announcementfield">
@@ -119,7 +120,7 @@ function AnnouncementPopup({ staffID, onClose }) {
           void sectionsQuery.refetch();
           void announcementsQuery.refetch();
         }}>Try again</button>}
-        {saved && selectedSections.length > 0 && <p className="announcementsuccess" role="status">Announcement saved for {allSections ? "all sections" : selectedSections[0].sectionName}.</p>}
+        {saved && selectedSections.length > 0 && <p className="announcementsuccess" role="status">Announcement saved for {allSections ? "all sections" : GetSectionLabel(selectedSections[0])}.</p>}
         <div className="announcementactions">
           <button type="submit" className="announcementsave" disabled={busy || loading || Boolean(loadError) || !selectedSections.length || !message.trim() || message.length > announcementCharacterLimit}>
             {busy ? "Saving..." : "Save announcement"}

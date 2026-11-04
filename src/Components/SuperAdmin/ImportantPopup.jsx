@@ -1,3 +1,4 @@
+import { GetSectionLabel, SortSectionsBySchoolYear } from "../../lib/schoolYear";
 import { useEffect, useRef, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { AssignTeacherSections } from "../../lib/teacherQueries";
@@ -26,8 +27,7 @@ function ImportantPopup({ category, records, students, sections, teachers, loadi
   const [status, setStatus] = useState("");
   useActionPending(saving);
   const label = labels[category];
-  const sectionChoices = sections.filter((section) => section.isShared !== true)
-    .sort((first, second) => String(first.sectionName ?? "").localeCompare(String(second.sectionName ?? "")));
+  const sectionChoices = SortSectionsBySchoolYear(sections.filter((section) => section.isShared !== true));
   const availableSections = sectionChoices.filter((section) => section.staffID === null);
   const teacherChoices = [...teachers].sort((first, second) =>
     `${first.lastName ?? ""} ${first.firstName ?? ""}`.localeCompare(`${second.lastName ?? ""} ${second.firstName ?? ""}`)
@@ -60,7 +60,7 @@ function ImportantPopup({ category, records, students, sections, teachers, loadi
 
   function GetName(item) {
     return category === "sections"
-      ? item.sectionName || "Unnamed Section"
+      ? GetSectionLabel(item)
       : [item.lastName, item.firstName].filter(Boolean).join(", ") || "Unnamed account";
   }
 
@@ -190,7 +190,7 @@ function ImportantPopup({ category, records, students, sections, teachers, loadi
                                   <input type="checkbox" checked={selected.includes(value)} disabled={Boolean(owner && owner !== id)} onChange={(event) => {
                                     ChangeSelection(id, event.target.checked ? [...selected, value] : selected.filter((sectionID) => sectionID !== value));
                                   }} />
-                                  <span>{section.sectionName || "Unnamed Section"}</span>
+                                  <span>{GetSectionLabel(section)}</span>
                                 </label>
                               );
                             })}
@@ -205,7 +205,7 @@ function ImportantPopup({ category, records, students, sections, teachers, loadi
                           ? sectionChoices.length > 0 ? "Choose a section" : "No sections available"
                           : teacherChoices.length > 0 ? "Choose a teacher" : "No teachers available"}</option>
                         {category === "students" ? sectionChoices.map((section) => (
-                          <option key={section.sectionID} value={section.sectionID}>{section.sectionName || "Unnamed Section"}</option>
+                          <option key={section.sectionID} value={section.sectionID}>{GetSectionLabel(section)}</option>
                         )) : teacherChoices.map((teacher) => (
                           <option key={teacher.staffID} value={teacher.staffID}>{[teacher.lastName, teacher.firstName].filter(Boolean).join(", ")}</option>
                         ))}

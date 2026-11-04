@@ -1,3 +1,4 @@
+import { GetSectionLabel } from "../../lib/schoolYear";
 import "../../css/StudentPopup.css";
 import { useRef, useState } from "react";
 import teacherImage from "../../assets/pfp.png";
@@ -198,7 +199,7 @@ function TeacherPopup({ sections, onClose, onSave }) {
                                             }
                                         />
 
-                                        <span>{section.sectionName || "Unnamed Section"}</span>
+                                        <span>{GetSectionLabel(section)}</span>
                                     </label>
                                 ))}
                             </div>

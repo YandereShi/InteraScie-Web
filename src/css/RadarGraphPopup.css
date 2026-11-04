@@ -61,8 +61,20 @@
 
 .radarpopupcontrols {
   display: flex;
+  flex-wrap: wrap;
   justify-content: flex-end;
   gap: 4px;
+}
+
+.radarpopupcontrols select {
+  flex: 1 1 150px;
+  min-width: 0;
+  padding: 8px;
+  border: 1px solid #89988e;
+  border-radius: 6px;
+  background-color: #ffffff;
+  color: #153d2b;
+  font-size: clamp(0.75rem, 2.8vw, 1rem);
 }
 
 .radarpopuptab {

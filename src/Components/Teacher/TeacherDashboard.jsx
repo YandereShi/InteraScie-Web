@@ -15,6 +15,9 @@ import DashboardRadar from "./DashboardRadar";
 import DashboardLevelProgress from "./DashboardLevelProgress";
 import RadarGraphPopup from "./RadarGraphPopup";
 import ExportDataPopup from "./ExportDataPopup";
+import SectionSelect from "../SectionSelect";
+import { MatchesSchoolYear } from "../../lib/schoolYear";
+import { FilterRadarLevels } from "../../lib/radarData";
 
 const emptyDashboard = {
   staffID: null,
@@ -80,6 +83,8 @@ function TeacherDashboard() {
   const [branch, setBranch] = useState("Chemistry");
   const [active, setActive] = useState(null);
   const [section, setSection] = useState("all");
+  const [performanceSchoolYear, setPerformanceSchoolYear] = useState("all");
+  const [radarSchoolYear, setRadarSchoolYear] = useState("all");
   const [announcementOpen, setAnnouncementOpen] = useState(false);
   const [radarOpen, setRadarOpen] = useState(false);
   const [exportOpen, setExportOpen] = useState(false);
@@ -94,9 +99,15 @@ function TeacherDashboard() {
 
   const dashboard = dashboardQuery.data ?? emptyDashboard;
   const { staffID, sections, students, levels, tests, scores } = dashboard;
+  const performanceSections = sections.filter((item) => MatchesSchoolYear(item, performanceSchoolYear));
+  const selectedSection = performanceSections.some((item) => String(item.sectionID) === section) ? section : "all";
+  const performanceSectionIDs = new Set(performanceSections.filter((item) => selectedSection === "all" || String(item.sectionID) === selectedSection).map((item) => String(item.sectionID)));
+  const performanceStudentIDs = new Set(students.filter((item) => performanceSectionIDs.has(String(item.sectionID))).map((item) => String(item.studentID)));
+  const performanceScores = scores.filter((item) => performanceStudentIDs.has(String(item.studentID)));
+  const radarSections = sections.filter((item) => MatchesSchoolYear(item, radarSchoolYear));
   const studentIDs = useMemo(() => students.map((item) => item.studentID), [students]);
   const radarQuery = useQuery({
-    queryKey: ["TeacherRadar", staffID, students.map((student) => [student.studentID, student.sectionID])],
+    queryKey: ["TeacherRadar", staffID, students.map((student) => [student.studentID, student.sectionID]), "sectionTotals"],
     queryFn: () => GetTeacherRadarData(staffID, students),
     enabled: Boolean(staffID),
     staleTime: 2 * 60 * 1000,
@@ -118,10 +129,13 @@ function TeacherDashboard() {
       : dashboardQuery.error
         ? "Unable to load the teacher dashboard."
         : "";
-  const charts = useMemo(
-    () => GetCharts(levels, tests, scores),
-    [levels, scores, tests]
-  );
+  const charts = GetCharts(levels, tests, performanceScores);
+  const radarLevels = FilterRadarLevels(radarQuery.data ?? [], radarSections);
+
+  function ChangePerformanceSchoolYear(value) {
+    setPerformanceSchoolYear(value);
+    setSection("all");
+  }
 
   function GetScores(index) {
     const level = levels[index];
@@ -138,28 +152,15 @@ function TeacherDashboard() {
       return [];
     }
 
-    let scoreList = scores.filter(
+    return performanceScores.filter(
       (item) =>
         item.assessmentID === test.assessmentID &&
         Number(item.totalQuestions) === 15 &&
         IsValidScore(item.score)
     );
-
-    if (section !== "all") {
-      const studentIDs = students
-        .filter((item) => String(item.sectionID) === section)
-        .map((item) => item.studentID);
-
-      scoreList = scoreList.filter((item) =>
-        studentIDs.includes(item.studentID)
-      );
-    }
-
-    return scoreList;
   }
 
   function OpenGraph(index) {
-    setSection("all");
     setActive(index);
   }
 
@@ -204,7 +205,7 @@ function TeacherDashboard() {
             error={dashboardQuery.isError || progressQuery.isError}
           />
 
-        <DashboardRadar levels={radarQuery.data ?? []} loading={radarLoading} error={radarError} onOpen={OpenRadar} />
+        <DashboardRadar levels={radarLevels} sections={sections} schoolYear={radarSchoolYear} onSchoolYearChange={setRadarSchoolYear} loading={radarLoading} error={radarError} onOpen={OpenRadar} />
 
         <div className="performance">
           {error && <p className="dashboardmessage">{error}</p>}
@@ -213,6 +214,7 @@ function TeacherDashboard() {
 
             <div className="performanceactions">
               <button type="button" className="dashboardexportbutton" disabled={loading || !staffID} onClick={() => setExportOpen(true)}>Export Data</button>
+              <SectionSelect sections={sections} value={selectedSection} onChange={setSection} schoolYear={performanceSchoolYear} onSchoolYearChange={ChangePerformanceSchoolYear} label="Performance overview section" allowAll disabled={loading} />
               <select
                 value={branch}
                 onChange={(event) => setBranch(event.target.value)}
@@ -250,7 +252,9 @@ function TeacherDashboard() {
             data={MakeData(activeScores)}
             averageScore={averageScore}
             sections={sections}
-            section={section}
+            schoolYear={performanceSchoolYear}
+            onSchoolYearChange={ChangePerformanceSchoolYear}
+            section={selectedSection}
             onPick={setSection}
             onClose={CloseGraph}
           />
@@ -264,7 +268,7 @@ function TeacherDashboard() {
         )}
 
         {radarOpen && (
-          <RadarGraphPopup levels={radarQuery.data ?? []} sections={sections} loading={radarLoading} error={radarError} onClose={CloseRadar} />
+          <RadarGraphPopup levels={radarLevels} sections={sections} schoolYear={radarSchoolYear} onSchoolYearChange={setRadarSchoolYear} loading={radarLoading} error={radarError} onClose={CloseRadar} />
         )}
         {exportOpen && <ExportDataPopup teacherName={[teacher.firstName, teacher.lastName].filter(Boolean).join(" ")} onClose={() => setExportOpen(false)} />}
       </section>

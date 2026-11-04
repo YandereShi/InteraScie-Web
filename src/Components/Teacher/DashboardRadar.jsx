@@ -1,20 +1,17 @@
 import RadarChartJS from "./RadarChartJS";
+import SchoolYearSelect from "../SchoolYearSelect";
 
-function DashboardRadar({ levels, loading, error, onOpen }) {
+function DashboardRadar({ levels, sections, schoolYear, onSchoolYearChange, loading, error, onOpen }) {
   const scored = levels.filter((level) => level.accuracy !== null).length;
 
   return (
-    <button
-      className="dashboardradar dashboardtile"
-      type="button"
-      onClick={onOpen}
-      aria-label="Open radar graph details"
-      aria-haspopup="dialog"
-    >
-      <span className="dashboardtilehead">
-        <span className="dashboardradartitle">Radar Graph</span>
-        <span>All levels</span>
-      </span>
+    <section className="dashboardradar dashboardtile" aria-labelledby="dashboardradartitle">
+      <div className="dashboardtilehead">
+        <h2 id="dashboardradartitle" className="dashboardradartitle">Radar Graph</h2>
+        <SchoolYearSelect sections={sections} value={schoolYear} label="Radar school year" disabled={loading} onChange={onSchoolYearChange} />
+      </div>
+
+      <button className="dashboardradaropen" type="button" onClick={onOpen} aria-label="Open radar graph details" aria-haspopup="dialog">
 
       {loading ? (
         <span className="dashboardtilemessage">Loading levels...</span>
@@ -28,7 +25,8 @@ function DashboardRadar({ levels, loading, error, onOpen }) {
           <span className="dashboardradarnote">{scored} of {levels.length} levels have scores</span>
         </>
       )}
-    </button>
+      </button>
+    </section>
   );
 }
 

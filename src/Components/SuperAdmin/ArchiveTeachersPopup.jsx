@@ -1,3 +1,4 @@
+import { GetSectionLabel } from "../../lib/schoolYear";
 import { useEffect, useRef, useState } from "react";
 import { useActionPending } from "../../lib/useActionPending";
 import "../../css/ArchivedSectionsPopup.css";
@@ -56,9 +57,9 @@ function ArchiveTeachersPopup({ selectedTeachers, teachers, onSave, onClose }) {
         {selectedTeachers.map((teacher) => <p key={teacher.staffID}>{teacher.lastName}, {teacher.firstName}</p>)}
         {sections.map((section) => (
           <div className="archivedsectionsitem" key={section.sectionID}>
-            <div><h3>{section.sectionName}</h3><p>{section.teacherName}</p></div>
+            <div><h3>{GetSectionLabel(section)}</h3><p>{section.teacherName}</p></div>
             <div className="archivedsectionsactions">
-              <select aria-label={`Replacement teacher for ${section.sectionName}`} disabled={saving} value={assignments[section.sectionID] ?? ""} onChange={(event) => { setAssignments((current) => ({ ...current, [section.sectionID]: event.target.value })); setError(""); }}>
+              <select aria-label={`Replacement teacher for ${GetSectionLabel(section)}`} disabled={saving} value={assignments[section.sectionID] ?? ""} onChange={(event) => { setAssignments((current) => ({ ...current, [section.sectionID]: event.target.value })); setError(""); }}>
                 <option value="">Choose a teacher</option>
                 {choices.map((teacher) => <option key={teacher.staffID} value={teacher.staffID}>{teacher.lastName}, {teacher.firstName}</option>)}
               </select>

@@ -26,7 +26,7 @@ export async function GetSectionReportData(staffID, sectionIDs, branches) {
   if (!selectedSections.length || !selectedBranches.length) throw new Error("Select at least one section and branch.");
   const [sections, allLevels] = await Promise.all([
     ReadBatches(selectedSections, (ids) => supabase.from("Section")
-        .select("sectionID, sectionName")
+        .select("sectionID, sectionName, schoolYear")
         .eq("staffID", staffID).eq("isShared", false)
         .is("archivedAt", null).in("sectionID", ids).order("sectionID")),
     ReadRows(() => supabase.from("Level")

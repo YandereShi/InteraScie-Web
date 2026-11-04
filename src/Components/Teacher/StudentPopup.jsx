@@ -1,3 +1,4 @@
+import { GetSectionLabel } from "../../lib/schoolYear";
 import "../../css/StudentPopup.css";
 import { useState } from "react";
 import studentImage from "../../assets/pfp.png";
@@ -210,7 +211,7 @@ function StudentPopup({
                   key={section.sectionID}
                   value={section.sectionID}
                 >
-                  {section.displayName ?? section.sectionName}
+                  {GetSectionLabel(section)}
                 </option>
               ))}
             </select>

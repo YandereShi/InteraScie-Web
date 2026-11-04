@@ -1,3 +1,4 @@
+import { GetSectionLabel } from "./schoolYear.js";
 import { AddSectionReportCharts } from "./sectionReportCharts.js";
 
 const missing = "—";
@@ -30,7 +31,8 @@ function Cell(sheet, row, first, last, value, fill, options = {}) {
 }
 
 function SheetName(section, names) {
-  const base = String(section.sectionName).replace(/[\\/*?:[\]]/g, " ").replace(/^'+|'+$/g, "").trim().replace(/^history$/i, "History Section") || "Section";
+  const label = section.schoolYear ? `${section.schoolYear} ${section.sectionName}` : section.sectionName;
+  const base = String(label).replace(/[\\/*?:[\]]/g, " ").replace(/^'+|'+$/g, "").trim().replace(/^history$/i, "History Section") || "Section";
   let name = base.slice(0, 31);
   for (let index = 2; names.has(name.toLowerCase()); index += 1) {
     const suffix = ` (${index})`;
@@ -91,7 +93,7 @@ export async function CreateSectionWorkbook(data, teacherName, exportedAt = new 
     Cell(sheet, 4, 9, 10, date, colors.metadata, { format: "yyyy-mm-dd" });
     Cell(sheet, 4, 11, 12, (exportedAt.getHours() * 3600 + exportedAt.getMinutes() * 60 + exportedAt.getSeconds()) / daySeconds, colors.metadata, { format: "hh:mm:ss" });
     Cell(sheet, 6, 1, 2, "Section:", colors.metadata);
-    Cell(sheet, 6, 3, 5, section.sectionName, colors.metadata);
+    Cell(sheet, 6, 3, 5, GetSectionLabel(section), colors.metadata);
     Cell(sheet, 6, 7, 8, "Branch/es:", colors.metadata);
     Cell(sheet, 6, 9, 12, branches.join(", "), colors.metadata);
     const allScores = [];

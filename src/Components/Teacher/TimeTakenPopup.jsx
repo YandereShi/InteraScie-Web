@@ -1,9 +1,11 @@
+import { GetSectionLabel, MatchesSchoolYear } from "../../lib/schoolYear";
+import SectionSelect from "../SectionSelect";
 import { useEffect, useRef, useState } from "react";
 import "../../css/QuestionAccuracyPopup.css";
 import "../../css/TimeTakenPopup.css";
 import { FormatLevelTime, GetLevelTimes } from "../../lib/levelTime";
 
-function TimeTakenPopup({ branch, levels, sections, section, students, records, loading, error, onSectionChange, onClose }) {
+function TimeTakenPopup({ branch, levels, sections, schoolYear, onSchoolYearChange, section, students, records, loading, error, onSectionChange, onClose }) {
   const dialog = useRef(null);
   const [lesson, setLesson] = useState(0);
   const [sortDirection, setSortDirection] = useState("asc");
@@ -11,12 +13,14 @@ function TimeTakenPopup({ branch, levels, sections, section, students, records, 
     .sort((first, second) => first.levelID - second.levelID);
   const activeLesson = Math.min(lesson, Math.max(0, branchLevels.length - 1));
   const levelID = branchLevels[activeLesson]?.levelID;
-  const rows = GetLevelTimes(students, records, section, levelID, sortDirection);
+  const sectionIDs = new Set(sections.filter((item) => MatchesSchoolYear(item, schoolYear)).map((item) => String(item.sectionID)));
+  const yearStudents = schoolYear === "all" ? students : students.filter((item) => sectionIDs.has(String(item.sectionID)));
+  const rows = GetLevelTimes(yearStudents, records, section, levelID, sortDirection);
   const finishedRows = rows.filter((student) => student.isFinished);
   const averageTime = !loading && !error && finishedRows.length > 0
     ? finishedRows.reduce((total, student) => total + student.timeTakenSeconds, 0) / finishedRows.length
     : null;
-  const sectionNames = new Map(sections.map((item) => [String(item.sectionID), item.sectionName]));
+  const sectionNames = new Map(sections.map((item) => [String(item.sectionID), GetSectionLabel(item)]));
   const branchName = branch === "Earth" ? "Earth Science" : branch;
 
   useEffect(() => {
@@ -51,10 +55,7 @@ function TimeTakenPopup({ branch, levels, sections, section, students, records, 
       <div className="accuracycontrols">
         <label className="accuracybranch">
           <span>Section</span>
-          <select value={section} onChange={(event) => onSectionChange(event.target.value)} aria-label="Time taken section">
-            <option value="all">All sections</option>
-            {sections.map((item) => <option key={item.sectionID} value={String(item.sectionID)}>{item.sectionName}</option>)}
-          </select>
+          <SectionSelect sections={sections} value={section} onChange={onSectionChange} schoolYear={schoolYear} onSchoolYearChange={onSchoolYearChange} label="Time taken section" allowAll disabled={loading} />
         </label>
         <div className="timetakenlevels">
           <span className="timetakenaverage">Avg Time: {averageTime === null ? "--" : FormatLevelTime(Math.round(averageTime))}</span>

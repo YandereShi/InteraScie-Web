@@ -1,3 +1,4 @@
+import { GetSectionLabel } from "../../lib/schoolYear";
 import "../../css/QuestionAccuracyPopup.css";
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
@@ -98,7 +99,7 @@ function QuestionAccuracyPopup({ initialBranch, initialSection = "all", onClose:
               <select value={selectedSection} onChange={(event) => setSection(event.target.value)} disabled={sections.length === 0}>
                 <option value="all">All sections</option>
                 {sections.map((item) => (
-                  <option key={item.sectionID} value={String(item.sectionID)}>{item.sectionName}</option>
+                  <option key={item.sectionID} value={String(item.sectionID)}>{GetSectionLabel(item)}</option>
                 ))}
               </select>
             </label>

@@ -1,3 +1,4 @@
+import { GetSectionLabel } from "../../lib/schoolYear";
 import "../../css/BatchStudentPopup.css";
 import { useState } from "react";
 import { GetNameError } from "../../lib/nameValidation";
@@ -177,7 +178,7 @@ function BatchStudentPopup({
                 key={Section.sectionID}
                 value={Section.sectionID}
               >
-                {Section.displayName ?? Section.sectionName}
+                {GetSectionLabel(Section)}
               </option>
             ))}
           </select>

@@ -37,7 +37,7 @@
 }
 
 .sectionheading {
-  flex: 0 1 220px;
+  flex: 0 1 280px;
 }
 
 .sectionsearch {
@@ -311,7 +311,15 @@
     padding: 12px 12px 8px;
   }
 
-  .sectionheading,
+  .sectionheading {
+    flex-basis: 100%;
+  }
+
+  .sectionheading .sectionpick {
+    padding: 0 6px;
+    font-size: clamp(0.75rem, 2.8vw, 0.95rem);
+  }
+
   .sectionsearch {
     flex-basis: 100%;
   }

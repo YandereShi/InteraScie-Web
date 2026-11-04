@@ -1,3 +1,4 @@
+import { GetSectionLabel } from "../lib/schoolYear";
 import { useEffect, useRef, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { SetAccountsArchived } from "../lib/archiveQueries";
@@ -126,7 +127,7 @@ function ArchivedAccountsPopup({ kind, records, sections = [], loading = false, 
                 {kind === "students" ? (
                   <select aria-label={`Section for ${record.firstName} ${record.lastName}`} value={sectionChoices.some((section) => String(section.sectionID) === targets[id]) ? targets[id] : ""} aria-invalid={Boolean(rowErrors[id])} aria-describedby={rowErrors[id] ? `archivedaccounterror-${id}` : undefined} disabled={restoring || sectionChoices.length === 0} onChange={(event) => ChangeTarget(id, event.target.value)}>
                     <option value="">Choose an active section</option>
-                    {sectionChoices.map((section) => <option key={section.sectionID} value={section.sectionID}>{section.isShared ? "No Section" : section.displayName || section.sectionName}</option>)}
+                    {sectionChoices.map((section) => <option key={section.sectionID} value={section.sectionID}>{GetSectionLabel(section)}</option>)}
                   </select>
                 ) : (
                   <select aria-label={`Restore ${record.firstName} ${record.lastName}`} value={targets[id] ?? ""} aria-invalid={Boolean(rowErrors[id])} aria-describedby={rowErrors[id] ? `archivedaccounterror-${id}` : undefined} disabled={restoring} onChange={(event) => ChangeTarget(id, event.target.value)}>

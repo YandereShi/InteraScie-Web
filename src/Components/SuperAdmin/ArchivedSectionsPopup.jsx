@@ -5,6 +5,7 @@ import { InvalidateSectionQueries } from "../../lib/studentCache";
 import { limits } from "../../lib/inputLimits";
 import { useActionPending } from "../../lib/useActionPending";
 import "../../css/ArchivedSectionsPopup.css";
+import { GetSchoolYears, MatchesSchoolYear, GetSectionLabel } from "../../lib/schoolYear";
 
 const pageSize = 5;
 
@@ -13,6 +14,7 @@ function ArchivedSectionsPopup({ sections, teachers, onClose }) {
   const pending = useRef(false);
   const queryClient = useQueryClient();
   const [search, setSearch] = useState("");
+  const [schoolYear, setSchoolYear] = useState("all");
   const [page, setPage] = useState(1);
   const [owners, setOwners] = useState({});
   const [restoring, setRestoring] = useState(false);
@@ -20,7 +22,7 @@ function ArchivedSectionsPopup({ sections, teachers, onClose }) {
   const [error, setError] = useState("");
   const [status, setStatus] = useState("");
   useActionPending(restoring);
-  const filtered = sections.filter((section) => section.sectionName.toLowerCase().includes(search.trim().toLowerCase()));
+  const filtered = sections.filter((section) => MatchesSchoolYear(section, schoolYear) && section.sectionName.toLowerCase().includes(search.trim().toLowerCase()));
   const pages = Math.max(1, Math.ceil(filtered.length / pageSize));
   const activePage = Math.min(page, pages);
   if (page > pages) setPage(pages);
@@ -93,8 +95,15 @@ function ArchivedSectionsPopup({ sections, teachers, onClose }) {
         <h2 id="archivedsectionstitle">Archived Sections</h2>
         <button type="button" aria-label="Close archived sections" disabled={restoring} onClick={() => { if (!pending.current) onClose(); }}>&times;</button>
       </div>
-      <p>Choose an active teacher for each section you want to restore. Selections are kept across pages and search. Students archived with those sections will also be restored; previously archived students stay archived.</p>
-      <input className="archivedsectionssearch" type="search" aria-label="Search archived sections" placeholder="Search sections..." maxLength={limits.search} value={search} disabled={restoring} onChange={(event) => { setSearch(event.target.value); setPage(1); }} />
+      <p>Choose an active teacher for each section you want to restore. Selections are kept across pages, search and school years. Students archived with those sections will also be restored; previously archived students stay archived.</p>
+      <div className="archivedsectionsfilters">
+        <select aria-label="Archived school year" value={schoolYear} disabled={restoring} onChange={(event) => { setSchoolYear(event.target.value); setPage(1); }}>
+          <option value="all">All School Years</option>
+          {GetSchoolYears([...sections, { schoolYear }]).map((year) => <option key={year} value={year}>{year}</option>)}
+          <option value="unassigned">SY not assigned</option>
+        </select>
+        <input className="archivedsectionssearch" type="search" aria-label="Search archived sections" placeholder="Search sections..." maxLength={limits.search} value={search} disabled={restoring} onChange={(event) => { setSearch(event.target.value); setPage(1); }} />
+      </div>
       {error && <p className="archivedsectionserror" role="alert">{error}</p>}
       {status && <p className="archivedsectionsstatus" role="status">{status}</p>}
       <div className="archivedsectionslist" aria-busy={restoring}>
@@ -102,7 +111,7 @@ function ArchivedSectionsPopup({ sections, teachers, onClose }) {
         {shown.map((section) => (
           <article className={`archivedsectionsitem${rowErrors[section.sectionID] ? " archivedsectionsitemerror" : ""}`} key={section.sectionID}>
             <div>
-              <h3>{section.sectionName}</h3>
+              <h3>{GetSectionLabel(section)}</h3>
               <p>{section.students.length} student(s) · Archived {new Date(section.archivedAt).toLocaleDateString()}</p>
               <details>
                 <summary>View students</summary>
@@ -110,7 +119,7 @@ function ArchivedSectionsPopup({ sections, teachers, onClose }) {
               </details>
             </div>
             <div className="archivedsectionsactions">
-              <select aria-label={`Teacher for ${section.sectionName}`} value={teacherChoices.some((teacher) => teacher.staffID === owners[section.sectionID]) ? owners[section.sectionID] : ""} aria-invalid={Boolean(rowErrors[section.sectionID])} aria-describedby={rowErrors[section.sectionID] ? `archivedsectionerror-${section.sectionID}` : undefined} disabled={restoring || teacherChoices.length === 0} onChange={(event) => ChangeOwner(section.sectionID, event.target.value)}>
+              <select aria-label={`Teacher for ${GetSectionLabel(section)}`} value={teacherChoices.some((teacher) => teacher.staffID === owners[section.sectionID]) ? owners[section.sectionID] : ""} aria-invalid={Boolean(rowErrors[section.sectionID])} aria-describedby={rowErrors[section.sectionID] ? `archivedsectionerror-${section.sectionID}` : undefined} disabled={restoring || teacherChoices.length === 0} onChange={(event) => ChangeOwner(section.sectionID, event.target.value)}>
                 <option value="">Choose a teacher</option>
                 {teacherChoices.map((teacher) => <option key={teacher.staffID} value={teacher.staffID}>{teacher.lastName}, {teacher.firstName}</option>)}
               </select>

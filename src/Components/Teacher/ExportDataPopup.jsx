@@ -1,3 +1,4 @@
+import { GetSectionLabel } from "../../lib/schoolYear";
 import { useEffect, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useOutletContext } from "react-router";
@@ -50,7 +51,7 @@ function ExportDataPopup({ teacherName, onClose }) {
   });
   const sections = optionsQuery.data?.sections ?? [];
   const branches = GetBranches(optionsQuery.data?.levels ?? []);
-  const sectionOptions = sections.map((item) => ({ value: String(item.sectionID), label: item.sectionName }));
+  const sectionOptions = sections.map((item) => ({ value: String(item.sectionID), label: GetSectionLabel(item) }));
   const branchOptions = branches.map((name) => ({ value: name, label: name }));
   const selectedSections = sectionOptions.map((item) => item.value).filter((value) => sectionIDs === null || sectionIDs.includes(value));
   const selectedBranches = branches.filter((name) => branchNames === null || branchNames.includes(name));

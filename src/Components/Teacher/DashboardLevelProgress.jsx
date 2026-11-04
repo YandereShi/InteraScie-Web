@@ -1,16 +1,26 @@
+import { MatchesSchoolYear, SortSectionsBySchoolYear } from "../../lib/schoolYear";
 import { useState } from "react";
 import TimeTakenPopup from "./TimeTakenPopup";
+import SectionSelect from "../SectionSelect";
 
 function DashboardLevelProgress({ sections, students, levels, records, loading, error }) {
   const [section, setSection] = useState("all");
+  const [schoolYear, setSchoolYear] = useState("all");
   const [page, setPage] = useState(0);
   const [timeOpen, setTimeOpen] = useState(false);
-  const selectedSection = section === "all" || sections.some((item) => String(item.sectionID) === section)
+  function ChangeSchoolYear(value) {
+    setSchoolYear(value);
+    setSection("all");
+  }
+  const yearSections = SortSectionsBySchoolYear(sections.filter((item) => MatchesSchoolYear(item, schoolYear)));
+  const sectionIDs = new Set(yearSections.map((item) => String(item.sectionID)));
+  const yearStudents = schoolYear === "all" ? students : students.filter((item) => sectionIDs.has(String(item.sectionID)));
+  const selectedSection = section === "all" || yearSections.some((item) => String(item.sectionID) === section)
     ? section
     : "all";
   const selectedStudents = selectedSection === "all"
-    ? students
-    : students.filter((item) => String(item.sectionID) === selectedSection);
+    ? yearStudents
+    : yearStudents.filter((item) => String(item.sectionID) === selectedSection);
   const studentIDs = new Set(selectedStudents.map((item) => String(item.studentID)));
   const studentCount = selectedStudents.length;
   const statuses = new Map();
@@ -75,10 +85,7 @@ function DashboardLevelProgress({ sections, students, levels, records, loading, 
         </div>
         <div className="dashboardprogressactions">
           <button type="button" className="dashboardtimebutton" onClick={() => setTimeOpen(true)} disabled={loading || Boolean(error) || !currentBranch}>Time Taken</button>
-          <select value={selectedSection} onChange={(event) => setSection(event.target.value)} aria-label="Progress section">
-            <option value="all">All sections</option>
-            {sections.map((item) => <option key={item.sectionID} value={String(item.sectionID)}>{item.sectionName}</option>)}
-          </select>
+          <SectionSelect sections={sections} value={selectedSection} onChange={setSection} schoolYear={schoolYear} onSchoolYearChange={ChangeSchoolYear} label="Progress section" allowAll disabled={loading} />
         </div>
       </div>
 
@@ -130,6 +137,8 @@ function DashboardLevelProgress({ sections, students, levels, records, loading, 
           branch={currentBranch}
           levels={levels}
           sections={sections}
+          schoolYear={schoolYear}
+          onSchoolYearChange={ChangeSchoolYear}
           section={selectedSection}
           students={students}
           records={records}

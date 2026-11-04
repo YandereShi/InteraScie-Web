@@ -1,3 +1,4 @@
+import { GetSectionLabel, SortSectionsBySchoolYear } from "../../lib/schoolYear";
 import "../../css/StudentPopup.css";
 import { useEffect, useRef, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
@@ -30,11 +31,7 @@ function TeacherSectionPopup({ teacher, sections, onClose, onSave }) {
         sectionMap.set(section.sectionID, section);
     }
 
-    const eligibleSections = [...sectionMap.values()].sort((first, second) =>
-        String(first.sectionName ?? "").localeCompare(
-            String(second.sectionName ?? "")
-        )
-    );
+    const eligibleSections = SortSectionsBySchoolYear([...sectionMap.values()]);
 
     useEffect(() => {
         if (resendCooldown <= 0 || teacher.emailPending !== true) return;
@@ -209,7 +206,7 @@ function TeacherSectionPopup({ teacher, sections, onClose, onSave }) {
                                             }
                                         />
 
-                                    <span>{section.sectionName || "Unnamed Section"}</span>
+                                    <span>{GetSectionLabel(section)}</span>
                                     </label>
                                 ))}
                             </div>

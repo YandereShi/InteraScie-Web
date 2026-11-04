@@ -1,9 +1,11 @@
 import { InvokeStudentManagement, supabase } from "./supabase";
+import { SortSectionsBySchoolYear } from "./schoolYear";
 
 export const archivedStudentsQueryKey = ["ArchivedStudents"];
 
 export async function GetArchivedStudents() {
-  return InvokeStudentManagement("loadarchivedstudents");
+  const data = await InvokeStudentManagement("loadarchivedstudents");
+  return { ...data, sections: SortSectionsBySchoolYear(data.sections ?? []) };
 }
 
 export async function SetAccountsArchived(kind, ids, archived, assignments = [], sectionID = null) {

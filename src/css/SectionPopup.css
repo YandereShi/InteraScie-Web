@@ -52,6 +52,16 @@
   color: #d00000;
 }
 
+.createschoolyear {
+  display: block;
+  margin-top: 18px;
+  font-weight: 600;
+}
+
+.createschoolyear + .createinput {
+  margin-top: 6px;
+}
+
 .createactions {
   display: flex;
   justify-content: flex-end;

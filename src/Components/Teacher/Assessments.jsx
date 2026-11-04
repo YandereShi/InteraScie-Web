@@ -1,3 +1,4 @@
+import { GetSectionLabel } from "../../lib/schoolYear";
 import "../../css/Assessments.css";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
@@ -57,9 +58,8 @@ function Assessments() {
     : branches[0] ?? "";
   const lessonCount = branch === "Earth" ? 2 : maxLessons;
   const sectionID = Number(section) || 0;
-  const sectionName = sections.find(
-    (item) => item.sectionID === sectionID
-  )?.sectionName ?? "";
+  const activeSection = sections.find((item) => item.sectionID === sectionID);
+  const sectionName = activeSection ? GetSectionLabel(activeSection) : "";
   const lessons = levels
     .filter((item) => item.branchName === branch)
     .slice(0, lessonCount);
@@ -335,7 +335,7 @@ function Assessments() {
                           key={item.sectionID}
                           value={item.sectionID}
                         >
-                          {item.sectionName}
+                          {GetSectionLabel(item)}
                         </option>
                       ))}
                     </select>

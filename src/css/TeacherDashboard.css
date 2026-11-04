@@ -181,6 +181,40 @@
   outline-offset: 3px;
 }
 
+.dashboardradar .dashboardtilehead {
+  flex-wrap: wrap;
+}
+
+.dashboardradar .dashboardtilehead select {
+  width: 100%;
+  min-width: 0;
+  padding: 6px 8px;
+  border: 1px solid #89988e;
+  border-radius: 7px;
+  background-color: #ffffff;
+  color: #153d2b;
+  font-size: clamp(0.75rem, 1.1vw, 0.9rem);
+}
+
+.dashboardradaropen {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  background-color: transparent;
+  font: inherit;
+  cursor: pointer;
+}
+
+.dashboardradaropen:focus-visible {
+  outline: 3px solid #00bf63;
+  outline-offset: 3px;
+}
+
 .dashboardtilehead {
   display: flex;
   width: 100%;
@@ -256,11 +290,18 @@
 
 .performanceactions {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: flex-end;
   gap: 10px;
   min-width: 0;
+  max-width: 100%;
   margin-left: auto;
+}
+
+.performanceactions .sectionselect {
+  flex: 0 1 220px;
+  width: 220px;
 }
 
 .dashboardexportbutton {
@@ -338,23 +379,23 @@
   font-size: 0.8rem;
 }
 
-.dashboardprogresshead select {
+.dashboardprogresshead .sectionselect {
   min-width: 0;
   width: 150px;
   max-width: 100%;
-  padding: 6px 8px;
-  border: 1px solid #89988E;
-  border-radius: 7px;
-  background-color: #FFFFFF;
-  color: #153D2B;
-  font-size: 0.85rem;
 }
 
 .dashboardprogressactions {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 8px;
   min-width: 0;
+  max-width: 100%;
+}
+
+.dashboardprogressactions .sectionselect {
+  flex: 1 1 130px;
 }
 
 .dashboardtimebutton {
@@ -379,8 +420,8 @@
     flex: 1 1 100%;
   }
 
-  .dashboardprogressactions select {
-    flex: 1;
+  .dashboardprogressactions .sectionselect {
+    flex: 1 1 130px;
   }
 }
 
@@ -630,16 +671,24 @@
   }
 
   .performanceactions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     width: 100%;
     margin-left: 0;
   }
 
   .performanceactions select {
-    flex: 1;
-    width: 0;
+    width: 100%;
+    padding: 8px 6px;
+    font-size: clamp(0.75rem, 2.8vw, 0.9rem);
+  }
+
+  .performanceactions .sectionselect {
+    width: 100%;
   }
 
   .dashboardexportbutton {
+    grid-column: 1 / -1;
     flex-shrink: 0;
   }
 }

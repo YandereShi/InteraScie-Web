@@ -1,5 +1,6 @@
 import { queryClient } from "./queryClient";
 import { supabase } from "./supabase";
+import { SortSectionsBySchoolYear } from "./schoolYear";
 
 export function GetLevels(staffID) {
   return queryClient.fetchQuery({
@@ -21,12 +22,12 @@ export function GetTeacherSections(staffID) {
     staleTime: 2 * 60 * 1000,
     queryFn: async () => {
       const { data, error } = await supabase.from("Section")
-        .select("sectionID, sectionName, isShared")
+        .select("sectionID, sectionName, schoolYear, isShared")
         .is("archivedAt", null)
         .eq("staffID", staffID)
         .order("sectionName", { ascending: true });
       if (error) throw new Error("Unable to load teacher sections.", { cause: error });
-      return (data ?? []).filter((section) => section.isShared !== true);
+      return SortSectionsBySchoolYear((data ?? []).filter((section) => section.isShared !== true));
     },
   });
 }
